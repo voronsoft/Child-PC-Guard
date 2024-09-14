@@ -5,18 +5,19 @@ import time
 import os
 import sys
 
-# Путь к файлу для хранения оставшегося времени до блокировки и счетчика завершений
-REMAINING_TIME_FILE = "file_remaining_time.txt"
-USR_BLCK = "file_username_blocking.txt"
+# Путь к файлу данных оставшегося времени и имени пользователя для блокировки.
+DATA_FILE = "data.json"
 
 
 def is_admin():
     """
     Проверяет, запущен ли скрипт с правами администратора.
+
+    :return: True, если запущен с правами администратора, иначе False.
     """
     try:
         return ctypes.windll.shell32.IsUserAnAdmin()
-    except:
+    except Exception:
         return False
 
 
@@ -25,18 +26,24 @@ def run_as_admin():
     Проверяет, запущено ли приложение с правами администратора.
     Если нет, перезапускает его с запросом прав администратора.
     """
-    try:
-        # Проверяем, запущено ли приложение с правами администратора
-        is_admin = ctypes.windll.shell32.IsUserAnAdmin()
-    except:
-        is_admin = False
-
-    if not is_admin:
+    if not is_admin():
         # Если приложение запущено без прав администратора, перезапускаем его с запросом прав администратора
         try:
             ctypes.windll.shell32.ShellExecuteW(
-                    None, "runas", sys.executable, ' '.join([f'"{arg}"' for arg in sys.argv]), None, 1
+                    None,
+                    "runas",
+                    sys.executable,
+                    ' '.join([f'"{arg}"' for arg in sys.argv]),
+                    None,
+                    0
             )
+            ctypes.windll.user32.MessageBoxW(
+                    None,
+                    f"Скрипт запущен с ПРАВАМИ АДМИНИСТРАТОРА",
+                    "Одобрено",
+                    1
+            )
+            print("Скрипт запущен с ПРАВАМИ АДМИНИСТРАТОРА")
             sys.exit()  # Завершаем текущий процесс, чтобы предотвратить двойной запуск
         except Exception as e:
             print("Ошибка ", e)
@@ -44,74 +51,49 @@ def run_as_admin():
                     None,
                     f"Не удалось запустить программу с правами администратора:\n\n{e}",
                     "Ошибка",
-                    0
+                    1
             )
 
-            # wx.MessageBox(f"Не удалось запустить программу с правами администратора: {e}", "Ошибка", wx.ICON_ERROR)
-            # sys.exit(3)
 
-
-def save_username_blocking(username):
+def read_json(key, file_path=DATA_FILE):
     """
-    Запись имени пользователя для которого выбрана блокировка
-    :param username: Имя пользователя для блокировки.
-    """
-    with open(USR_BLCK, "w") as file:
-        file.write(str(username))
+    Читает данные из JSON-файла и возвращает их в виде словаря.
 
-
-def load_username_blocking():
-    """
-    Загружает имя пользователя из файла.
-    """
-    if os.path.exists(USR_BLCK):
-        with open(USR_BLCK, "r") as file:
-            temp = file.read().strip()
-            return str(temp)
-    return None
-
-
-def delete_username_blocking_file():
-    """
-    Удаляет файл, содержащий имя пользователя для блокировки.
-    """
-    if os.path.exists(USR_BLCK):
-        os.remove(USR_BLCK)
-
-
-def save_remaining_time(remaining_time):
-    """
-    Сохраняет оставшееся время до блокировки в файл.
-    :param remaining_time: Остаток времени в секундах.
-    """
-    with open(REMAINING_TIME_FILE, "w") as file:
-        file.write(str(remaining_time))
-
-
-def load_remaining_time():
-    """
-    Загружает оставшееся время до блокировки из файла.
-    :return: Остаток времени в секундах или None, если файл не существует.
+    :param key: Ключ
+    :param file_path: Путь к JSON-файлу.
     """
     try:
-        if os.path.exists(REMAINING_TIME_FILE):
-            with open(REMAINING_TIME_FILE, "r", encoding="utf-8") as file:
-                temp = file.read().strip()
-                if temp == "":
-                    return 0
-                return int(temp)
-
+        with open(file_path, 'r', encoding='utf-8') as file:
+            data = json.load(file)
+        return data[key]
+    except FileNotFoundError:
+        print(f"Файл {file_path} не найден.")
         return None
+    except json.JSONDecodeError:
+        print("Ошибка чтения JSON-файла.")
+        return None
+
+
+def update_json(key, value, file_path=DATA_FILE):
+    """
+    Изменяет данные в JSON-файле по указанному ключу и сохраняет их обратно в файл.
+
+    :param file_path: Путь к JSON-файлу.
+    :param key: Ключ, который нужно изменить или добавить.
+    :param value: Новое значение для указанного ключа.
+    """
+    try:
+        # Читаем текущие данные из файла
+        data = read_json(key, file_path)
+        # Обновляем данные
+        data[key] = value
+
+        # Сохраняем измененные данные обратно в файл
+        with open(file_path, 'w', encoding='utf-8') as file:
+            json.dump(data, file, indent=4, ensure_ascii=False)
+        print(f"Данные успешно обновлены: {key} = {value}")
     except Exception as e:
-        print("Ошибка: ", e)
-
-
-def delete_remaining_time_file():
-    """
-    Удаляет файл, содержащий остаток времени до блокировки.
-    """
-    if os.path.exists(REMAINING_TIME_FILE):
-        os.remove(REMAINING_TIME_FILE)
+        print(f"Ошибка при обновлении данных: {e}")
 
 
 def get_users():
@@ -218,27 +200,12 @@ def unblock_user(username):
             # Выполняем команду в командной строке
             subprocess.run(command, shell=True, check=True)
             print(f"Пользователь {username} разблокирован.")
-            time.sleep(1)
 
-            # Очищаем содержимое файла file_remaining_time.txt
-            if os.path.exists(REMAINING_TIME_FILE):
-                with open(REMAINING_TIME_FILE, 'w') as file:
-                    file.write('')  # Записываем пустую строку в файл
-                print(f"Содержимое файла {REMAINING_TIME_FILE} было стерто.")
-                time.sleep(1)
-            else:
-                print(f"Файл {REMAINING_TIME_FILE} не найден.")
+            # Очищаем содержимое времени и имени пользователя в файле
+            update_json("remaining_time", 0)  # Записываем значение времени 0 в файл
+            update_json("username_blocking", "")  # Записываем пустую строку в файл
 
-            # Очищаем содержимое файла file_username_blocking.txt
-            if os.path.exists(USR_BLCK):
-                with open(USR_BLCK, 'w') as file:
-                    file.write('')  # Записываем пустую строку в файл
-                print(f"Содержимое файла {USR_BLCK} было стерто.")
-                time.sleep(1)
-            else:
-                print(f"Файл {REMAINING_TIME_FILE} не найден.")
-
-    except subprocess.CalledProcessError as e:
+    except Exception as e:
         print(f"Ошибка при разблокировке пользователя {username}: {e}")
 
 

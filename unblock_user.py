@@ -1,40 +1,9 @@
-import subprocess
-import os
-import sys
 import ctypes
+import subprocess
 
+from test_block import is_admin, run_as_admin, read_json, update_json
 
-def is_admin():
-    """
-    Проверяет, запущен ли скрипт с правами администратора.
-
-    :return: True, если запущен с правами администратора, иначе False.
-    """
-    try:
-        # Проверка административных прав
-        return ctypes.windll.shell32.IsUserAnAdmin()
-    except:
-        return False
-
-
-def run_as_admin():
-    """
-    Перезапускает текущий скрипт от имени администратора.
-    """
-    try:
-        # Запуск скрипта от имени администратора
-        ctypes.windll.shell32.ShellExecuteW(
-                None,
-                "runas",
-                sys.executable,
-                " ".join(sys.argv),
-                None,
-                0
-        )
-        print("Скрипт был запущен с правами администратора")
-    except Exception as e:
-        print(f"Не удалось перезапустить скрипт с правами администратора: {e}")
-
+USERNAME = read_json('username_blocking')
 
 def unblock_user(username):
     """
@@ -43,30 +12,35 @@ def unblock_user(username):
     :param username: Имя учетной записи пользователя для разблокировки.
     """
     try:
-        # Формируем команду для разблокировки пользователя
-        command = f'net user "{username}" /active:yes'
-        # Выполняем команду в командной строке
-        subprocess.run(command, shell=True, check=True)
-        print(f"Пользователь {username} разблокирован.")
 
-        # Очищаем содержимое файла lock_time.json
-        lock_time_file = 'lock_time.json'
-        if os.path.exists(lock_time_file):
-            with open(lock_time_file, 'w') as file:
-                file.write('')  # Записываем пустую строку в файл
-            print(f"Содержимое файла {lock_time_file} было стерто.")
-        else:
-            print(f"Файл {lock_time_file} не найден.")
+        if len(username) > 3:
+            # Формируем команду для разблокировки пользователя
+            command = f'net user "{username}" /active:yes'
+            # Выполняем команду в командной строке
+            subprocess.run(command, shell=True, check=True)
+            print(f"Пользователь {username} разблокирован.")
 
-    except subprocess.CalledProcessError as e:
+            # Очищаем время в файле с данными.
+            update_json("remaining_time", 0)
+
+    except Exception as e:
         print(f"Ошибка при разблокировке пользователя {username}: {e}")
 
 
 # Проверка и запуск от имени администратора
 if __name__ == "__main__":
     if not is_admin():
-        print("Скрипт не запущен с правами администратора. Попытка перезапуска...")
+        ctypes.windll.user32.MessageBoxW(
+                None,
+                f"Скрипт запущен без правами администратора.\nПопытка перезапуска...",
+                "Ошибка",
+                1
+        )
+
+        print("Скрипт запущен без правами администратора.\nПопытка перезапуска...")
         run_as_admin()
     else:
         # Разблокировка пользователя
-        unblock_user("test")  # Разблокируем
+        # получаем имя пользователя из файла с данными
+        user = read_json("username_blocking")
+        unblock_user(USERNAME)  # Разблокируем

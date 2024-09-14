@@ -1,5 +1,3 @@
-import time
-
 import wx
 import wx.xrc
 import gettext
@@ -9,7 +7,7 @@ _ = gettext.gettext
 
 
 ###########################################################################
-## Class window
+## Class Window
 ###########################################################################
 
 class Window(wx.Dialog):
@@ -27,7 +25,7 @@ class Window(wx.Dialog):
         self.SetSizeHints(wx.DefaultSize, wx.DefaultSize)
         self.SetFont(wx.Font(12, wx.FONTFAMILY_SWISS, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, "Segoe UI"))
 
-        self.username_blocking = test_block.load_username_blocking()  # Имя пользователя для блокировки
+        self.username_blocking = test_block.read_json("username_blocking")  # Имя пользователя для блокировки
         # Таймер
         self.timer = wx.Timer(self)  # Таймеp
         self.remaining_time = 0  # Время задаваемой блокировки
@@ -115,26 +113,6 @@ class Window(wx.Dialog):
 
         sizer_main.Add(sizer_center1, 1, wx.ALL | wx.EXPAND, 5)
 
-        # # ------------------------------------------------
-        # # TODO логика если есть остаточное время в файле.
-        # # Загрузка оставшегося времени из файла, если оно есть
-        # saved_time = test_block.load_remaining_time()
-        # print(f"Время из файла - {saved_time} - ({type(saved_time)})")
-        # saved_usr = test_block.load_username_blocking()
-        # print(f"Имя из файла - {saved_usr} - ({type(saved_usr)})")
-        #
-        # if saved_time is not None and saved_time > 0:
-        #     self.btn_ok.Disable()  # Отключаем кнопку
-        #     self.remaining_time = saved_time
-        #     self.elapsed_time = 0
-        #     self.gauge.SetRange(self.remaining_time)
-        #     self.gauge.SetValue(self.elapsed_time)
-        #     self.timer.Start(1000)  # Запускаем таймер, если есть оставшееся время
-        # else:
-        #     self.remaining_time = 0
-        # # END - логика если есть остаточное время в файле.
-        # # ------------------------------------------------
-
         sizer_center2 = wx.BoxSizer(wx.VERTICAL)
 
         self.btn_disable_blocking = wx.Button(self,
@@ -171,8 +149,8 @@ class Window(wx.Dialog):
         # TODO логика если есть остаточное время в файле.
 
         # Загрузка оставшегося времени из файла, если оно есть
-        saved_time = test_block.load_remaining_time()
-        saved_usr = test_block.load_username_blocking()
+        saved_time = test_block.read_json("remaining_time")  # Считываем время из файла
+        saved_usr = test_block.read_json("username_blocking")  # Считываем имя пользователя из файла
         print(f"Время из файла - {saved_time} - ({type(saved_time)})")
         print(f"Имя из файла - {saved_usr} - ({type(saved_usr)})")
 
@@ -205,10 +183,11 @@ class Window(wx.Dialog):
     def on_close(self, event):
         """Обработчик закрытия программы"""
         if self.remaining_time > 0:
-            test_block.save_remaining_time(self.remaining_time - self.elapsed_time)
+            # Запись времени в файл
+            test_block.update_json("remaining_time", self.remaining_time - self.elapsed_time)
         else:
-            test_block.delete_remaining_time_file()  # Удаляем файл c временем если таймер не активен
-            test_block.delete_username_blocking_file()  # Удаляем файл с именем пользователя для блокировки
+            test_block.update_json("remaining_time", 0)  # Удаляем значение времени если таймер не активен
+            test_block.update_json("username_blocking", "")  # Удаляем значение с именем пользователя для блокировки
         self.Hide()
         self.Close(True)
         self.Destroy()
@@ -219,7 +198,9 @@ class Window(wx.Dialog):
         """
         # Получаем значения из полей ввода.
         self.username_blocking = self.input_username.GetValue()  # Получаем имя пользователя для блокировки
-        test_block.save_username_blocking(self.username_blocking)  # Записываем имя пользователя для блокировки в файл
+        test_block.update_json("username_blocking",
+                               self.username_blocking
+                               )  # Записываем имя пользователя для блокировки в файл
         combo_value = self.combo_box.GetValue()  # Получаем значение времени для блокировки из списка
 
         # Проверяем, что оба значения не пустые
@@ -257,18 +238,18 @@ class Window(wx.Dialog):
         Обработчик таймера.
         """
         # Сохраняем имя пользователя для блокировки в файл
-        test_block.save_username_blocking(self.username_blocking)
+        test_block.update_json("username_blocking", self.username_blocking)
 
         if self.elapsed_time < self.remaining_time:
             self.elapsed_time += 1  # Увеличиваем прошедшее время
             self.gauge.SetValue(self.elapsed_time)  # Обновляем значение шкалы по мере увеличения времени
             # Сохраняем оставшееся время в файл при каждом тике таймера
-            test_block.save_remaining_time(self.remaining_time - self.elapsed_time)
+            test_block.update_json("remaining_time", self.remaining_time - self.elapsed_time)
         else:
             self.timer.Stop()  # Останавливаем таймер, когда время истекло
             self.gauge.SetValue(0)  # Обнуляем статус строку
-            test_block.delete_remaining_time_file()  # Удаляем файл с временем, когда блокировка завершена
-            test_block.delete_username_blocking_file()  # Удаляем файл с именем пользователя для блокировки
+            test_block.update_json("remaining_time", 0)  # Удаляем значение времени, когда блокировка завершена.
+            test_block.update_json("username_blocking", "")  # Удаляем значение с именем пользователя для блокировки
             # Логика блокировки учетной записи и рабочего стола.
             username = self.username_blocking  # Получаем имя пользователя для блокировки
 
@@ -281,21 +262,13 @@ class Window(wx.Dialog):
             print("Запуск блокировки для пользователя")
             # TODO закомментировано для теста
             # test_block.blocking(username, id_session_username)
-            self.btn_ok.Enable() # Активируем кнопку
+            self.btn_ok.Enable()  # Активируем кнопку
 
     def collapse_program(self, event):
         """
         Обработчик сворачивания программы в трей
         """
         self.Iconize(True)  # Свернуть окно в трей
-
-        def on_close(self, event):
-            """
-            Обработчик закрытия программы
-            """
-            self.Hide()  # Скрываем окно
-            self.Close(True)
-            self.Destroy()
 
     def disable_blocking(self, event):
         """
@@ -330,6 +303,7 @@ class Window(wx.Dialog):
                                       wx.ICON_WARNING
                                       )
             dialog.ShowModal()
+
 
 # =============================================================================================================
 
