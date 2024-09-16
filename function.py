@@ -8,6 +8,7 @@ from datetime import datetime
 
 # Путь к файлу данных оставшегося времени и имени пользователя для блокировки.
 DATA_FILE = "data.json"
+DATA_FILE_SHARED = r"C:\Users\Public\Documents\timer.json"
 
 
 def is_admin():
@@ -211,20 +212,19 @@ def unblock_user(username):
     :param username: Имя учетной записи пользователя для разблокировки.
     """
     try:
-        username_session = os.getlogin()  # Получение имени текущего пользователя
-        if username != username_session and username != "":
-            # Формируем команду для разблокировки пользователя
-            command = f'net user "{username}" /active:yes'
-            # Выполняем команду в командной строке
-            subprocess.run(command, shell=True, check=True)
-            print(f"Пользователь {username} разблокирован.")
-
-            # Очищаем содержимое времени и имени пользователя в файле
-            update_json("remaining_time", 0)  # Записываем значение времени 0 в файл
-            update_json("username_blocking", "")  # Записываем пустую строку в файл
-
+        # Формируем команду для разблокировки пользователя
+        command = f'net user "{username}" /active:yes'
+        # Выполняем команду в командной строке
+        subprocess.run(command, shell=True, check=True)
+        print(f"Пользователь {username} разблокирован.")
     except Exception as e:
         print(f"Ошибка при разблокировке пользователя {username}: {e}")
+        ctypes.windll.user32.MessageBoxW(
+                None,
+                f"Ошибка при разблокировке пользователя - {username}:\n\n{e}",
+                "Ошибка",
+                1
+        )
 
 
 def username_session():
