@@ -1,9 +1,10 @@
 import ctypes
 import subprocess
 
-from test_block import is_admin, run_as_admin, read_json, update_json
+from function import is_admin, run_as_admin, read_json, update_json
 
 USERNAME = read_json('username_blocking')
+TIME = read_json('remaining_time')
 
 def unblock_user(username):
     """
@@ -13,15 +14,30 @@ def unblock_user(username):
     """
     try:
 
-        if len(username) > 3:
+        if len(username) >= 3:
             # Формируем команду для разблокировки пользователя
             command = f'net user "{username}" /active:yes'
             # Выполняем команду в командной строке
             subprocess.run(command, shell=True, check=True)
-            print(f"Пользователь {username} разблокирован.")
 
-            # Очищаем время в файле с данными.
-            update_json("remaining_time", 0)
+            # Выводим сообщение
+            ctypes.windll.user32.MessageBoxW(
+                    None,
+                    f"Пользователь {username} разблокирован.",
+                    "Успешно",
+                    0
+            )
+            # Очищаем время и имя пользователя в файле с данными.
+            update_json('remaining_time', 0)
+            update_json('username_blocking', "")
+        else:
+            # Выводим сообщение
+            ctypes.windll.user32.MessageBoxW(
+                    None,
+                    f"Не удалось разблокировать пользователя - {username}",
+                    "ОШИБКА",
+                    0
+            )
 
     except Exception as e:
         print(f"Ошибка при разблокировке пользователя {username}: {e}")
@@ -29,18 +45,26 @@ def unblock_user(username):
 
 # Проверка и запуск от имени администратора
 if __name__ == "__main__":
-    if not is_admin():
+    if USERNAME:
+        if not is_admin():
+            ctypes.windll.user32.MessageBoxW(
+                    None,
+                    f"Скрипт запущен без прав администратора.\nПопытка перезапуска...",
+                    "Ошибка",
+                    0
+            )
+
+            # Перезапускаем
+            run_as_admin()
+        else:
+            # Разблокировка пользователя
+            unblock_user(USERNAME)  # Разблокируем
+    else:
+        # Выводим сообщение
         ctypes.windll.user32.MessageBoxW(
                 None,
-                f"Скрипт запущен без правами администратора.\nПопытка перезапуска...",
-                "Ошибка",
-                1
+                f"Ни один из пользователей не заблокирован.",
+                "ВНИМАНИЕ",
+                0
         )
 
-        print("Скрипт запущен без правами администратора.\nПопытка перезапуска...")
-        run_as_admin()
-    else:
-        # Разблокировка пользователя
-        # получаем имя пользователя из файла с данными
-        user = read_json("username_blocking")
-        unblock_user(USERNAME)  # Разблокируем
