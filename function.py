@@ -176,24 +176,16 @@ def blocking(username, id_ses_user):
     :param username: Имя блокируемого пользователя
     :param id_sess_user: ID сессии для блокировки экрана рабочего стола
     """
-    # command1 = f'net user "{username}" /active:no'
-    # subprocess.run(command1, shell=True, check=True)
-    # print("Выполняем команду в командной строке для блокировки учетной записи")
-    #
-    # time.sleep(1)
-
-    # command2 = 'C:\\Windows\\System32\\rundll32.exe user32.dll,LockWorkStation'
-    # subprocess.run(command2, shell=True, check=True)
-    # print("Выполнение команды блокировки рабочего стола (экран блокировки)")
     if id_ses_user is not None:
         command_logoff = f"logoff {id_ses_user}"
         command_disable_user = f'net user "{username}" /active:no'
         try:
+            # TODO закомментированная команда для теста
             # Выполнение команды logoff для указанной сессии
-            subprocess.run(command_logoff, shell=True, check=True)
+            # subprocess.run(command_logoff, shell=True, check=True)
             print("1 Отработала команда блокировки экрана")
-            time.sleep(3)
-            # TODO закоментированная команда для теста
+            time.sleep(1)
+            # TODO закомментированная команда для теста
             # Выполняем команду для блокировки учетной записи
             # subprocess.run(command_disable_user, shell=True, check=True)
             print("2 Отработала команда блокировки учетной записи")

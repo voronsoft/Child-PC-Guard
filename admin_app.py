@@ -232,8 +232,8 @@ class Window(wx.Dialog):
             # Сбрасываем поле с временем на 0
             self.input_time.SetSelection(0)
 
-        # self.Hide()
-        # self.Destroy()
+        self.Hide()
+        self.Destroy()
 
     def on_input_changed(self, event):
         """
@@ -342,27 +342,32 @@ class Window(wx.Dialog):
         else:
             self.timer.Stop()  # Останавливаем таймер, когда время истекло
             self.gauge.SetValue(0)  # Обнуляем статус строку
-            # Удаляем значение времени, когда блокировка завершена.
+            # Удаляем значение времени в файле, когда блокировка завершена.
             function.update_json("remaining_time", 0)
             # Удаляем время блокировки в файле таймера общего доступа
             function.update_json("remaining_time", 0, file_path=function.DATA_FILE_SHARED)
-
             # Удаляем значение с именем пользователя для блокировки
             function.update_json("username_blocking", "")
 
-            # Логика блокировки учетной записи и рабочего стола.
+            # =============== Логика блокировки учетной записи и рабочего стола.
             username = self.username_blocking  # Получаем имя пользователя для блокировки
-
             print(f"Имя пользователя - {username}")
             session_data = function.get_session_id_by_username(username)
             print("session_data", session_data)
             id_session_username = int(*(id for id in session_data if id.isdigit()))
             print(f"ID сесии - {id_session_username}")
-            # Запускаем блокировку
+
+            # TODO Запускаем блокировку ==========================
             print("Запуск блокировки для пользователя")
-            # TODO закомментировано для теста
             function.blocking(username, id_session_username)
-            self.btn_ok.Enable()  # Активируем кнопку
+            # После того как отработала блокировка пользователя обнуляем поля ввода имя-время.
+            # Стираем значение в поле имя пользователя.
+            self.input_username.SetSelection(-1)
+            # Стираем значение в поле выбора времени для блокировки
+            self.input_time.SetSelection(0)
+            # Активируем кнопку
+            self.btn_ok.Enable()
+            # todo ================= END ==============================
 
     def collapse_program(self, event):
         """
@@ -410,12 +415,7 @@ class Window(wx.Dialog):
             # Отключаем кнопку - "Отключить блокировку"
             self.btn_disable_blocking.Disable()
             print(555)
-        # # Если имя пользователя пустое, а время не равно 0.
-        # elif username == "" and self.remaining_time != 0:
-        #     # Стираем значение времени == 0
-        #     self.remaining_time = 0
-        #     time.sleep(10)
-        # Если имя пользователя путое
+        # Если имя пользователя пустое
         elif username == "":
             dialog = wx.MessageDialog(self,
                                       _("Вы не указали пользователя для отключения блокировки."),
