@@ -8,8 +8,6 @@ from datetime import datetime
 
 # Путь к файлу данных оставшегося времени и имени пользователя для блокировки.
 DATA_FILE = "data.json"
-DATA_FILE_SHARED = r"C:\Users\Public\Documents\timer.json"
-
 
 def is_admin():
     """
@@ -37,14 +35,8 @@ def run_as_admin():
                     sys.executable,
                     ' '.join([f'"{arg}"' for arg in sys.argv]),
                     None,
-                    1
+                    0  # 1-отобразить консоль \ 0-скрыть консоль
             )
-            # ctypes.windll.user32.MessageBoxW(
-            #         None,
-            #         f"Скрипт запущен с ПРАВАМИ АДМИНИСТРАТОРА",
-            #         "Одобрено",
-            #         1
-            # )
             sys.exit()  # Завершаем текущий процесс, чтобы предотвратить двойной запуск
         except Exception as e:
             ctypes.windll.user32.MessageBoxW(
@@ -182,7 +174,7 @@ def blocking(username, id_ses_user):
         try:
             # TODO закомментированная команда для теста
             # Выполнение команды logoff для указанной сессии
-            # subprocess.run(command_logoff, shell=True, check=True)
+            subprocess.run(command_logoff, shell=True, check=True)
             print("1 Отработала команда блокировки экрана")
             time.sleep(1)
             # TODO закомментированная команда для теста

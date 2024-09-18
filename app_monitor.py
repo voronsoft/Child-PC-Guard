@@ -7,7 +7,8 @@ import psutil
 class AppMonitor:
     def __init__(self):
         # Путь к приложению, которое будем запускать
-        self.app_path = r"C:\child_control\dist\Child PC Guard.exe"
+        # self.app_path = r"C:\child_control\dist\Child PC Guard.exe"
+        self.app_path = r"Child PC Guard.exe"
         self.process = None
 
     def is_process_running(self, process_name):
@@ -57,7 +58,8 @@ class AppMonitor:
 
     def log_error(self, message):
         """Метод для логирования ошибок в файл."""
-        log_file_path = r"C:\child_control\app_monitor_log.txt"
+        # log_file_path = r"C:\child_control\app_monitor_log.txt"
+        log_file_path = r"app_monitor_log.txt"
         try:
             with open(log_file_path, 'a', encoding="utf-8") as log_file:
                 log_file.write(f"{time.strftime('%Y-%m-%d %H:%M:%S')} - {message}\n==================\n")

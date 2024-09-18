@@ -1,4 +1,4 @@
-('C:\\child_control\\build\\app_monitor\\Monitor CPG.pkg',
+('C:\\child_control\\build\\app_monitor\\Windows CPG Monitor.pkg',
  {'BINARY': True,
   'DATA': True,
   'EXECUTABLE': True,

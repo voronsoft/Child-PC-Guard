@@ -2,7 +2,7 @@
 
 
 a = Analysis(
-    ['app_simple_user.py'],
+    ['app_timer.py'],
     pathex=[],
     binaries=[],
     datas=[],
@@ -22,7 +22,7 @@ exe = EXE(
     a.binaries,
     a.datas,
     [],
-    name='Child PC Guard Simple User',
+    name='Child PC Timer',
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
@@ -35,5 +35,5 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
-    icon=['img\\icon.ico'],
+    icon=['icon.ico'],
 )

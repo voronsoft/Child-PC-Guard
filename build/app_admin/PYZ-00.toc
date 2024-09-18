@@ -7,6 +7,7 @@
   ('_pydecimal', 'C:\\python312\\Lib\\_pydecimal.py', 'PYMODULE'),
   ('_strptime', 'C:\\python312\\Lib\\_strptime.py', 'PYMODULE'),
   ('_threading_local', 'C:\\python312\\Lib\\_threading_local.py', 'PYMODULE'),
+  ('app_wind_pass', 'C:\\child_control\\app_wind_pass.py', 'PYMODULE'),
   ('argparse', 'C:\\python312\\Lib\\argparse.py', 'PYMODULE'),
   ('ast', 'C:\\python312\\Lib\\ast.py', 'PYMODULE'),
   ('base64', 'C:\\python312\\Lib\\base64.py', 'PYMODULE'),

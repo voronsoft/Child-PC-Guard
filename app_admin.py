@@ -12,6 +12,7 @@ _ = gettext.gettext
 
 ###########################################################################
 ## Class Window
+## Класс окна основного приложения
 ###########################################################################
 
 class Window(wx.Dialog):
@@ -37,7 +38,7 @@ class Window(wx.Dialog):
         sizer_main = wx.BoxSizer(wx.VERTICAL)
         sizer_main.SetMinSize(wx.Size(600, 400))
         # Устанавливаем иконку для окна
-        icon = wx.Icon('img/icon.ico', wx.BITMAP_TYPE_ICO)
+        icon = wx.Icon('icon.ico', wx.BITMAP_TYPE_ICO)
         self.SetIcon(icon)
 
         sizer_top = wx.BoxSizer(wx.HORIZONTAL)
@@ -194,8 +195,6 @@ class Window(wx.Dialog):
             function.update_json("username_blocking", "")
             # Очищаем время блокировки в файле
             function.update_json("remaining_time", 0)
-            # Очищаем время блокировки в файле таймера общего доступа
-            function.update_json("remaining_time", 0, file_path=function.DATA_FILE_SHARED)
         # END - логика если есть остаточное время в файле.
         # ------------------------------------------------
 
@@ -218,25 +217,18 @@ class Window(wx.Dialog):
         if self.remaining_time > 0 and len(self.username_blocking) >= 1:
             # Запись времени в файл
             function.update_json("remaining_time", self.remaining_time - self.elapsed_time)
-            function.update_json("remaining_time", self.remaining_time - self.elapsed_time,
-                                 file_path=function.DATA_FILE_SHARED
-                                 )
             print("1as")
         # Если время равно 0
         elif self.remaining_time == 0:
             # Удаляем значение времени если таймер не активен
             function.update_json("remaining_time", 0)
-            # Очищаем время блокировки в файле таймера общего доступа
-            function.update_json("remaining_time", 0, file_path=function.DATA_FILE_SHARED)
             # Удаляем значение с именем пользователя для блокировки
             function.update_json("username_blocking", "")
             print("2as")
         # Если время больше ноля, но имя пустое
         elif self.remaining_time > 0 and len(self.username_blocking) == 0:
-            # Удаляем значение времени если таймер не активен
+            # Очищаем время если таймер не активен
             function.update_json("remaining_time", 0)
-            # Очищаем время блокировки в файле таймера общего доступа
-            function.update_json("remaining_time", 0, file_path=function.DATA_FILE_SHARED)
             # Сбрасываем поле с временем на 0
             self.input_time.SetSelection(0)
 
@@ -256,8 +248,6 @@ class Window(wx.Dialog):
         print(104, self.input_time.GetValue(), type(self.input_time.GetValue()))
         # Записывает выбранное время для блокировки
         function.update_json("remaining_time", self.remaining_time)
-        # Записывает время блокировки в файле таймера общего доступа
-        function.update_json("remaining_time", self.remaining_time, file_path=function.DATA_FILE_SHARED)
 
         # Проверяем запущена ли сессия искомого пользователя
         if function.get_session_id_by_username(self.username_blocking) is None:
@@ -328,8 +318,6 @@ class Window(wx.Dialog):
             function.update_json("username_blocking", "")
             # Очищаем время блокировки в файле
             function.update_json("remaining_time", 0)
-            # Очищаем время блокировки в файле таймера общего доступа
-            function.update_json("remaining_time", 0, file_path=function.DATA_FILE_SHARED)
 
     def run_on_timer(self, event):
         """
@@ -343,19 +331,12 @@ class Window(wx.Dialog):
             self.gauge.SetValue(self.elapsed_time)  # Обновляем значение шкалы по мере увеличения времени
             # Сохраняем оставшееся время в файл при каждом тике таймера
             function.update_json("remaining_time", self.remaining_time - self.elapsed_time)
-            # Сохраняем оставшееся время в файл при каждом тике таймера в файл общего доступа
-            function.update_json("remaining_time",
-                                 self.remaining_time - self.elapsed_time,
-                                 file_path=function.DATA_FILE_SHARED
-                                 )
 
         else:
             self.timer.Stop()  # Останавливаем таймер, когда время истекло
             self.gauge.SetValue(0)  # Обнуляем статус строку
             # Удаляем значение времени в файле, когда блокировка завершена.
             function.update_json("remaining_time", 0)
-            # Удаляем время блокировки в файле таймера общего доступа
-            function.update_json("remaining_time", 0, file_path=function.DATA_FILE_SHARED)
             # Удаляем значение с именем пользователя для блокировки
             function.update_json("username_blocking", "")
 
@@ -415,8 +396,6 @@ class Window(wx.Dialog):
             function.update_json("remaining_time", 0)  # Записываем значение времени 0 в файл
             # Очищаем содержимое имени пользователя в файле
             function.update_json("username_blocking", "")  # Записываем пустую строку в файл
-            # Очищаем время блокировки в файле таймера общего доступа
-            function.update_json("remaining_time", 0, file_path=function.DATA_FILE_SHARED)
 
             # Активируем поле выбора пользователя
             self.input_username.Enable()
@@ -447,8 +426,6 @@ class Window(wx.Dialog):
             self.input_time.SetSelection(0)  # Сброс поля времени блокировки
             # Очистка значений в файлах
             function.update_json("remaining_time", 0)  # Удаляем значение времени, когда блокировка завершена.
-            # Удаляем время блокировки в файле таймера общего доступа
-            function.update_json("remaining_time", 0, file_path=function.DATA_FILE_SHARED)
             function.update_json("username_blocking", "")  # Удаляем значение с именем пользователя для блокировки
 
 
@@ -459,27 +436,26 @@ def main():
     # Запускаем приложение как администратор
     function.run_as_admin()
 
-    # Пароль приложения
-    # TODO ВАЖНО - изменить пароль для программы !!! (app_wind_pass.py)
-    app_pass = "123"
     app = wx.App(False)
+    main_frame = Window(None)
+    # main_frame.Show()
+    main_frame.Hide()
 
-    while True:
-        # Создаем и отображаем окно ввода пароля
-        dlg = WndPass(None)
-        dlg.ShowModal()
 
-        # Проверяем, правильно ли введен пароль
-        if dlg.password == app_pass:
-            dlg.Destroy()  # Закрываем окно ввода пароля
-            main_frame = Window(None)
-            main_frame.Show()
-            app.MainLoop()
-            break  # Выходим из цикла, если пароль верный
-        else:
-            dlg.Destroy()  # Закрываем окно ввода пароля
-            wx.MessageBox("Неверный пароль. Попробуйте снова.", "Ошибка", wx.OK | wx.ICON_ERROR)
+    # Выводим предупреждение перед запуском приложения
+    wx.MessageBox("Программа должна быть запущена от имени АДМИНИСТРАТОРА\nИначе работа программы будет некорректной",
+                  "Напоминание",
+                  wx.OK | wx.ICON_AUTH_NEEDED)
 
+
+    # Создаем и отображаем окно ввода пароля
+    dlg = WndPass(None)
+    dlg.ShowModal()
+
+    if dlg.password_check:
+        main_frame.Show()
+
+    app.MainLoop()
 
 if __name__ == "__main__":
     main()
