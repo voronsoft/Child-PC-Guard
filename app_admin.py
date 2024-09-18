@@ -5,6 +5,7 @@ import wx.xrc
 import gettext
 
 import function
+from app_wind_pass import WndPass
 
 _ = gettext.gettext
 
@@ -82,7 +83,14 @@ class Window(wx.Dialog):
 
         combo_box_choices = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10"]
 
-        self.input_time = wx.ComboBox(self, wx.ID_ANY, _("0"), wx.DefaultPosition, wx.DefaultSize, combo_box_choices, wx.CB_READONLY)
+        self.input_time = wx.ComboBox(self,
+                                      wx.ID_ANY,
+                                      _("0"),
+                                      wx.DefaultPosition,
+                                      wx.DefaultSize,
+                                      combo_box_choices,
+                                      wx.CB_READONLY
+                                      )
         # Устанавливаем начальное значение временем на 0
         self.input_time.SetSelection(0)
 
@@ -323,7 +331,6 @@ class Window(wx.Dialog):
             # Очищаем время блокировки в файле таймера общего доступа
             function.update_json("remaining_time", 0, file_path=function.DATA_FILE_SHARED)
 
-
     def run_on_timer(self, event):
         """
         Обработчик таймера.
@@ -337,7 +344,10 @@ class Window(wx.Dialog):
             # Сохраняем оставшееся время в файл при каждом тике таймера
             function.update_json("remaining_time", self.remaining_time - self.elapsed_time)
             # Сохраняем оставшееся время в файл при каждом тике таймера в файл общего доступа
-            function.update_json("remaining_time", self.remaining_time - self.elapsed_time, file_path=function.DATA_FILE_SHARED)
+            function.update_json("remaining_time",
+                                 self.remaining_time - self.elapsed_time,
+                                 file_path=function.DATA_FILE_SHARED
+                                 )
 
         else:
             self.timer.Stop()  # Останавливаем таймер, когда время истекло
@@ -446,11 +456,29 @@ class Window(wx.Dialog):
 
 
 def main():
+    # Запускаем приложение как администратор
     function.run_as_admin()
+
+    # Пароль приложения
+    # TODO ВАЖНО - изменить пароль для программы !!! (app_wind_pass.py)
+    app_pass = "123"
     app = wx.App(False)
-    main_frame = Window(None)
-    main_frame.Show()
-    app.MainLoop()
+
+    while True:
+        # Создаем и отображаем окно ввода пароля
+        dlg = WndPass(None)
+        dlg.ShowModal()
+
+        # Проверяем, правильно ли введен пароль
+        if dlg.password == app_pass:
+            dlg.Destroy()  # Закрываем окно ввода пароля
+            main_frame = Window(None)
+            main_frame.Show()
+            app.MainLoop()
+            break  # Выходим из цикла, если пароль верный
+        else:
+            dlg.Destroy()  # Закрываем окно ввода пароля
+            wx.MessageBox("Неверный пароль. Попробуйте снова.", "Ошибка", wx.OK | wx.ICON_ERROR)
 
 
 if __name__ == "__main__":

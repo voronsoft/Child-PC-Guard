@@ -16,6 +16,7 @@ class WndPass(wx.Dialog):
     def __init__(self, parent):
         wx.Dialog.__init__(self, parent, id=wx.ID_ANY, title=_(u"Ввод пароля"), pos=wx.DefaultPosition,
                            size=wx.Size(-1, -1), style=wx.DEFAULT_DIALOG_STYLE)
+        # TODO ВАЖНО - изменить пароль для программы !!! (app_wind_pass.py)
         self.password = ""
 
         self.SetSizeHints(wx.DefaultSize, wx.DefaultSize)
@@ -50,5 +51,5 @@ class WndPass(wx.Dialog):
     def on_ok(self, event):
         # Получаем значения из полей ввода
         self.password = self.m_text_ctrl1.GetValue()
-        self.Close(True)
+        self.Close()
         self.Destroy()
