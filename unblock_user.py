@@ -41,7 +41,12 @@ def unblock_user(username):
 
     except Exception as e:
         print(f"Ошибка при разблокировке пользователя {username}: {e}")
-
+        ctypes.windll.user32.MessageBoxW(
+                None,
+                f"Ошибка при разблокировке пользователя - {username}:\n\n{e}",
+                "Ошибка",
+                1
+        )
 
 # Проверка и запуск от имени администратора
 if __name__ == "__main__":

@@ -1,59 +1,105 @@
 import wx
 import wx.xrc
-
 import gettext
 
 _ = gettext.gettext
 
 
 ###########################################################################
-## Class wnd_pass
+## Class WndPass
 ## Класс окна ввода пароля для программы
 ###########################################################################
 
 class WndPass(wx.Dialog):
 
     def __init__(self, parent):
-        wx.Dialog.__init__(self, parent, id=wx.ID_ANY, title=_("Ввод пароля"), pos=wx.DefaultPosition,
-                           size=wx.Size(-1, -1), style=wx.DEFAULT_DIALOG_STYLE)
+        wx.Dialog.__init__(self, parent,
+                           id=wx.ID_ANY,
+                           title=_("ЗАПУСК"),
+                           pos=wx.DefaultPosition,
+                           size=wx.Size(400, 150),
+                           style=wx.DEFAULT_DIALOG_STYLE & ~(wx.CLOSE_BOX | wx.STAY_ON_TOP)
+                           )
         # TODO ВАЖНО - изменить пароль для программы !!! (app_wind_pass.py)
-        self.password = "123"
-        self.password_check = False
+        self.password = "123"  # Пароль, который нужно ввести
+        self.password_check = False  # Флаг проверки правильности пароля
 
+        # Установка минимального размера окна
         self.SetSizeHints(wx.DefaultSize, wx.DefaultSize)
+        # Установка шрифта
         self.SetFont(wx.Font(12, wx.FONTFAMILY_SWISS, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, "Segoe UI"))
+        # Задаем фон окна
+        self.SetBackgroundColour(wx.SystemSettings.GetColour(wx.SYS_COLOUR_INACTIVEBORDER))
+        # Устанавливаем иконку для окна
+        icon = wx.Icon('icon.ico', wx.BITMAP_TYPE_ICO)
+        self.SetIcon(icon)
 
-        sizer = wx.BoxSizer(wx.HORIZONTAL)
+        # Основной вертикальный слайзер
+        sizer_main = wx.BoxSizer(wx.VERTICAL)
 
-        sizer.SetMinSize(wx.Size(500, 70))
-        self.m_static_text1 = wx.StaticText(self, wx.ID_ANY, _("Введите пароль: "), wx.DefaultPosition, wx.DefaultSize,
-                                            0)
-        self.m_static_text1.Wrap(-1)
+        # Верхний текст
+        self.m_static_text2 = wx.StaticText(self,
+                                            wx.ID_ANY,
+                                            _("Программа должна быть запущена от имени АДМИНИСТРАТОРА\nИначе работа "
+                                              "программы будет некорректной!"),
+                                            wx.DefaultPosition,
+                                            wx.DefaultSize,
+                                            0
+                                            )
+        # Устанавливаем шрифт с размером 10
+        self.m_static_text2.SetFont(wx.Font(10, wx.FONTFAMILY_SWISS, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False))
+        self.m_static_text2.Wrap(-1)
+        sizer_main.Add(self.m_static_text2, 0, wx.ALL | wx.ALIGN_CENTER_HORIZONTAL, 10)
 
-        sizer.Add(self.m_static_text1, 0, wx.ALL, 5)
+        # Поле ввода пароля и кнопка OK
+        sizer_input = wx.BoxSizer(wx.HORIZONTAL)
+        self.m_static_text1 = wx.StaticText(self, wx.ID_ANY, _("Пароль: "), wx.DefaultPosition, wx.DefaultSize, 0)
+        sizer_input.Add(self.m_static_text1, 0, wx.ALL, 5)
 
-        self.m_text_ctrl1 = wx.TextCtrl(self, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.Size(200, -1),
-                                        0 | wx.BORDER_SIMPLE)
-        sizer.Add(self.m_text_ctrl1, 0, wx.ALL, 5)
+        # Поле для ввода текста
+        self.m_text_ctrl1 = wx.TextCtrl(self,
+                                        wx.ID_ANY,
+                                        wx.EmptyString,
+                                        wx.DefaultPosition,
+                                        wx.Size(200, -1),
+                                        wx.TE_PASSWORD | wx.BORDER_SIMPLE | wx.TE_PROCESS_ENTER
+                                        )
+        sizer_input.Add(self.m_text_ctrl1, 0, wx.ALL, 5)
 
+        # Кнопка OK
         self.btn_ok = wx.Button(self, wx.ID_ANY, _("OK"), wx.DefaultPosition, wx.DefaultSize, 0)
-        sizer.Add(self.btn_ok, 0, wx.ALL, 5)
+        sizer_input.Add(self.btn_ok, 0, wx.ALL, 5)
 
-        self.SetSizer(sizer)
+        # Добавляем слайзер с вводом и кнопкой в главный слайзер
+        sizer_main.Add(sizer_input, 0, wx.ALL | wx.ALIGN_CENTER_HORIZONTAL, 5)
+
+        # Установка главного слайзера
+        self.SetSizer(sizer_main)
         self.Layout()
-        sizer.Fit(self)
+        sizer_main.Fit(self)
 
+        # Центровка окна
         self.Centre(wx.BOTH)
 
         # Привязка событий
-        self.btn_ok.Bind(wx.EVT_BUTTON, self.on_ok)  # Событие, при нажатии кнопки OK
+        self.btn_ok.Bind(wx.EVT_BUTTON, self.on_ok)
+        self.m_text_ctrl1.Bind(wx.EVT_TEXT_ENTER, self.on_ok)  # Привязка нажатия Enter к полю для пароля
 
-    # Обработчики
+        # Установка кнопки OK как кнопки по умолчанию для Enter
+        self.btn_ok.SetDefault()
+
+    # Обработчик нажатия кнопки OK
     def on_ok(self, event):
-        # Получаем значения из полей ввода
+        # Получаем значение из поля ввода
         if self.password == self.m_text_ctrl1.GetValue():
             self.password_check = True
-            self.Close()
-            self.Destroy()
+            self.Close()  # Закрытие окна
         else:
-            wx.MessageBox("Неверный пароль. Попробуйте снова.", "Ошибка", wx.OK | wx.ICON_ERROR)
+            wx.MessageBox(_("Неверный пароль. Попробуйте снова."), _("Ошибка"), wx.OK | wx.ICON_ERROR)
+
+
+if __name__ == "__main__":
+    app = wx.App(False)
+    main_frame = WndPass(None)
+    main_frame.ShowModal()  # Используем ShowModal для модального окна
+    app.MainLoop()

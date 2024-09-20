@@ -35,7 +35,7 @@ def run_as_admin():
                     sys.executable,
                     ' '.join([f'"{arg}"' for arg in sys.argv]),
                     None,
-                    0  # 1-отобразить консоль \ 0-скрыть консоль
+                    1  # 1-отобразить консоль \ 0-скрыть консоль
             )
             sys.exit()  # Завершаем текущий процесс, чтобы предотвратить двойной запуск
         except Exception as e:
@@ -45,6 +45,7 @@ def run_as_admin():
                     "Ошибка",
                     1
             )
+
 
 
 def read_json(key, file_path=DATA_FILE):
@@ -135,6 +136,7 @@ def get_users():
 def get_session_id_by_username(username: str):
     """
     Получение данных сессии по имени пользователя
+
     :param username: Имя пользователя
     """
     try:
@@ -155,7 +157,7 @@ def get_session_id_by_username(username: str):
 
         return None
     except subprocess.CalledProcessError as e:
-        print(f"Ошибка при выполнении команды: {e}")
+        print(f"Получение данных сессии по имени пользователя\nОшибка при выполнении команды:\n{e}")
     except Exception as e:
         print(f"Неизвестная ошибка: {e}")
     return None
@@ -212,7 +214,7 @@ def unblock_user(username):
 
 
 def username_session():
-    """Получение имени пользователя в сесии"""
+    """Получение имени пользователя в сессии"""
     username_session = os.getlogin()  # Получение имени текущего пользователя
     return username_session
 
@@ -220,6 +222,7 @@ def username_session():
 def show_message(username, time):
     """
     Показывает сообщение о предстоящей блокировке.
+
     :param username: Имя пользователя для отображения в сообщении.
     """
     username_session = os.getlogin()
@@ -252,7 +255,6 @@ def auto_close():
 def date_control():
     """
     Функция контроля даты.
-    :return:
     """
     # Получаем сегодняшнюю дату
     today = datetime.today().date()
