@@ -68,7 +68,7 @@ class AppMonitor:
 
     def log_error(self, message):
         """Метод для логирования ошибок в файл."""
-        log_file_path = r"app_monitor_log.txt"
+        log_file_path = r"log_chpcgu.txt"
         try:
             with open(log_file_path, 'a', encoding="utf-8") as log_file:
                 log_file.write(f"Windows_CPG_Monitor({time.strftime('%Y-%m-%d %H:%M:%S')}) -"

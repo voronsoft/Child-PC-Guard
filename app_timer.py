@@ -130,7 +130,7 @@ class TimerApp(wx.Frame):
 
     def log_error(self, message):
         """Логирование ошибок в файл."""
-        log_file_path = r"app_monitor_log.txt"
+        log_file_path = r"log_chpcgu.txt"
         try:
             with open(log_file_path, 'a', encoding="utf-8") as log_file:
                 log_file.write(f"{time.strftime('%Y-%m-%d %H:%M:%S')} - {message}\n==================\n")
