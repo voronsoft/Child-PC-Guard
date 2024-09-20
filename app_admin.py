@@ -37,6 +37,10 @@ class Window(wx.Frame):
         self.SetFont(wx.Font(12, wx.FONTFAMILY_SWISS, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, "Segoe UI"))
         # Задаем фон окна
         self.SetBackgroundColour(wx.SystemSettings.GetColour(wx.SYS_COLOUR_INACTIVEBORDER))
+        # Устанавливаем иконку для окна
+        icon = wx.Icon('icon.ico', wx.BITMAP_TYPE_ICO)
+        self.SetIcon(icon)
+
         # Основные переменные ==========================================
         self.timer = wx.Timer(self)  # Таймеp
         self.username_blocking = function.read_json("username_blocking")  # Имя пользователя для блокировки из файла
@@ -48,9 +52,7 @@ class Window(wx.Frame):
         # ============================ END =============================
         sizer_main = wx.BoxSizer(wx.VERTICAL)
         sizer_main.SetMinSize(wx.Size(600, 400))
-        # Устанавливаем иконку для окна
-        icon = wx.Icon('icon.ico', wx.BITMAP_TYPE_ICO)
-        self.SetIcon(icon)
+
 
         sizer_top = wx.BoxSizer(wx.HORIZONTAL)
 

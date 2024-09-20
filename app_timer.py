@@ -36,8 +36,6 @@ class TimerApp(wx.Frame):
         self.SetFont(wx.Font(20, wx.FONTFAMILY_SWISS, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, False, "Segoe UI"))
         # Задаем фон окна
         self.SetBackgroundColour(wx.SystemSettings.GetColour(wx.SYS_COLOUR_INACTIVEBORDER))
-        # Задаем фон окна
-        self.SetBackgroundColour(wx.SystemSettings.GetColour(wx.SYS_COLOUR_INACTIVEBORDER))
         # Устанавливаем иконку для окна
         icon = wx.Icon('icon.ico', wx.BITMAP_TYPE_ICO)
         self.SetIcon(icon)
@@ -140,7 +138,6 @@ class TimerApp(wx.Frame):
 
 
 # =============================================================================================================
-
 
 def main():
     # ------- Проверка кода ошибки -------
