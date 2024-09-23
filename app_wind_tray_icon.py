@@ -1,5 +1,10 @@
+import os
+
 import wx
 import wx.adv
+
+import config_app
+
 
 ###########################################################################
 ## TrayIcon
@@ -13,8 +18,8 @@ class TrayIcon(wx.adv.TaskBarIcon):
         self.frame = frame
 
         # Устанавливаем иконку для трея
-        icon_path = "icon.ico"  # Путь к иконке для трея
-        self.SetIcon(wx.Icon(icon_path), "Child PC Guard")
+        icon = wx.Icon(os.path.join(config_app.FOLDER_IMG, "icon.ico"), wx.BITMAP_TYPE_ICO)
+        self.SetIcon(wx.Icon(icon), "Child PC Guard")
 
         # Подключаем события.
         # Добавляем контекстное меню для иконки в трее

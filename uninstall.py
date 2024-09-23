@@ -1,6 +1,8 @@
+import ctypes
 import os
 import shutil
-import time
+import sys
+
 import wx
 import wx.xrc
 import gettext
@@ -86,12 +88,12 @@ class UninstallerFrame(wx.Frame):
     def on_uninstall(self):
         """Функция удаления приложений и всех зависимостей"""
         # Папка установки программ
-        install_dir = os.path.join(os.getenv('ProgramFiles'), 'ChildPCGuard')
+        install_dir = os.path.join(os.getenv('ProgramFiles(x86)'), 'ChildPCGuard')
 
         # Папка с общими данными приложений
         common_data_dir = os.path.join(os.getenv('ProgramData'), 'ChildPCGuard')
 
-        # Удаление исполняемых файлов и других данных
+        # 1 Удаление исполняемых файлов и других данных
         try:
             if os.path.exists(install_dir):
                 self.log_message(f"Удаление папки установки: {install_dir}")
@@ -109,7 +111,7 @@ class UninstallerFrame(wx.Frame):
         except Exception as e:
             self.log_message(f"Ошибка при удалении папок:\n{e}")
 
-        # Удаление ярлыков из меню "Пуск"
+        # 2 Удаление ярлыков из меню "Пуск"
         try:
             start_menu_dir = os.path.join(os.getenv('ProgramData'),
                                           'Microsoft',
@@ -127,7 +129,7 @@ class UninstallerFrame(wx.Frame):
         except Exception as e:
             self.log_message(f"Ошибка при удалении ярлыков из меню Пуск:\n{e}")
 
-        # Удаление ярлыков с рабочего стола
+        # 3 Удаление ярлыков с рабочего стола
         try:
             desktop_dir = os.path.join(os.getenv('Public'), 'Desktop')
             for shortcut in ['Child PC Guard.lnk',
@@ -145,7 +147,7 @@ class UninstallerFrame(wx.Frame):
         except Exception as e:
             self.log_message(f"Ошибка удаления ярлыков с рабочего стола:\n{e}")
 
-        # Удаление ярлыка из автозагрузки
+        # 4 Удаление ярлыка из автозагрузки
         try:
             startup_dir = os.path.join(os.getenv('AppData'),
                                        'Microsoft',
@@ -167,7 +169,7 @@ class UninstallerFrame(wx.Frame):
         # Сообщение об успешном удалении
         wx.MessageBox("Все программы и файлы успешно удалены!", "Удаление завершено", wx.OK | wx.ICON_INFORMATION)
 
-        # Запуск самоуничтожения
+        # 5 Запуск самоуничтожения
         # self.self_destruct()  # TODO Закомментировано в момент разработки
 
     def on_cancel(self, event):
@@ -178,15 +180,15 @@ class UninstallerFrame(wx.Frame):
     def self_destruct(self):
         # TODO раскомментировать при релизе
         try:
-            # # Получаем путь к текущему исполняемому файлу
-            # current_exe = os.path.realpath(__file__)
-            #
-            # # Запуск команды удаления после закрытия текущего процесса
-            # delete_command = f'cmd /c timeout /t 3 && del /f /q "{current_exe}"'
-            # os.system(delete_command)
-            #
-            # # Закрываем приложение
-            # self.Close()
+            # Получаем путь к текущему исполняемому файлу
+            current_exe = os.path.realpath(__file__)
+
+            # Запуск команды удаления после закрытия текущего процесса
+            delete_command = f'cmd /c timeout /t 3 && del /f /q "{current_exe}"'
+            os.system(delete_command)
+
+            # Закрываем приложение
+            self.Close()
             ...
         except Exception as e:
             self.log_message(f"Ошибка при удалении самого деинсталлятора: {e}")
@@ -198,8 +200,47 @@ class UninstallerFrame(wx.Frame):
 
 
 # ============================================================================================
+def is_admin():
+    """
+    Проверяет, запущен ли скрипт с правами администратора.
+
+    :return: True, если запущен с правами администратора, иначе False.
+    """
+    try:
+        return ctypes.windll.shell32.IsUserAnAdmin()
+    except Exception:
+        return False
+
+
+def run_as_admin():
+    """
+    Проверяет, запущено ли приложение с правами администратора.
+    Если нет, перезапускает его с запросом прав администратора.
+    """
+    if not is_admin():
+        # Если приложение запущено без прав администратора, перезапускаем его с запросом прав администратора
+        try:
+            ctypes.windll.shell32.ShellExecuteW(
+                    None,
+                    "runas",
+                    sys.executable,
+                    ' '.join([f'"{arg}"' for arg in sys.argv]),
+                    None,
+                    0  # 1-отобразить консоль \ 0-скрыть консоль
+            )
+            sys.exit()  # Завершаем текущий процесс, чтобы предотвратить двойной запуск
+        except Exception as e:
+            ctypes.windll.user32.MessageBoxW(
+                    None,
+                    f"Не удалось запустить программу с правами администратора:\n\n{e}",
+                    "Ошибка",
+                    1
+            )
 
 def main():
+    # Запускаем приложение как администратор
+    run_as_admin()
+
     app = wx.App(False)
     uninst = UninstallerFrame(None)
     uninst.Show()

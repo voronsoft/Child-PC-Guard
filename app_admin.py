@@ -1,11 +1,14 @@
+import os
 import sys
 import wx
 import wx.xrc
 import ctypes
 import gettext
 import function
+from app_wind_exit_prog import WndCloseApp
 from app_wind_pass import WndPass
 from app_wind_tray_icon import TrayIcon
+from config_app import FOLDER_IMG
 
 _ = gettext.gettext
 
@@ -27,7 +30,6 @@ class Window(wx.Frame):
                           title=_("Child PC Guard"),
                           pos=wx.DefaultPosition,
                           size=wx.DefaultSize,
-                          # style=wx.DEFAULT_DIALOG_STYLE # & ~(wx.CLOSE_BOX)
                           style=wx.DEFAULT_FRAME_STYLE & ~wx.MAXIMIZE_BOX | wx.TAB_TRAVERSAL
                           )
 
@@ -38,7 +40,7 @@ class Window(wx.Frame):
         # Задаем фон окна
         self.SetBackgroundColour(wx.SystemSettings.GetColour(wx.SYS_COLOUR_INACTIVEBORDER))
         # Устанавливаем иконку для окна
-        icon = wx.Icon('icon.ico', wx.BITMAP_TYPE_ICO)
+        icon = wx.Icon(os.path.join(FOLDER_IMG, "icon.ico"), wx.BITMAP_TYPE_ICO)
         self.SetIcon(icon)
 
         # Основные переменные ==========================================
@@ -52,7 +54,6 @@ class Window(wx.Frame):
         # ============================ END =============================
         sizer_main = wx.BoxSizer(wx.VERTICAL)
         sizer_main.SetMinSize(wx.Size(600, 400))
-
 
         sizer_top = wx.BoxSizer(wx.HORIZONTAL)
 
@@ -219,9 +220,8 @@ class Window(wx.Frame):
     # Обработчики событий
     def on_close(self, event):
         """Обработчик закрытия программы"""
-        # Перед закрытием программы запрашиваем пароль
-        # защита от просто го пользователя.
-        dlg = WndPass(None)
+        # Перед закрытием программы запрашиваем пароль, защита от просто го пользователя.
+        dlg = WndCloseApp(None)
         dlg.ShowModal()
 
         # Если время больше ноля и имя пользователя не пустое
@@ -269,8 +269,9 @@ class Window(wx.Frame):
             dialog = wx.MessageDialog(self,
                                       _(f"Выбранный пользователь: {self.username_blocking} не вошел в свой аккаунт "
                                         f"Windows.\nРЕШЕНИЕ:\n"
-                                        f"1 - Нужно зайти в его аккаунт.\n2 - Далее перейти в аккаунт АДМИНИСТРАТОРА\n"
-                                        f"3 - И провести процедуру настройки блокировки снова."
+                                        f"1 - Нужно зайти в его аккаунт.\n"
+                                        f"2 - Запустить программу от имени АДМИНИСТРАТОРА\n"
+                                        f"3 - Провести процедуру настройки блокировки снова."
                                         ),
                                       _("Предупреждение"),
                                       wx.ICON_WARNING
@@ -480,6 +481,8 @@ class Window(wx.Frame):
 
 
 def main():
+    # Создаем папки и файлы с данными для работы приложения в местах допуска системы windows 10/11
+    function.function_to_create_path_data_files()
     # ------- Проверка кода ошибки -------
     # Создание мьютекса
     mutex = ctypes.windll.kernel32.CreateMutexW(None, False, MUTEX_NAME)

@@ -10,19 +10,19 @@ _ = gettext.gettext
 
 
 ###########################################################################
-## Class WndPass
-## Класс окна ввода пароля для программы
+## Class WndCloseApp
+## Класс окна для ЗАКРЫТИЯ программы (ввода пароля)
 ###########################################################################
 
-class WndPass(wx.Dialog):
+class WndCloseApp(wx.Dialog):
 
     def __init__(self, parent):
         wx.Dialog.__init__(self, parent,
                            id=wx.ID_ANY,
-                           title=_("ЗАПУСК-ВЫХОД"),
+                           title=_("ВЫХОД из программы"),
                            pos=wx.DefaultPosition,
                            size=wx.Size(400, 150),
-                           style=wx.DEFAULT_DIALOG_STYLE & ~(wx.CLOSE_BOX | wx.STAY_ON_TOP)
+                           style=wx.DEFAULT_DIALOG_STYLE  # & ~(wx.CLOSE_BOX | wx.STAY_ON_TOP)
                            )
         # TODO ВАЖНО - изменить пароль для программы !!! (app_wind_pass.py)
         self.password = "123"  # Пароль, который нужно ввести
@@ -51,8 +51,8 @@ class WndPass(wx.Dialog):
         # Верхний текст
         self.m_static_text2 = wx.StaticText(self,
                                             wx.ID_ANY,
-                                            _("Программа должна быть запущена от имени АДМИНИСТРАТОРА\nИначе работа "
-                                              "программы будет некорректной!"
+                                            _("Вы уверены что хотите закрыть программу ?\n"
+                                              "Таймер программы будет отключен."
                                               ),
                                             wx.DefaultPosition,
                                             wx.DefaultSize,
@@ -96,24 +96,30 @@ class WndPass(wx.Dialog):
 
         # Кнопка ОК
         self.btn_ok.Bind(wx.EVT_BUTTON, self.on_ok)
+        self.btn_ok.SetDefault()  # Установка кнопки OK как кнопки по умолчанию для Enter
 
         # Привязка событий
-        self.m_text_ctrl1.Bind(wx.EVT_TEXT_ENTER, self.on_ok)  # Привязка нажатия Enter к полю для пароля
-        self.btn_ok.SetDefault()  # Установка кнопки OK как кнопки по умолчанию для Enter
+        self.m_text_ctrl1.Bind(wx.EVT_TEXT_ENTER, self.on_ok)  # Событие при нажатии кнопки ОК
+        self.Bind(wx.EVT_CLOSE, self.on_close)  # Событие при закрытии окна
+
 
     # Обработчик нажатия кнопки OK
     def on_ok(self, event):
         # Получаем значение из поля ввода
         if self.password == self.m_text_ctrl1.GetValue():
             self.password_check = True
-            # self.Close()  # Закрытие окна
             self.Destroy()  # Закрытие окна и завершение процесса питон
         else:
             wx.MessageBox(_("Неверный пароль. Попробуйте снова."), _("Ошибка"), wx.OK | wx.ICON_ERROR)
 
+    def on_close(self, event):
+        """Обработчик события закрытия окна"""
+        self.Destroy()  # Закрытие текущего окна
+        wx.Exit()  # Завершение основного цикла приложения
+
 
 if __name__ == "__main__":
     app = wx.App(False)
-    main_frame = WndPass(None)
+    main_frame = WndCloseApp(None)
     main_frame.ShowModal()  # Используем ShowModal для модального окна
     app.MainLoop()

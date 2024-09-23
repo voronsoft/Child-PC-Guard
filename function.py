@@ -6,8 +6,8 @@ import os
 import sys
 from datetime import datetime
 
-# Путь к файлу данных оставшегося времени и имени пользователя для блокировки.
-DATA_FILE = "data.json"
+from config_app import FOLDER_DATA, path_data_file, path_log_file
+
 
 def is_admin():
     """
@@ -35,7 +35,7 @@ def run_as_admin():
                     sys.executable,
                     ' '.join([f'"{arg}"' for arg in sys.argv]),
                     None,
-                    1  # 1-отобразить консоль \ 0-скрыть консоль
+                    0  # 1-отобразить консоль \ 0-скрыть консоль
             )
             sys.exit()  # Завершаем текущий процесс, чтобы предотвратить двойной запуск
         except Exception as e:
@@ -47,8 +47,7 @@ def run_as_admin():
             )
 
 
-
-def read_json(key, file_path=DATA_FILE):
+def read_json(key, file_path=path_data_file):
     """
     Читает данные из JSON-файла и возвращает их в виде словаря.
 
@@ -71,7 +70,7 @@ def read_json(key, file_path=DATA_FILE):
         return None
 
 
-def update_json(key, value, file_path=DATA_FILE):
+def update_json(key, value, file_path=FOLDER_DATA):
     """
     Изменяет данные в JSON-файле по указанному ключу и сохраняет их обратно в файл.
 
@@ -252,14 +251,45 @@ def auto_close():
         ctypes.windll.user32.PostMessageW(hwnd, 0x0010, 0, 0)  # 0x0010 — это WM_CLOSE, команда закрытия окна.
 
 
+# TODO дописать функцию
 def date_control():
     """
     Функция контроля даты.
     """
     # Получаем сегодняшнюю дату
     today = datetime.today().date()
-    # Метка времени дня.
-    program_launch_label = ...
+
+    # Проверяем дату из файла данных
+
+    #
+    #
+    #
 
     # Выводим результат
     print("Сегодняшняя дата:", today)
+
+
+def function_to_create_path_data_files():
+    """Функция проверки и создания файлов данных для приложения"""
+
+    # Проверяем, существует ли папка. Если нет, то создаем её.
+    if not os.path.exists(FOLDER_DATA):
+        os.makedirs(FOLDER_DATA)
+        print(f"Создана папка: {FOLDER_DATA}")
+
+    # Проверяем, существует ли файл data.json. Если нет, то создаем его и записываем начальные данные.
+    if not os.path.exists(path_data_file):
+        initial_data = {
+                "username_blocking": "",
+                "remaining_time": 0,
+                "date": "0001-02-03"
+        }
+        with open(path_data_file, 'w') as file:
+            json.dump(initial_data, file, indent=4)  # Записываем данные в формате JSON с отступами
+        print(f"Создан файл: {path_data_file} с начальными данными")
+
+    # Проверяем, существует ли файл log_chpcgu.txt. Если нет, то создаем его.
+    if not os.path.exists(path_log_file):
+        with open(path_log_file, 'w') as file:
+            file.write("")  # Создаем пустой лог-файл
+        print(f"Создан файл: {path_log_file}")

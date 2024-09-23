@@ -4,6 +4,8 @@ import subprocess
 import os
 import psutil
 
+from config_app import path_log_file
+
 # Имя мьютекса (должно быть уникальным для вашего приложения)
 MUTEX_NAME = "Global\\Windows_CPG_Monitor"
 
@@ -68,7 +70,7 @@ class AppMonitor:
 
     def log_error(self, message):
         """Метод для логирования ошибок в файл."""
-        log_file_path = r"log_chpcgu.txt"
+        log_file_path = path_log_file
         try:
             with open(log_file_path, 'a', encoding="utf-8") as log_file:
                 log_file.write(f"Windows_CPG_Monitor({time.strftime('%Y-%m-%d %H:%M:%S')}) -"

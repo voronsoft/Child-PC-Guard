@@ -8,6 +8,9 @@ import time
 import ctypes
 import sys
 
+import config_app
+from function import read_json, function_to_create_path_data_files
+
 _ = gettext.gettext
 
 # Имя мьютекса (должно быть уникальным для вашего приложения)
@@ -28,22 +31,22 @@ class TimerApp(wx.Frame):
                           title=_("Осталось времени"),
                           pos=wx.DefaultPosition,
                           size=wx.DefaultSize,
-                          style=wx.DEFAULT_FRAME_STYLE
+                          style=wx.DEFAULT_FRAME_STYLE | wx.STAY_ON_TOP
                           )
 
-        self.SetSizeHints(wx.DefaultSize, wx.DefaultSize)
+        self.SetSizeHints(wx.Size(300, 100), wx.Size(300, 100))
         # Установка шрифта
-        self.SetFont(wx.Font(20, wx.FONTFAMILY_SWISS, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, False, "Segoe UI"))
+        self.SetFont(wx.Font(30, wx.FONTFAMILY_SWISS, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, False, "Segoe UI"))
         # Задаем фон окна
         self.SetBackgroundColour(wx.SystemSettings.GetColour(wx.SYS_COLOUR_INACTIVEBORDER))
         # Устанавливаем иконку для окна
-        icon = wx.Icon('icon.ico', wx.BITMAP_TYPE_ICO)
+        icon = wx.Icon(os.path.join(config_app.FOLDER_IMG, "icon.ico"), wx.BITMAP_TYPE_ICO)
         self.SetIcon(icon)
 
         # Таймер для обновления каждую секунду
         self.timer = wx.Timer(self)
         # Путь к файлу с временем
-        self.json_file = r"data.json"
+        self.json_file = config_app.path_data_file
 
         sizer_main = wx.BoxSizer(wx.VERTICAL)
         sizer_main.SetMinSize(wx.Size(300, -1))
@@ -51,15 +54,15 @@ class TimerApp(wx.Frame):
 
         self.time_label = wx.StaticText(self,
                                         wx.ID_ANY,
-                                        _("00:00:00"),
+                                        _("Выключен"),
                                         wx.DefaultPosition,
-                                        wx.Size(-1, -1),
+                                        wx.DefaultSize,
                                         0
                                         )
         # Установка красного цвета тексту
         self.time_label.SetForegroundColour(wx.Colour(255, 0, 0))
         self.time_label.Wrap(-1)
-        sizer.Add(self.time_label, 0, wx.ALIGN_CENTER_VERTICAL | wx.ALL, 5)
+        sizer.Add(self.time_label, 0, wx.ALIGN_CENTER_VERTICAL | wx.ALL, 0)
 
         sizer_main.Add(sizer, 1, wx.ALIGN_CENTER, 5)
 
@@ -70,7 +73,7 @@ class TimerApp(wx.Frame):
         self.Centre(wx.BOTH)
 
         # Подключаемые события в программе
-        self.Bind(wx.EVT_TIMER, self.update_time, self.timer)
+        self.Bind(wx.EVT_TIMER, self.update_time, self.timer)  # если произошло событие таймера
         self.timer.Start(1000)  # обновление каждые 1000 миллисекунд (1 секунда)
 
         # Запуск потока для чтения времени
@@ -78,38 +81,40 @@ class TimerApp(wx.Frame):
         self.update_thread.daemon = True
         self.update_thread.start()
 
-    # Обработчики
-    def read_time_from_json(self):
-        """Чтение времени из файла time.json"""
-        if os.path.exists(self.json_file):
-            with open(self.json_file, 'r') as f:
-                data = json.load(f)
-                return data.get("remaining_time", None)
-        else:
-            wx.CallAfter(wx.MessageBox, f"Файл {self.json_file} не найден", "Ошибка", wx.OK | wx.ICON_ERROR)
-            # Логируем ошибку
-            self.log_error(f"Child_PC_Timer({time.strftime('%Y-%m-%d %H:%M:%S')}) -"
-                           f"Файл {self.json_file} не найден"
-                           )
-            wx.CallAfter(self.Close)  # Закрываем приложение при отсутствии файла
-            return None
-
     def update_time(self, event):
-        """Обновление времени каждую секунду"""
-        remaining_time = self.read_time_from_json()
+        """Обработчик обновления времени каждую секунду"""
+        remaining_time = read_json("remaining_time")
+        print(remaining_time)
         if remaining_time is not None:
             if remaining_time > 0:
                 self.time_label.SetLabel(self.seconds_to_hms(remaining_time))
+                self.Layout()
             elif remaining_time == 0:
-                self.time_label.SetLabel(f"00:00:00")
+                self.time_label.SetLabel(f"Выключен")
         else:
             self.time_label.SetLabel("ERROR")
+            self.timer.Stop()
+            wx.CallAfter(wx.MessageBox,
+                         f"Ошибка считывания времени.\nТаймер будет закрыт.\n"
+                         f"Повторный запуск таймера может исправить проблему",
+                         "Ошибка",
+                         wx.OK | wx.ICON_ERROR
+                         )
+            # Проверка существования файлов с данными
+            function_to_create_path_data_files()
+            # Запускаем таймер
+            self.timer.Start(1000)
+            # self.Close(True)
 
     def update_time_loop(self):
         """Цикл обновления времени в фоновом потоке"""
         while True:
-            wx.CallAfter(self.update_time, None)
-            time.sleep(1)
+            if self.time_label.GetLabel() == "ERROR":
+                print("Остановлен цикл", self.time_label.GetLabel())
+                break
+            else:
+                wx.CallAfter(self.update_time, None)
+                time.sleep(1)
 
     def seconds_to_hms(self, seconds):
         """
@@ -128,12 +133,12 @@ class TimerApp(wx.Frame):
 
     def log_error(self, message):
         """Логирование ошибок в файл."""
-        log_file_path = r"log_chpcgu.txt"
+        log_file_path = config_app.path_log_file
         try:
             with open(log_file_path, 'a', encoding="utf-8") as log_file:
                 log_file.write(f"{time.strftime('%Y-%m-%d %H:%M:%S')} - {message}\n==================\n")
         except Exception as e:
-            print(f"(1)Ошибка при записи лога в файл лога: {str(e)}")
+            print(f"(1)Ошибка при записи лога в файл: {str(e)}")
             ctypes.windll.user32.MessageBoxW(None, f"Ошибка при записи в файл лога:\n{str(e)}", "ОШИБКА", 0)
 
 
