@@ -42,7 +42,7 @@ class WndCloseApp(wx.Dialog):
         # Задаем фон окна
         self.SetBackgroundColour(wx.SystemSettings.GetColour(wx.SYS_COLOUR_INACTIVEBORDER))
         # Устанавливаем иконку для окна
-        icon = wx.Icon(os.path.join(FOLDER_IMG, "icon.ico"), wx.BITMAP_TYPE_ICO)
+        icon = wx.Icon(os.path.join(FOLDER_IMG, "off_app.ico"), wx.BITMAP_TYPE_ICO)
         self.SetIcon(icon)
 
         # Основной вертикальный слайзер
@@ -103,8 +103,9 @@ class WndCloseApp(wx.Dialog):
         self.Bind(wx.EVT_CLOSE, self.on_close)  # Событие при закрытии окна
 
 
-    # Обработчик нажатия кнопки OK
+    # Обработчики
     def on_ok(self, event):
+        """Обработчик нажатия кнопки OK"""
         # Получаем значение из поля ввода
         if self.password == self.m_text_ctrl1.GetValue():
             self.password_check = True

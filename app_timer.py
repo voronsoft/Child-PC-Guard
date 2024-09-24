@@ -13,7 +13,7 @@ from function import read_json, function_to_create_path_data_files
 
 _ = gettext.gettext
 
-# Имя мьютекса (должно быть уникальным для вашего приложения)
+# Имя мьютекса (должно быть уникальным)
 MUTEX_NAME = "Global\\Child_PC_Timer"
 
 
@@ -150,8 +150,8 @@ def main():
     mutex = ctypes.windll.kernel32.CreateMutexW(None, False, MUTEX_NAME)
     error_code = ctypes.windll.kernel32.GetLastError()
 
-    if error_code == 183:
-        ctypes.windll.user32.MessageBoxW(None, f"Приложение << Child PC Timer >> уже запущено.", "ПРЕДУПРЕЖДЕНИЕ", 0)
+    if error_code == 183 or error_code == 5:
+        ctypes.windll.user32.MessageBoxW(None, f"Приложение Child PC Timer уже запущено.", "ПРЕДУПРЕЖДЕНИЕ", 0)
         # Закрываем дескриптор мьютекса, так как он не нужен
         ctypes.windll.kernel32.CloseHandle(mutex)
         return

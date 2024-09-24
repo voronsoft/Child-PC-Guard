@@ -1,0 +1,6 @@
+Компилируем приложения
+pyinstaller app_admin.spec
+pyinstaller app_lock_unlock_usr.spec
+pyinstaller app_monitor.spec
+pyinstaller app_timer.spec
+pyinstaller uninstall.spec

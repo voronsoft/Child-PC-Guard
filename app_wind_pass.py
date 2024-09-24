@@ -15,11 +15,10 @@ _ = gettext.gettext
 ###########################################################################
 
 class WndPass(wx.Dialog):
-
     def __init__(self, parent):
         wx.Dialog.__init__(self, parent,
                            id=wx.ID_ANY,
-                           title=_("ЗАПУСК-ВЫХОД"),
+                           title=_("ВХОД"),
                            pos=wx.DefaultPosition,
                            size=wx.Size(400, 150),
                            style=wx.DEFAULT_DIALOG_STYLE & ~(wx.CLOSE_BOX | wx.STAY_ON_TOP)
@@ -42,7 +41,7 @@ class WndPass(wx.Dialog):
         # Задаем фон окна
         self.SetBackgroundColour(wx.SystemSettings.GetColour(wx.SYS_COLOUR_INACTIVEBORDER))
         # Устанавливаем иконку для окна
-        icon = wx.Icon(os.path.join(FOLDER_IMG, "icon.ico"), wx.BITMAP_TYPE_ICO)
+        icon = wx.Icon(os.path.join(FOLDER_IMG, "password24.ico"), wx.BITMAP_TYPE_ICO)
         self.SetIcon(icon)
 
         # Основной вертикальный слайзер
@@ -106,7 +105,6 @@ class WndPass(wx.Dialog):
         # Получаем значение из поля ввода
         if self.password == self.m_text_ctrl1.GetValue():
             self.password_check = True
-            # self.Close()  # Закрытие окна
             self.Destroy()  # Закрытие окна и завершение процесса питон
         else:
             wx.MessageBox(_("Неверный пароль. Попробуйте снова."), _("Ошибка"), wx.OK | wx.ICON_ERROR)

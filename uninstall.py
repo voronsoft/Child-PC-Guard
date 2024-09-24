@@ -88,15 +88,33 @@ class UninstallerFrame(wx.Frame):
     def on_uninstall(self):
         """Функция удаления приложений и всех зависимостей"""
         # Папка установки программ
-        install_dir = os.path.join(os.getenv('ProgramFiles(x86)'), 'ChildPCGuard')
-
-        # Папка с общими данными приложений
-        common_data_dir = os.path.join(os.getenv('ProgramData'), 'ChildPCGuard')
+        install_dir = os.path.join(os.getenv('ProgramFiles(x86)'), 'Child PC Guard')
+        # Папка с данными для приложений (логи и json)
+        common_data_dir = os.path.join(os.getenv('ProgramData'), 'Child PC Guard Data')
+        # Папка с ярлыками из меню "Пуск"
+        start_menu_dir = os.path.join(os.getenv('ProgramData'),
+                                      'Microsoft',
+                                      'Windows',
+                                      'Start Menu',
+                                      'Programs',
+                                      'Child PC Guard'
+                                      )
+        # Папка с ярлыками на рабочем столе
+        desktop_dir = os.path.join(os.getenv('Public'), 'Desktop')
+        # Папка автозагрузки
+        startup_dir = os.path.join(os.getenv('AppData'),
+                                   'Microsoft',
+                                   'Windows',
+                                   'Start Menu',
+                                   'Programs',
+                                   'Startup'
+                                   )
 
         # 1 Удаление исполняемых файлов и других данных
         try:
             if os.path.exists(install_dir):
                 self.log_message(f"Удаление папки установки: {install_dir}")
+                # Удаление папки с приложениями
                 shutil.rmtree(install_dir)
                 self.log_message("Папка установки удалена успешно.")
             else:
@@ -104,6 +122,7 @@ class UninstallerFrame(wx.Frame):
 
             if os.path.exists(common_data_dir):
                 self.log_message(f"Удаление папки данных: {common_data_dir}")
+                # Удаление папки с данными для приложений (логи и json)
                 shutil.rmtree(common_data_dir)
                 self.log_message("Папка данных удалена успешно.")
             else:
@@ -113,13 +132,6 @@ class UninstallerFrame(wx.Frame):
 
         # 2 Удаление ярлыков из меню "Пуск"
         try:
-            start_menu_dir = os.path.join(os.getenv('ProgramData'),
-                                          'Microsoft',
-                                          'Windows',
-                                          'Start Menu',
-                                          'Programs',
-                                          'Child PC Guard'
-                                          )
             if os.path.exists(start_menu_dir):
                 self.log_message(f"Удаление ярлыков из меню Пуск: {start_menu_dir}")
                 shutil.rmtree(start_menu_dir)
@@ -131,12 +143,7 @@ class UninstallerFrame(wx.Frame):
 
         # 3 Удаление ярлыков с рабочего стола
         try:
-            desktop_dir = os.path.join(os.getenv('Public'), 'Desktop')
-            for shortcut in ['Child PC Guard.lnk',
-                             'Child PC Timer.lnk',
-                             'Child PC Monitor.lnk',
-                             'Logs Child PC Guard.lnk',
-                             ]:
+            for shortcut in ['Child PC Guard.lnk', 'Child PC Timer.lnk',]:
                 shortcut_path = os.path.join(desktop_dir, shortcut)
                 if os.path.exists(shortcut_path):
                     self.log_message(f"Удаление ярлыка с рабочего стола: {shortcut_path}")
@@ -149,13 +156,6 @@ class UninstallerFrame(wx.Frame):
 
         # 4 Удаление ярлыка из автозагрузки
         try:
-            startup_dir = os.path.join(os.getenv('AppData'),
-                                       'Microsoft',
-                                       'Windows',
-                                       'Start Menu',
-                                       'Programs',
-                                       'Startup'
-                                       )
             monitor_shortcut = os.path.join(startup_dir, 'Child PC Monitor.lnk')
             if os.path.exists(monitor_shortcut):
                 self.log_message(f"Удаление ярлыка из автозагрузки: {monitor_shortcut}")

@@ -6,7 +6,7 @@ import psutil
 
 from config_app import path_log_file
 
-# Имя мьютекса (должно быть уникальным для вашего приложения)
+# Имя мьютекса (должно быть уникальным)
 MUTEX_NAME = "Global\\Windows_CPG_Monitor"
 
 
@@ -107,7 +107,7 @@ def main():
     error_code = ctypes.windll.kernel32.GetLastError()
 
     if error_code == 183:
-        ctypes.windll.user32.MessageBoxW(None, f"Приложение << Windows CPG Monitor >> уже запущено.",
+        ctypes.windll.user32.MessageBoxW(None, f"Приложение Windows CPG Monitor уже запущено.",
                                          "ПРЕДУПРЕЖДЕНИЕ", 0
                                          )
         # Закрываем дескриптор мьютекса, так как он не нужен

@@ -16,7 +16,8 @@ def is_admin():
     :return: True, если запущен с правами администратора, иначе False.
     """
     try:
-        return ctypes.windll.shell32.IsUserAnAdmin()
+        print("xx", ctypes.windll.shell32.IsUserAnAdmin())
+        return bool(ctypes.windll.shell32.IsUserAnAdmin())
     except Exception:
         return False
 
@@ -27,7 +28,7 @@ def run_as_admin():
     Если нет, перезапускает его с запросом прав администратора.
     """
     if not is_admin():
-        # Если приложение запущено без прав администратора, перезапускаем его с запросом прав администратора
+        # Перезапускаем с запросом прав администратора
         try:
             ctypes.windll.shell32.ShellExecuteW(
                     None,

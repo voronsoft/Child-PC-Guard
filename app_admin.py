@@ -5,6 +5,7 @@ import wx.xrc
 import ctypes
 import gettext
 import function
+from app_splash_screen import SplashScreen
 from app_wind_exit_prog import WndCloseApp
 from app_wind_pass import WndPass
 from app_wind_tray_icon import TrayIcon
@@ -12,7 +13,7 @@ from config_app import FOLDER_IMG
 
 _ = gettext.gettext
 
-# Имя мьютекса (должно быть уникальным для вашего приложения)
+# Имя мьютекса (должно быть уникальным)
 MUTEX_NAME = "Global\\Child_PC_Guard"
 
 
@@ -483,13 +484,14 @@ class Window(wx.Frame):
 def main():
     # Создаем папки и файлы с данными для работы приложения в местах допуска системы windows 10/11
     function.function_to_create_path_data_files()
+
     # ------- Проверка кода ошибки -------
     # Создание мьютекса
     mutex = ctypes.windll.kernel32.CreateMutexW(None, False, MUTEX_NAME)
     error_code = ctypes.windll.kernel32.GetLastError()
 
-    if error_code == 183:
-        ctypes.windll.user32.MessageBoxW(None, f"Приложение << Child PC Guard >> уже запущено.", "ПРЕДУПРЕЖДЕНИЕ", 0)
+    if error_code == 183  or error_code == 5:
+        ctypes.windll.user32.MessageBoxW(None, f"Приложение Child PC Guard уже запущено.", "ПРЕДУПРЕЖДЕНИЕ", 0)
         # Закрываем дескриптор мьютекса, так как он не нужен
         ctypes.windll.kernel32.CloseHandle(mutex)
         return
