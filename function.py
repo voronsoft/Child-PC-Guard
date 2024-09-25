@@ -1,9 +1,11 @@
-import ctypes
-import json
-import subprocess
-import time
 import os
 import sys
+import time
+import stat  # Импортируем модуль для управления правами доступа к файлам
+import json
+import ctypes
+import subprocess
+
 from datetime import datetime
 
 from config_app import FOLDER_DATA, path_data_file, path_log_file
@@ -16,7 +18,6 @@ def is_admin():
     :return: True, если запущен с правами администратора, иначе False.
     """
     try:
-        print("xx", ctypes.windll.shell32.IsUserAnAdmin())
         return bool(ctypes.windll.shell32.IsUserAnAdmin())
     except Exception:
         return False
@@ -36,6 +37,7 @@ def run_as_admin():
                     sys.executable,
                     ' '.join([f'"{arg}"' for arg in sys.argv]),
                     None,
+                    # TODO отобразить окно консоли или скрыть
                     0  # 1-отобразить консоль \ 0-скрыть консоль
             )
             sys.exit()  # Завершаем текущий процесс, чтобы предотвратить двойной запуск
@@ -71,7 +73,7 @@ def read_json(key, file_path=path_data_file):
         return None
 
 
-def update_json(key, value, file_path=FOLDER_DATA):
+def update_json(key, value, file_path=path_data_file):
     """
     Изменяет данные в JSON-файле по указанному ключу и сохраняет их обратно в файл.
 
@@ -203,15 +205,17 @@ def unblock_user(username):
         # Выполняем команду в командной строке
         subprocess.run(command, shell=True, check=True)
         print(f"Пользователь {username} разблокирован.")
+        return True
     except Exception as e:
         print(f"Ошибка при разблокировке пользователя {username}: {e}")
+
         ctypes.windll.user32.MessageBoxW(
                 None,
                 f"Ошибка при разблокировке пользователя - {username}:\n\n{e}",
                 "Ошибка",
                 1
         )
-
+        return False
 
 def username_session():
     """Получение имени пользователя в сессии"""
@@ -277,6 +281,12 @@ def function_to_create_path_data_files():
     if not os.path.exists(FOLDER_DATA):
         os.makedirs(FOLDER_DATA)
         print(f"Создана папка: {FOLDER_DATA}")
+        # Изменяем права доступа к папке, чтобы все пользователи могли читать, писать и выполнять файлы
+        os.chmod(FOLDER_DATA, stat.S_IRWXU | stat.S_IRWXG | stat.S_IRWXO)
+        # S_IRWXU - полный доступ для владельца (User)
+        # S_IRWXG - полный доступ для группы (Group)
+        # S_IRWXO - полный доступ для других (Others)
+        print(f"Установлены полные права доступа к папке: {FOLDER_DATA}")
 
     # Проверяем, существует ли файл data.json. Если нет, то создаем его и записываем начальные данные.
     if not os.path.exists(path_data_file):
@@ -285,12 +295,18 @@ def function_to_create_path_data_files():
                 "remaining_time": 0,
                 "date": "0001-02-03"
         }
-        with open(path_data_file, 'w') as file:
+        with open(path_data_file, 'w', encoding='utf-8') as file:
             json.dump(initial_data, file, indent=4)  # Записываем данные в формате JSON с отступами
         print(f"Создан файл: {path_data_file} с начальными данными")
+        # Устанавливаем полный доступ к файлу для всех пользователей
+        os.chmod(path_data_file, stat.S_IRWXU | stat.S_IRWXG | stat.S_IRWXO)
+        print(f"Установлены полные права доступа к файлу: {path_data_file}")
 
     # Проверяем, существует ли файл log_chpcgu.txt. Если нет, то создаем его.
     if not os.path.exists(path_log_file):
-        with open(path_log_file, 'w') as file:
+        with open(path_log_file, 'w', encoding='utf-8') as file:
             file.write("")  # Создаем пустой лог-файл
         print(f"Создан файл: {path_log_file}")
+        # Устанавливаем полный доступ к файлу для всех пользователей
+        os.chmod(path_log_file, stat.S_IRWXU | stat.S_IRWXG | stat.S_IRWXO)
+        print(f"Установлены полные права доступа к файлу: {path_log_file}")

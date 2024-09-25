@@ -1,6 +1,16 @@
-Компилируем приложения
-pyinstaller app_admin.spec
-pyinstaller app_lock_unlock_usr.spec
-pyinstaller app_monitor.spec
-pyinstaller app_timer.spec
-pyinstaller uninstall.spec
+----------------------------------------
+- Компилируем приложения
+pyinstaller app_admin.spec - Основное приложение
+pyinstaller app_lock_unlock_usr.spec - Снятие блокировки с пользователя
+pyinstaller app_monitor_2.spec - Мониторинг работы "Основного приложения"
+pyinstaller app_timer.spec - Таймер времени до начала блокировки
+pyinstaller uninstall.spec - Деинсталлятор всех приложений
+----------------------------------------
+
+----------------------------------------
+
+Обновление файла с зависимостями:
+--> pip freeze > requirements.txt
+Установка модулей из файла с зависимостями
+--> pip install -r requirements.txt
+----------------------------------------

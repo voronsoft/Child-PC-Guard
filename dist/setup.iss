@@ -22,6 +22,10 @@ DisableDirPage=yes
 ; Отключить страницу выбора группы программ
 DisableProgramGroupPage=yes
 
+[Dirs]
+; Создание папки с доступом на изменение для всех пользователей
+Name: "{commonappdata}\Child PC Guard Data"; Permissions: "everyone-full everyone-readexec"
+
 [Files]
 ; Основные исполняемые файлы
 Source: "Child PC Guard.exe"; DestDir: "{app}"; Flags: ignoreversion
@@ -29,8 +33,13 @@ Source: "Child PC Timer.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "Child PC Unlock User.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "Windows CPG Monitor.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "Uninstall Child PC Guard.exe"; DestDir: "{app}"; Flags: ignoreversion
+
 ; Копирование файлов из папки img в папку с приложениями
 Source: "img\*"; DestDir: "{app}\img"; Flags: ignoreversion recursesubdirs createallsubdirs
+; Копируем файл data.json с правами на изменение (файл находится на одном уровне с .iss)
+Source: "data.json"; DestDir: "{commonappdata}\Child PC Guard Data"; Flags: ignoreversion; Permissions: "everyone-full"
+; Копируем файл log_chpcgu.txt с правами на изменение (файл находится на одном уровне с .iss)
+Source: "log_chpcgu.txt"; DestDir: "{commonappdata}\Child PC Guard Data"; Flags: ignoreversion; Permissions: "everyone-full"
 
 [Icons]
 ; Создание ярлыков в меню "Пуск" в общей папке для всех пользователей - (C:\ProgramData\Microsoft\Windows\Start Menu\Programs\)

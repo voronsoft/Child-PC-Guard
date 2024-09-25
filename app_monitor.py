@@ -1,128 +1,117 @@
 import ctypes
-import time
-import subprocess
+import json
 import os
+import time
 import psutil
+from datetime import datetime
+from apscheduler.schedulers.blocking import BlockingScheduler
 
-from config_app import path_log_file
+from config_app import path_data_file, DISK_LETTER, path_log_file
+from function import run_as_admin
 
-# Имя мьютекса (должно быть уникальным)
-MUTEX_NAME = "Global\\Windows_CPG_Monitor"
+# Путь к .exe файлу, который нужно мониторить
+path_to_program = os.path.join(DISK_LETTER, "Program Files (x86)", "Child PC Guard.exe")
 
 
-class AppMonitor:
-    def __init__(self):
-        # Путь к приложению, которое будем запускать
-        # self.app_path = r"C:\child_control\dist\Child PC Guard.exe"
-        self.app_path = r"Child PC Guard.exe"
-        self.process = None
+# Функция для проверки, запущена ли программа
+def check_and_restart_program():
+    program_running = False
+    for proc in psutil.process_iter(['pid', 'name']):
+        if proc.info['name'] == 'Child PC Guard.exe':  # Убедитесь, что имя программы правильное
+            program_running = True
+            break
 
-    def is_process_running(self, process_name):
-        """Проверяет, запущен ли процесс с данным именем."""
-        for proc in psutil.process_iter(['pid', 'name']):
-            try:
-                if proc.info['name'] == process_name:
-                    return True
-            except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
-                continue
-        return False
+    if not program_running:
+        print("Программа не запущена. Перезапуск...")
+        # Сообщение записываем в log
+        log_error_monitor(f"Программа не запущена. Перезапуск...")
 
-    def start_app(self):
-        """Метод для запуска приложения."""
         try:
-            if os.path.exists(self.app_path):
-                # Проверяем, запущен ли процесс
-                if self.is_process_running(os.path.basename(self.app_path)):
-                    print(f"Приложение <<{self.app_path}>> уже запущено.")
-                    self.log_error(f"Приложение <<{self.app_path}>> уже запущено.")
-                    return False
-
-                # Если не запущено, запускаем
-                self.process = subprocess.Popen(self.app_path)
-                print(f"Приложение <<{self.app_path}>> успешно запущено.")
-                self.log_error(f"Приложение <<{self.app_path}>> успешно запущено.")
-                return True
-            else:
-                print(f"Приложение <<{self.app_path}>> не найдено по пути: {self.app_path}")
-                self.log_error(f"Приложение <<{self.app_path}>> не найдено по пути: {self.app_path}")
-                return False
+            os.startfile(path_to_program)  # Перезапуск программы
         except Exception as e:
-            print(f"Ошибка при запуске приложения <<{self.app_path}>>:\n{str(e)}")
-            self.log_error(f"Ошибка при запуске приложения <<{self.app_path}>>:\n{str(e)}")
-            return False
-
-    def stop_app(self):
-        """Метод для остановки приложения."""
-        if self.process:
-            try:
-                self.process.terminate()
-                self.process.wait()
-                self.process = None
-                print(f"Приложение мониторинга было остановлено.")
-                self.log_error(f"Приложение мониторинга было остановлено.")
-            except Exception as e:
-                print(f"Ошибка при остановке приложения:\n{str(e)}")
-                self.log_error(f"Ошибка при остановке приложения:\n{str(e)}")
-
-    def is_app_running(self):
-        """Проверка, запущено ли приложение."""
-        return self.process and self.process.poll() is None
-
-    def log_error(self, message):
-        """Метод для логирования ошибок в файл."""
-        log_file_path = path_log_file
-        try:
-            with open(log_file_path, 'a', encoding="utf-8") as log_file:
-                log_file.write(f"Windows_CPG_Monitor({time.strftime('%Y-%m-%d %H:%M:%S')}) -"
-                               f" {message}\n==================\n"
-                               )
-        except Exception as e:
-            print(f"Ошибка при записи лога в файл лога: {str(e)}")
-
-    def monitor(self):
-        """Основной метод мониторинга приложения."""
-        # Продолжаем работу даже если приложение уже запущено
-        print("Запуск мониторинга приложения...")
-        if not self.start_app():
-            self.log_error("Не удалось запустить приложение: <<Child PC Guard>>.")
-
-        try:
-            while True:
-                # Проверяем, работает ли приложение
-                if not self.is_process_running(os.path.basename(self.app_path)):
-                    self.log_error("Приложение <<Child PC Guard>> закрыто. Перезапуск...")
-                    print("Приложение << Child PC Guard >> закрыто. Перезапуск...")
-                    self.start_app()
-                time.sleep(10)  # Интервал проверки
-        except KeyboardInterrupt:
-            self.log_error("Мониторинг << Windows_CPG_Monitor >> остановлен вручную.")
-            print("Мониторинг остановлен вручную.")
-            self.stop_app()
+            print("Планировщик остановлен.")
+            # Отключаем планировщик
+            log_error_monitor(f"Планировщик остановлен.:\n{e}")
+            scheduler.shutdown()
 
 
-def main():
-    # ------- Проверка кода ошибки -------
-    # Создание мьютекса
-    mutex = ctypes.windll.kernel32.CreateMutexW(None, False, MUTEX_NAME)
-    error_code = ctypes.windll.kernel32.GetLastError()
+# Функция для обновления данных в файле
+def update_data():
+    try:
+        with open(path_data_file, 'r', encoding='utf-8') as file:
+            data = json.load(file)
 
-    if error_code == 183:
-        ctypes.windll.user32.MessageBoxW(None, f"Приложение Windows CPG Monitor уже запущено.",
-                                         "ПРЕДУПРЕЖДЕНИЕ", 0
-                                         )
-        # Закрываем дескриптор мьютекса, так как он не нужен
-        ctypes.windll.kernel32.CloseHandle(mutex)
-        return
-    elif error_code != 0:
-        ctypes.windll.user32.MessageBoxW(None, f"Неизвестная ошибка:\n{error_code}", "ОШИБКА", 0)
-        # Закрываем дескриптор мьютекса
-        ctypes.windll.kernel32.CloseHandle(mutex)
-        return
-    # -------------- END ---------------
+        current_date = datetime.now().date()
 
-    monitor = AppMonitor()
-    monitor.monitor()
+        if current_date > datetime.strptime(data['date'], '%Y-%m-%d').date():
+            data['date'] = str(current_date)
+            if data['remaining_time'] >= 0:
+                data['remaining_time'] += 7200
+            data['username_blocking'] = 'test'
+
+            with open(path_data_file, 'w', encoding='utf-8') as file:
+                json.dump(data, file, ensure_ascii=False, indent=4)
+
+            print(f"Данные обновлены: {data}")
+        else:
+            print("Дата не обновлена, реальная дата не больше даты из файла.")
+
+    except FileNotFoundError:
+        print("Планировщик остановлен.")
+        print("Файл data.json не найден.")
+        log_error_monitor("Файл data.json не найден.")
+        scheduler.shutdown()
+    except json.JSONDecodeError:
+        print("Планировщик остановлен.")
+        print("Ошибка чтения JSON из файла.")
+        log_error_monitor("Ошибка чтения JSON из файла.")
+        scheduler.shutdown()
+    except Exception as e:
+        print("Планировщик остановлен.")
+        # Отключаем планировщик
+        log_error_monitor(f"Планировщик остановлен.:\n{e}")
+        scheduler.shutdown()
 
 
+def log_error_monitor(message):
+    """Метод для логирования ошибок в файл."""
+    log_file_path = path_log_file
+    try:
+        with open(log_file_path, 'a', encoding='utf-8') as log_file:
+            log_file.write(f"MONITOR_CPG({time.strftime('%Y-%m-%d %H:%M:%S')}) -"
+                           f" {message}\n==================\n"
+                           )
+    except Exception as e:
+        print(f"Ошибка при записи лога в файл лога: {str(e)}")
+        ctypes.windll.user32.MessageBoxW(
+                None,
+                f"MONITOR_CPG({time.strftime('%Y-%m-%d %H:%M:%S')}) - {message}\n==================\n",
+                "Ошибка",
+                1
+        )
+
+
+# Основная секция для запуска программы
 if __name__ == '__main__':
-    main()
+    # Запуск приложения как администратора
+    run_as_admin()
+
+    # Создаем экземпляр планировщика
+    scheduler = BlockingScheduler()
+
+    # Задача 1: Следить за процессом и перезапускать, если не запущен (каждые 60 секунд)
+    scheduler.add_job(check_and_restart_program, 'interval', seconds=60)
+
+    # Задача 2: Следить за датой и обновлять данные (каждый час)
+    scheduler.add_job(update_data, 'interval', hours=1)
+
+    # TODO секундах для теста работы
+    # scheduler.add_job(update_data, 'interval', seconds=10)
+
+    try:
+        print("Запуск планировщика...")
+        scheduler.start()
+    except (KeyboardInterrupt, SystemExit):
+        # Отключаем планировщик
+        scheduler.shutdown()
+        print("Планировщик остановлен.")

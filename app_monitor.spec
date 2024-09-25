@@ -22,7 +22,7 @@ exe = EXE(
     a.binaries,
     a.datas,
     [],
-    name='Windows CPG Monitor',
+    name='Windows CPG Monitor 2',
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,

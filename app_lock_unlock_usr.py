@@ -1,9 +1,12 @@
 import os
 import wx
 import wx.xrc
+import time
 import ctypes
 import gettext
-from config_app import FOLDER_IMG
+
+import function
+from config_app import FOLDER_IMG, path_log_file
 from function import read_json, is_admin, run_as_admin, unblock_user
 
 _ = gettext.gettext
@@ -12,11 +15,11 @@ _ = gettext.gettext
 MUTEX_NAME = "Global\\Unlock_User_CPGuard"
 
 USERNAME = read_json('username_blocking')
-print('username_blocking: ', USERNAME)
+
 TIME = read_json('remaining_time')
-print('remaining_time: ', TIME)
+
 APP_MODE = bool(ctypes.windll.shell32.IsUserAnAdmin())
-print('APP_MODE: ', APP_MODE)
+
 
 
 class UnblockUser(wx.Dialog):
@@ -167,6 +170,7 @@ class UnblockUser(wx.Dialog):
 
         # Привязка событий
         self.Bind(wx.EVT_CLOSE, self.on_close)  # Событие при закрытии окна
+        self.btn_update_mode.Bind(wx.EVT_BUTTON, self.search_user_block)  # Событие при нажатии на кнопку обновить
         self.btn_unlock.Bind(wx.EVT_BUTTON, self.unblock)  # Событие, при нажатии кнопки UNLOCK (запуск задания)
 
     # Обработчики
@@ -175,8 +179,63 @@ class UnblockUser(wx.Dialog):
         self.Destroy()  # Закрытие текущего окна
         wx.Exit()  # Завершение основного цикла приложения
 
+    def search_user_block(self, event):
+        """Обработчик поиска заблокированного пользователя"""
+        usr = read_json('username_blocking')
+        if len(usr) >= 3:
+            # обновляем поле с именем
+            self.static_txt.SetLabel(usr)
+            # Активируем кнопку
+            self.btn_unlock.Enable(True)
+
     def unblock(self, event):
-        unblock_user(USERNAME)
+        # Снимаем блокировку
+        answer = unblock_user(USERNAME)
+        # Очищаем имя пользователя для блокировки в файле
+        function.update_json("username_blocking", "")
+        # Очищаем время блокировки в файле
+        function.update_json("remaining_time", 0)
+        # Сбрасываем поле с именем пользователя
+        self.static_txt.SetLabel(f"Нет заблокированных")
+        # Отключаем кнопку
+        self.btn_unlock.Enable(False)
+        # Сообщение записываем в log
+        self.log_error(f"Пользователь {USERNAME} разблокирован !")
+
+
+        if answer:
+            ctypes.windll.user32.MessageBoxW(
+                    None,
+                    f"Пользователь {USERNAME} разблокирован !",
+                    "Успешно",
+                    1
+            )
+        else:
+            # Сообщение записываем в log
+            self.log_error(f"Ошибка при разблокировке пользователя: {USERNAME}")
+            ctypes.windll.user32.MessageBoxW(
+                    None,
+                    f"(a_l_u_u)\nОшибка при разблокировке пользователя: {USERNAME}\n",
+                    "Ошибка",
+                    1
+            )
+
+    def log_error(self, message):
+        """Метод для логирования ошибок в файл."""
+        log_file_path = path_log_file
+        try:
+            with open(log_file_path, 'a', encoding='utf-8') as log_file:
+                log_file.write(f"CPG_UNLOCK_USER({time.strftime('%Y-%m-%d %H:%M:%S')}) -"
+                               f" {message}\n==================\n"
+                               )
+        except Exception as e:
+            print(f"Ошибка при записи лога в файл лога: {str(e)}")
+            ctypes.windll.user32.MessageBoxW(
+                    None,
+                    f"CPG_UNLOCK_USER({time.strftime('%Y-%m-%d %H:%M:%S')}) - {message}\n==================\n",
+                    "Ошибка",
+                    1
+            )
 
 
 def main():
@@ -187,7 +246,8 @@ def main():
 
     if error_code == 183 or error_code == 5:
         ctypes.windll.user32.MessageBoxW(None, f"Приложение Unlock User CPGuard уже запущено.",
-                                         "ПРЕДУПРЕЖДЕНИЕ", 0)
+                                         "ПРЕДУПРЕЖДЕНИЕ", 0
+                                         )
         # Закрываем дескриптор мьютекса, так как он не нужен
         ctypes.windll.kernel32.CloseHandle(mutex)
         return
@@ -197,6 +257,7 @@ def main():
         ctypes.windll.kernel32.CloseHandle(mutex)
         return
     # -------------- END ---------------
+
     if APP_MODE:
         app = wx.App(False)
         main_frame = UnblockUser(None)
@@ -209,7 +270,6 @@ def main():
         app = wx.App(False)
         main_frame = UnblockUser(None)
         main_frame.ShowModal()
-        print("2APP_MODE", APP_MODE)
         app.MainLoop()
 
 

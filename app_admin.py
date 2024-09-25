@@ -1,11 +1,13 @@
 import os
 import sys
+import time
+
 import wx
 import wx.xrc
 import ctypes
 import gettext
 import function
-from app_splash_screen import SplashScreen
+from app_wind_splash_screen import SplashScreen, main_splash
 from app_wind_exit_prog import WndCloseApp
 from app_wind_pass import WndPass
 from app_wind_tray_icon import TrayIcon
@@ -181,14 +183,14 @@ class Window(wx.Frame):
         # Загрузка оставшегося времени из файла, если оно есть
         # Если есть остаточное время и имя в файле данных data.json
         if self.remaining_time > 0 and len(self.username_blocking) >= 1:
+            # Отключаем поле выбора пользователя
+            self.input_username.Disable()
             # Отключаем кнопку OK
             self.btn_ok.Disable()
             # Включаем кнопку отключения блокировки
             self.btn_disable_blocking.Enable()
             # Определяем какой пользователь был выбран при продолжении отсчета времени если был остаток в файле.
             self.input_username.SetValue(self.username_blocking)
-            # Отключаем кнопку
-            self.input_username.Disable()
 
             # Запускаем таймер, если есть оставшееся время
             self.elapsed_time = 0
@@ -210,8 +212,6 @@ class Window(wx.Frame):
         # Подключаемые события в программе
         self.input_username.Bind(wx.EVT_TEXT, self.on_input_changed)  # Событие при выборе имени пользователя
         self.input_time.Bind(wx.EVT_COMBOBOX, self.on_input_changed)  # Событие при выборе времени для блокировки
-
-        self.input_time.Disable()  # TODO Не понятно зачем тут этот код...!!???
 
         self.Bind(wx.EVT_TIMER, self.run_on_timer, self.timer)  # Событие, при запуске таймера
         self.Bind(wx.EVT_CLOSE, self.on_close)  # Событие, закрытия окна
@@ -313,6 +313,8 @@ class Window(wx.Frame):
         self.gauge.SetValue(0)  # Начальное значение шкалы
         self.timer.Start(1000)  # Запуск таймера с интервалом 1 секунда
         self.btn_ok.Disable()  # Блокируем кнопку OK, пока таймер работает
+        self.input_username.Disable()  # Блокируем поле имени пользователя
+        self.input_time.Disable()  # Блокируем поле выбора времени блокировки
 
         if username == function.username_session():
             dialog = wx.MessageDialog(self,
@@ -385,8 +387,7 @@ class Window(wx.Frame):
         """
         username = self.input_username.GetValue()  # Получаем имя пользователя для разблокировки
 
-        # Если имя не совпадает с именем пользователя сессии и имя не пустое
-        # Запуск блокировки
+        # Запуск блокировки если имя совпадает с именем пользователя сессии и имя не пустое
         if username == function.username_session() and username != "":
             self.timer.Stop()  # Остановка таймера
             self.gauge.SetValue(0)  # Стираем статус заполненности таймера
@@ -421,8 +422,33 @@ class Window(wx.Frame):
             # Отключаем кнопку OK
             self.btn_ok.Disable()
 
-        # Если имя пользователя пустое
-        # Отмена блокировки
+        # Если имя пользователя из файла данных не совпадает с именем из сессии
+        elif username != function.username_session():
+            # Сообщение
+            dialog = wx.MessageDialog(self,
+                                      _(f"Пользователь - {self.username_blocking} - разблокирован"),
+                                      _("Предупреждение"),
+                                      wx.ICON_WARNING
+                                      )
+            dialog.ShowModal()
+            # END сообщение
+
+            # Останавливаем таймер
+            self.timer.Stop()
+            # Стираем статус заполненности таймера
+            self.gauge.SetValue(0)
+            # Стираем значение в поле имя пользователя.
+            self.input_username.SetSelection(-1)
+            # Стираем значение в поле выбора времени для блокировки
+            self.input_time.SetSelection(0)
+            # Сбрасываем значение времени в поле - "Осталось времени до блокировки:"
+            self.timer_time.SetLabel("00:00:00")
+            # Очищаем содержимое времени в файле
+            function.update_json("remaining_time", 0)  # Удаляем значение времени в файле.
+            # Очищаем содержимое имени пользователя в файле
+            function.update_json("username_blocking", "")  # Удаляем значение с именем пользователя для блокировки.
+
+        # Отмена блокировки если имя пользователя пустое
         elif username == "":
             dialog = wx.MessageDialog(self,
                                       _("Вы не указали пользователя для отключения блокировки."),
@@ -430,23 +456,6 @@ class Window(wx.Frame):
                                       wx.ICON_WARNING
                                       )
             dialog.ShowModal()
-        # Если имя пользователя совпадает с именем пользователя сессии
-        # Отмена блокировки
-        elif username == function.username_session():
-            dialog = wx.MessageDialog(self,
-                                      _("Вы не можете заблокировать/разблокировать самого себя."),
-                                      _("Предупреждение"),
-                                      wx.ICON_WARNING
-                                      )
-            dialog.ShowModal()
-
-            self.btn_disable_blocking.Disable()  # Отключаем кнопку блокировки
-            self.input_username.SetSelection(-1)  # Очищаем поле с именем пользователя
-            self.input_time.SetSelection(0)  # Сброс поля времени блокировки
-            self.input_time.Disable()  # Отключаем выбора времени
-            # Очистка значений в файлах
-            function.update_json("remaining_time", 0)  # Удаляем значение времени, когда блокировка завершена.
-            function.update_json("username_blocking", "")  # Удаляем значение с именем пользователя для блокировки.
 
     def disable_fields(self):
         """Функция отключения полей для ввода"""
@@ -463,6 +472,14 @@ class Window(wx.Frame):
         self.input_username.Enable()  # Поле имени пользователя для блокировки
         self.gauge.Enable()  # Поле прогресса времени
 
+    def enable_fields_if_have_time(self):
+        """
+        Функция включения (активации) полей для ввода.
+        Если есть остаточное время в файле с данными.
+        """
+        self.gauge.Enable()  # Поле прогресса времени
+        self.btn_disable_blocking.Enable()  # Кнопка - Отключить блокировку
+
     def seconds_to_hms(self, seconds):
         """
         Преобразует количество секунд в строку формата часы:минуты:секунды.
@@ -478,10 +495,14 @@ class Window(wx.Frame):
         # Форматируем результат с ведущими нулями
         return f"{hours:02}:{minutes:02}:{secs:02}"
 
-    # =============================================================================================================
+
+# =============================================================================================================
 
 
 def main():
+    # Запускаем приложение как администратор
+    function.run_as_admin()
+
     # Создаем папки и файлы с данными для работы приложения в местах допуска системы windows 10/11
     function.function_to_create_path_data_files()
 
@@ -490,9 +511,13 @@ def main():
     mutex = ctypes.windll.kernel32.CreateMutexW(None, False, MUTEX_NAME)
     error_code = ctypes.windll.kernel32.GetLastError()
 
-    if error_code == 183  or error_code == 5:
+    if error_code == 183:
         ctypes.windll.user32.MessageBoxW(None, f"Приложение Child PC Guard уже запущено.", "ПРЕДУПРЕЖДЕНИЕ", 0)
         # Закрываем дескриптор мьютекса, так как он не нужен
+        ctypes.windll.kernel32.CloseHandle(mutex)
+        return
+    elif error_code == 5:  # ERROR_ACCESS_DENIED
+        ctypes.windll.user32.MessageBoxW(None, "Доступ к мьютексу запрещен.", "ОШИБКА", 0)
         ctypes.windll.kernel32.CloseHandle(mutex)
         return
     elif error_code != 0:
@@ -502,13 +527,13 @@ def main():
         return
     # -------------- END ---------------
 
-    # Запускаем приложение как администратор
-    function.run_as_admin()
+    # Выводим заставку
+    main_splash()
 
     app = wx.App(False)
 
+    # Инициализируем главное окно
     main_frame = Window(None)
-    main_frame.Show()
 
     # Деактивируем все поля главного приложения
     main_frame.disable_fields()
@@ -517,8 +542,16 @@ def main():
     dlg = WndPass(None)
     dlg.ShowModal()
 
-    # Активируем все поля если пароль совпал
-    main_frame.enable_fields()
+    username_blocking = function.read_json("username_blocking")  # Имя пользователя для блокировки из файла
+    remaining_time = function.read_json("remaining_time")  # Время задаваемой блокировки из файла
+
+    # Проверяем если есть остаточное время в файле с данными то активируем необходимые поля главного приложения
+    if username_blocking and remaining_time > 0:
+        main_frame.enable_fields_if_have_time()
+    #  Иначе это чистый запуск активируем необходимое
+    else:
+        # Активируем все поля если пароль совпал
+        main_frame.enable_fields()
 
     if dlg.password_check:
         main_frame.Show()
@@ -531,3 +564,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+# TODO ВАЖНО при работе окна таймера для пользователя периодично выводится ошибка при считывании времени.
