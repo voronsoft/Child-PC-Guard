@@ -133,10 +133,11 @@ class TimerApp(wx.Frame):
 
     def log_error(self, message):
         """Логирование ошибок в файл."""
-        log_file_path = config_app.path_log_file
         try:
-            with open(log_file_path, 'a', encoding="utf-8") as log_file:
-                log_file.write(f"{time.strftime('%Y-%m-%d %H:%M:%S')} - {message}\n==================\n")
+            with open(config_app.path_log_file, 'a', encoding="utf-8") as log_file:
+                log_file.write(f"TIMER({time.strftime('%Y-%m-%d %H:%M:%S')}) - "
+                               f"{message}\n==================\n"
+                               )
         except Exception as e:
             print(f"(1)Ошибка при записи лога в файл: {str(e)}")
             ctypes.windll.user32.MessageBoxW(None, f"Ошибка при записи в файл лога:\n{str(e)}", "ОШИБКА", 0)
