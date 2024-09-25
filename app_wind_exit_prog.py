@@ -22,7 +22,7 @@ class WndCloseApp(wx.Dialog):
                            title=_("ВЫХОД из программы"),
                            pos=wx.DefaultPosition,
                            size=wx.Size(400, 150),
-                           style=wx.DEFAULT_DIALOG_STYLE  # & ~(wx.CLOSE_BOX | wx.STAY_ON_TOP)
+                           style=wx.DEFAULT_DIALOG_STYLE & ~(wx.CLOSE_BOX) | wx.STAY_ON_TOP
                            )
         # TODO ВАЖНО - изменить пароль для программы !!! (app_wind_pass.py)
         self.password = "123"  # Пароль, который нужно ввести
@@ -51,8 +51,7 @@ class WndCloseApp(wx.Dialog):
         # Верхний текст
         self.m_static_text2 = wx.StaticText(self,
                                             wx.ID_ANY,
-                                            _("Вы уверены что хотите закрыть программу ?\n"
-                                              "Таймер программы будет отключен."
+                                            _("Закрыв программу таймер программы будет отключен."
                                               ),
                                             wx.DefaultPosition,
                                             wx.DefaultSize,
@@ -70,18 +69,21 @@ class WndCloseApp(wx.Dialog):
         sizer_input.Add(self.m_static_text1, 0, wx.ALL, 5)
 
         # Поле для ввода текста
-        self.m_text_ctrl1 = wx.TextCtrl(self,
+        self.input_pass_txt = wx.TextCtrl(self,
                                         wx.ID_ANY,
                                         wx.EmptyString,
                                         wx.DefaultPosition,
                                         wx.Size(200, -1),
                                         wx.TE_PASSWORD | wx.BORDER_SIMPLE | wx.TE_PROCESS_ENTER
                                         )
-        sizer_input.Add(self.m_text_ctrl1, 0, wx.ALL, 5)
+        sizer_input.Add(self.input_pass_txt, 0, wx.ALL, 5)
 
         # Кнопка OK
         self.btn_ok = wx.Button(self, wx.ID_ANY, _("OK"), wx.DefaultPosition, wx.DefaultSize, 0)
         sizer_input.Add(self.btn_ok, 0, wx.ALL, 5)
+        # Кнопка ОТМЕНИТЬ
+        self.btn_cancell = wx.Button(self, wx.ID_ANY, _("Отмена"), wx.DefaultPosition, wx.DefaultSize, 0)
+        sizer_input.Add(self.btn_cancell, 0, wx.ALL, 5)
 
         # Добавляем слайзер с вводом и кнопкой в главный слайзер
         sizer_main.Add(sizer_input, 0, wx.ALL | wx.ALIGN_CENTER_HORIZONTAL, 5)
@@ -94,33 +96,44 @@ class WndCloseApp(wx.Dialog):
         # Центровка окна
         self.Centre(wx.BOTH)
 
-        # Кнопка ОК
-        self.btn_ok.Bind(wx.EVT_BUTTON, self.on_ok)
-        self.btn_ok.SetDefault()  # Установка кнопки OK как кнопки по умолчанию для Enter
-
         # Привязка событий
-        self.m_text_ctrl1.Bind(wx.EVT_TEXT_ENTER, self.on_ok)  # Событие при нажатии кнопки ОК
-        self.Bind(wx.EVT_CLOSE, self.on_close)  # Событие при закрытии окна
-
+        # Кнопка ОК
+        self.btn_ok.Bind(wx.EVT_BUTTON, self.on_ok)  # Событие при нажатии кнопки ОК
+        self.btn_ok.SetDefault()  # Установка кнопки OK как кнопки по умолчанию для Enter
+        self.input_pass_txt.Bind(wx.EVT_TEXT_ENTER, self.on_ok)
+        self.btn_cancell.Bind(wx.EVT_BUTTON, self.on_cancel)  # Событие при нажатии кнопки cancel
+        # Установка фокуса на поле ввода пароля
+        self.input_pass_txt.SetFocus()  # Устанавливаем фокус на поле ввода
 
     # Обработчики
     def on_ok(self, event):
         """Обработчик нажатия кнопки OK"""
         # Получаем значение из поля ввода
-        if self.password == self.m_text_ctrl1.GetValue():
+        if self.password == self.input_pass_txt.GetValue():
             self.password_check = True
-            self.Destroy()  # Закрытие окна и завершение процесса питон
+            self.EndModal(wx.ID_OK)  # Закрыть диалог с результатом OK
         else:
             wx.MessageBox(_("Неверный пароль. Попробуйте снова."), _("Ошибка"), wx.OK | wx.ICON_ERROR)
 
-    def on_close(self, event):
-        """Обработчик события закрытия окна"""
-        self.Destroy()  # Закрытие текущего окна
-        wx.Exit()  # Завершение основного цикла приложения
+    def on_cancel(self, event):
+        """Обработчик нажатия кнопки Отмена"""
+        self.EndModal(wx.ID_CANCEL)  # Закрыть диалог с результатом Cancel
+
+    def on_key_press_Esc(self, event):
+        """Обработка нажатия клавиш"""
+        keycode = event.GetKeyCode()
+
+        # Если нажата клавиша ESC, вызываем обработчик закрытия окна
+        if keycode == wx.WXK_ESCAPE:
+            self.on_cancel(None)  # Вызов метода закрытия окна
 
 
-if __name__ == "__main__":
+def main_exit_pass():
     app = wx.App(False)
     main_frame = WndCloseApp(None)
     main_frame.ShowModal()  # Используем ShowModal для модального окна
     app.MainLoop()
+
+
+if __name__ == "__main__":
+    main_exit_pass()

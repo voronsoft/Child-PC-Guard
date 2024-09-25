@@ -21,7 +21,7 @@ class WndPass(wx.Dialog):
                            title=_("ВХОД"),
                            pos=wx.DefaultPosition,
                            size=wx.Size(400, 150),
-                           style=wx.DEFAULT_DIALOG_STYLE & ~(wx.CLOSE_BOX | wx.STAY_ON_TOP)
+                           style=wx.DEFAULT_DIALOG_STYLE & ~(wx.CLOSE_BOX) | wx.STAY_ON_TOP
                            )
         # TODO ВАЖНО - изменить пароль для программы !!! (app_wind_pass.py)
         self.password = "123"  # Пароль, который нужно ввести

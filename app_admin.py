@@ -7,8 +7,8 @@ import wx.xrc
 import ctypes
 import gettext
 import function
-from app_wind_splash_screen import SplashScreen, main_splash
 from app_wind_exit_prog import WndCloseApp
+from app_wind_splash_screen import main_splash
 from app_wind_pass import WndPass
 from app_wind_tray_icon import TrayIcon
 from config_app import FOLDER_IMG
@@ -209,7 +209,7 @@ class Window(wx.Frame):
         # END - логика если есть остаточное время в файле.
         # ------------------------------------------------
 
-        # Подключаемые события в программе
+        # Подключаемые события в программе ---------------
         self.input_username.Bind(wx.EVT_TEXT, self.on_input_changed)  # Событие при выборе имени пользователя
         self.input_time.Bind(wx.EVT_COMBOBOX, self.on_input_changed)  # Событие при выборе времени для блокировки
 
@@ -217,37 +217,55 @@ class Window(wx.Frame):
         self.Bind(wx.EVT_CLOSE, self.on_close)  # Событие, закрытия окна
         self.btn_ok.Bind(wx.EVT_BUTTON, self.start_blocking)  # Событие, при нажатии кнопки OK (запуск задания)
         self.btn_disable_blocking.Bind(wx.EVT_BUTTON, self.disable_blocking)  # Событие, отключения блокировки
+        # END ---------------------------------------------
 
     # Обработчики событий
     def on_close(self, event):
         """Обработчик закрытия программы"""
-        # Перед закрытием программы запрашиваем пароль, защита от просто го пользователя.
-        dlg = WndCloseApp(None)
-        dlg.ShowModal()
+        # Создаем диалоговое окно с выбором
+        # dlg = wx.MessageDialog(self,
+        #                        "Вы действительно хотите закрыть приложение?",
+        #                        "Закрыть",
+        #                        wx.OK | wx.CANCEL | wx.ICON_QUESTION
+        #                        )
+        # Ожидаем ответа от пользователя
+        dlg = WndCloseApp(self)
+        result = dlg.ShowModal()  # Показать диалог с паролем
 
-        # Если время больше ноля и имя пользователя не пустое
-        if self.remaining_time > 0 and len(self.username_blocking) >= 1:
-            # Запись времени в файл
-            function.update_json("remaining_time", self.remaining_time - self.elapsed_time)
-        # Если время равно 0
-        elif self.remaining_time == 0:
-            # Удаляем значение времени если таймер не активен
-            function.update_json("remaining_time", 0)
-            # Удаляем значение с именем пользователя для блокировки
-            function.update_json("username_blocking", "")
-        # Если время больше ноля, но имя пустое
-        elif self.remaining_time > 0 and len(self.username_blocking) == 0:
-            # Очищаем время если таймер не активен
-            function.update_json("remaining_time", 0)
-            # Сбрасываем поле с временем на 0
-            self.input_time.SetSelection(0)
+        # Если пользователь нажал "OK", закрываем все приложение
+        if result == wx.ID_OK:
+            print(2222)
+            # Если время больше ноля и имя пользователя не пустое
+            if self.remaining_time > 0 and len(self.username_blocking) >= 1:
+                # Запись времени в файл
+                function.update_json("remaining_time", self.remaining_time - self.elapsed_time)
+            # Если время равно 0
+            elif self.remaining_time == 0:
+                # Удаляем значение времени если таймер не активен
+                function.update_json("remaining_time", 0)
+                # Удаляем значение с именем пользователя для блокировки
+                function.update_json("username_blocking", "")
+            # Если время больше ноля, но имя пустое
+            elif self.remaining_time > 0 and len(self.username_blocking) == 0:
+                # Очищаем время если таймер не активен
+                function.update_json("remaining_time", 0)
+                # Сбрасываем поле с временем на 0
+                self.input_time.SetSelection(0)
 
-        # При закрытии убираем иконку из трея
-        self.tray_icon.RemoveIcon()
-        self.tray_icon.Destroy()
+            # При закрытии убираем иконку из трея
+            self.tray_icon.RemoveIcon()
+            self.tray_icon.Destroy()
 
-        # Завершаем процесс (закрытие программы)
-        sys.exit()
+            self.Destroy()  # Закрывает основное окно, завершая приложение
+            # Завершаем процесс (закрытие программы)
+            sys.exit()
+        # Если пользователь нажал "Отмена", просто закрываем диалог
+        elif result == wx.ID_CANCEL:
+            print(1111)
+            dlg.Destroy()  # Закрываем только диалоговое окно и продолжаем работу
+
+        # Не даем закрыть окно, если нажали "Отмена"
+        event.Veto()
 
     def on_input_changed(self, event):
         """
