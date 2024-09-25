@@ -75,9 +75,8 @@ def update_data():
 
 def log_error_monitor(message):
     """Метод для логирования ошибок в файл."""
-    log_file_path = path_log_file
     try:
-        with open(log_file_path, 'a', encoding='utf-8') as log_file:
+        with open(path_log_file, 'a', encoding='utf-8') as log_file:
             log_file.write(f"MONITOR_CPG({time.strftime('%Y-%m-%d %H:%M:%S')}) -"
                            f" {message}\n==================\n"
                            )
