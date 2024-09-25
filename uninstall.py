@@ -7,6 +7,8 @@ import wx
 import wx.xrc
 import gettext
 
+from config_app import FOLDER_IMG
+
 _ = gettext.gettext
 
 
@@ -29,6 +31,9 @@ class UninstallerFrame(wx.Frame):
         self.SetSizeHints(wx.Size(600, 350), wx.Size(600, 350))
         self.SetFont(wx.Font(12, wx.FONTFAMILY_SWISS, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, "Segoe UI"))
         self.SetBackgroundColour(wx.SystemSettings.GetColour(wx.SYS_COLOUR_INACTIVEBORDER))
+        # Устанавливаем иконку для окна
+        icon = wx.Icon(os.path.join(FOLDER_IMG, "uninstall.ico"), wx.BITMAP_TYPE_ICO)
+        self.SetIcon(icon)
 
         sizer_main = wx.BoxSizer(wx.VERTICAL)
         sizer_main.SetMinSize(wx.Size(600, 350))
