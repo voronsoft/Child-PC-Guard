@@ -120,12 +120,12 @@ class SplashScreen(wx.Frame):
         self.Bind(wx.EVT_PAINT, self.OnPaint)
 
         # Таймер для плавного исчезновения
-        self.alpha_value = 255  # Начальная прозрачность (полностью видимо)
+        self.alpha_value = 100  # Начальная прозрачность
         self.fade_out_timer = wx.Timer(self)
         self.Bind(wx.EVT_TIMER, self.OnFadeOutTimer, self.fade_out_timer)
 
         # Запуск таймера для плавного исчезновения через 2 секунды
-        wx.CallLater(1000, self.StartFadeOut)
+        wx.CallLater(500, self.StartFadeOut)
 
     def SetWindowShape(self):
         """Устанавливает форму окна по форме изображения."""
@@ -139,7 +139,7 @@ class SplashScreen(wx.Frame):
 
     def StartFadeOut(self):
         """Запускает процесс плавного исчезновения окна."""
-        self.fade_out_timer.Start(30)  # Каждые 30 миллисекунд уменьшаем прозрачность
+        self.fade_out_timer.Start(5)  # Каждые 30 миллисекунд уменьшаем прозрачность
 
     def OnFadeOutTimer(self, event):
         """Плавное исчезновение окна."""
