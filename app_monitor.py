@@ -86,7 +86,7 @@ def log_error_monitor(message):
                 None,
                 f"MONITOR_CPG({time.strftime('%Y-%m-%d %H:%M:%S')}) - {message}\n==================\n",
                 "Ошибка",
-                1
+                0
         )
 
 
@@ -98,14 +98,12 @@ if __name__ == '__main__':
     # Создаем экземпляр планировщика
     scheduler = BlockingScheduler()
 
+    # TODO Настройка времени для заданий в мониторинге
     # Задача 1: Следить за процессом и перезапускать, если не запущен (каждые 60 секунд)
     scheduler.add_job(check_and_restart_program, 'interval', seconds=60)
 
     # Задача 2: Следить за датой и обновлять данные (каждый час)
     scheduler.add_job(update_data, 'interval', hours=1)
-
-    # TODO секундах для теста работы
-    # scheduler.add_job(update_data, 'interval', seconds=10)
 
     try:
         print("Запуск планировщика...")

@@ -114,7 +114,8 @@ class UninstallerFrame(wx.Frame):
                                    'Programs',
                                    'Startup'
                                    )
-
+        # TODO Логику удаления и работы деинсталлятора пересмотреть..
+        #  не правильная последовательность действий
         # 1 Удаление исполняемых файлов и других данных
         try:
             if os.path.exists(install_dir):
@@ -175,14 +176,14 @@ class UninstallerFrame(wx.Frame):
         wx.MessageBox("Все программы и файлы успешно удалены!", "Удаление завершено", wx.OK | wx.ICON_INFORMATION)
 
         # 5 Запуск самоуничтожения
-        # self.self_destruct()  # TODO Закомментировано в момент разработки
+        # self.self_destroy_uninstaller()  # TODO Закомментировано в момент разработки
 
     def on_cancel(self, event):
         """Обработчик закрытия программы при нажатии кнопки CANCEL"""
         self.log_message("Деинсталляция отменена пользователем.")
         self.Close()
 
-    def self_destruct(self):
+    def self_destroy_uninstaller(self):
         # TODO раскомментировать при релизе
         try:
             # Получаем путь к текущему исполняемому файлу
@@ -194,9 +195,9 @@ class UninstallerFrame(wx.Frame):
 
             # Закрываем приложение
             self.Close()
-            ...
         except Exception as e:
-            self.log_message(f"Ошибка при удалении самого деинсталлятора: {e}")
+            ctypes.windll.user32.MessageBoxW(None, f"Ошибка при удалении самого деинсталлятора:\n{e}", "ОШИБКА", 0)
+
 
     def log_message(self, message):
         """Отображает сообщение в лог поле (self.log_text) и в консоли"""
@@ -239,7 +240,7 @@ def run_as_admin():
                     None,
                     f"Не удалось запустить программу с правами администратора:\n\n{e}",
                     "Ошибка",
-                    1
+                    0
             )
 
 def main():

@@ -21,7 +21,6 @@ TIME = read_json('remaining_time')
 APP_MODE = bool(ctypes.windll.shell32.IsUserAnAdmin())
 
 
-
 class UnblockUser(wx.Dialog):
 
     def __init__(self, parent):
@@ -202,13 +201,12 @@ class UnblockUser(wx.Dialog):
         # Сообщение записываем в log
         self.log_error(f"Пользователь {USERNAME} разблокирован !")
 
-
         if answer:
             ctypes.windll.user32.MessageBoxW(
                     None,
                     f"Пользователь {USERNAME} разблокирован !",
                     "Успешно",
-                    1
+                    0
             )
         else:
             # Сообщение записываем в log
@@ -217,7 +215,7 @@ class UnblockUser(wx.Dialog):
                     None,
                     f"(a_l_u_u)\nОшибка при разблокировке пользователя: {USERNAME}\n",
                     "Ошибка",
-                    1
+                    0
             )
 
     def log_error(self, message):
@@ -233,7 +231,7 @@ class UnblockUser(wx.Dialog):
                     None,
                     f"CPG_UNLOCK_USER({time.strftime('%Y-%m-%d %H:%M:%S')}) - {message}\n==================\n",
                     "Ошибка",
-                    1
+                    0
             )
 
 

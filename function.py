@@ -46,7 +46,7 @@ def run_as_admin():
                     None,
                     f"Не удалось запустить программу с правами администратора:\n\n{e}",
                     "Ошибка",
-                    1
+                    0
             )
 
 
@@ -176,7 +176,6 @@ def blocking(username, id_ses_user):
         command_logoff = f"logoff {id_ses_user}"
         command_disable_user = f'net user "{username}" /active:no'
         try:
-            # TODO закомментированная команда для теста
             # Выполнение команды logoff для указанной сессии
             subprocess.run(command_logoff, shell=True, check=True)
             print("1 Отработала команда блокировки экрана")
@@ -188,7 +187,6 @@ def blocking(username, id_ses_user):
             print(f"Учетка заблокирована {username} (ID: {id_ses_user}).")
         except subprocess.CalledProcessError as e:
             print(f"Ошибка при выполнении команд: {e}")
-            time.sleep(3)
     else:
         print("Не удалось получить ID сессии. Команды не будут выполнены.")
 
@@ -204,18 +202,16 @@ def unblock_user(username):
         command = f'net user "{username}" /active:yes'
         # Выполняем команду в командной строке
         subprocess.run(command, shell=True, check=True)
-        print(f"Пользователь {username} разблокирован.")
         return True
     except Exception as e:
-        print(f"Ошибка при разблокировке пользователя {username}: {e}")
-
         ctypes.windll.user32.MessageBoxW(
                 None,
                 f"Ошибка при разблокировке пользователя - {username}:\n\n{e}",
                 "Ошибка",
-                1
+                0
         )
         return False
+
 
 def username_session():
     """Получение имени пользователя в сессии"""
@@ -256,24 +252,6 @@ def auto_close():
         ctypes.windll.user32.PostMessageW(hwnd, 0x0010, 0, 0)  # 0x0010 — это WM_CLOSE, команда закрытия окна.
 
 
-# TODO дописать функцию
-def date_control():
-    """
-    Функция контроля даты.
-    """
-    # Получаем сегодняшнюю дату
-    today = datetime.today().date()
-
-    # Проверяем дату из файла данных
-
-    #
-    #
-    #
-
-    # Выводим результат
-    print("Сегодняшняя дата:", today)
-
-
 def function_to_create_path_data_files():
     """Функция проверки и создания файлов данных для приложения"""
 
@@ -310,3 +288,14 @@ def function_to_create_path_data_files():
         # Устанавливаем полный доступ к файлу для всех пользователей
         os.chmod(path_log_file, stat.S_IRWXU | stat.S_IRWXG | stat.S_IRWXO)
         print(f"Установлены полные права доступа к файлу: {path_log_file}")
+
+
+def check_mode_run_app():
+    """Проверяет, запущено ли приложение от имени администратора."""
+    try:
+        if os.name == 'nt':
+            app_is_admin = ctypes.windll.shell32.IsUserAnAdmin() != 0
+            return "admin" if app_is_admin else "user"
+    except:
+        pass
+    return "user"
