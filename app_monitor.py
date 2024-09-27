@@ -1,16 +1,78 @@
 import ctypes
 import json
 import os
+import sys
 import time
 import psutil
 from datetime import datetime
 from apscheduler.schedulers.blocking import BlockingScheduler
 
-from config_app import path_data_file, DISK_LETTER, path_log_file
-from function import run_as_admin
+# ----------------- Основные переменные. ------------------------
+# Определяем корневую папку проекта.
+PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
+# Получаем имя диска (вид С:\)
+DISK_LETTER = os.path.splitdrive(PROJECT_ROOT)[0] + "\\"
+# Путь к папке с данными
+FOLDER_DATA = os.path.join(DISK_LETTER, "ProgramData", "Child PC Guard Data")
 
 # Путь к .exe файлу, который нужно мониторить
 path_to_program = os.path.join(DISK_LETTER, "Program Files (x86)", "Child PC Guard.exe")
+# Путь к файлу данных - data.json
+path_data_file = os.path.join(FOLDER_DATA, "data.json")
+# Путь к файлу логов - log_chpcgu.txt
+path_log_file = os.path.join(FOLDER_DATA, "log_chpcgu.txt")
+
+
+# ---------------------------- END ------------------------------
+def is_admin():
+    """
+    Проверяет, запущен ли скрипт с правами администратора.
+
+    :return: True, если запущен с правами администратора, иначе False.
+    """
+    try:
+        return bool(ctypes.windll.shell32.IsUserAnAdmin())
+    except Exception:
+        return False
+
+
+def run_as_admin():
+    """
+    Проверяет, запущено ли приложение с правами администратора.
+    Если нет, перезапускает его с запросом прав администратора.
+    """
+    if not is_admin():
+        # Перезапускаем с запросом прав администратора
+        try:
+            print("Запрос прав администратора...")
+            response = ctypes.windll.shell32.ShellExecuteW(
+                    None,
+                    "runas",
+                    sys.executable,
+                    ' '.join([f'"{arg}"' for arg in sys.argv]),
+                    None,
+                    1  # 1-отобразить консоль \ 0-скрыть консоль
+            )
+
+            # Проверяем, удалось ли запустить программу с правами администратора
+            if response <= 32:
+                print(f"Не удалось запросить права администратора. Код ошибки: {response}")
+                ctypes.windll.user32.MessageBoxW(
+                        None,
+                        f"Не удалось запустить программу с правами администратора. Код ошибки: {response}",
+                        "Ошибка",
+                        0
+                )
+            else:
+                sys.exit()  # Завершаем текущий процесс, чтобы предотвратить двойной запуск
+        except Exception as e:
+            print(f"Не удалось запустить программу с правами администратора:\n{e}")
+            ctypes.windll.user32.MessageBoxW(
+                    None,
+                    f"Не удалось запустить программу с правами администратора:\n\n{e}",
+                    "Ошибка",
+                    0
+            )
 
 
 # Функция для проверки, запущена ли программа
@@ -22,16 +84,17 @@ def check_and_restart_program():
             break
 
     if not program_running:
-        print("Программа не запущена. Перезапуск...")
+        print("Программа Child PC Guard не запущена. Перезапуск...")
         # Сообщение записываем в log
-        log_error_monitor(f"Программа не запущена. Перезапуск...")
+        log_error_monitor(f"Программа Child PC Guard не запущена. Перезапуск...")
 
         try:
-            os.startfile(path_to_program)  # Перезапуск программы
+            # os.startfile(path_to_program)  # Перезапуск программы
+            ...
         except Exception as e:
-            print("Планировщик остановлен.")
+            print(f"Планировщик остановлен. Не удалось запустить Блокировщик:\n{e}")
             # Отключаем планировщик
-            log_error_monitor(f"Планировщик остановлен.:\n{e}")
+            log_error_monitor(f"Планировщик остановлен. Не удалось запустить Блокировщик:\n{e}")
             scheduler.shutdown()
 
 
@@ -52,22 +115,22 @@ def update_data():
             with open(path_data_file, 'w', encoding='utf-8') as file:
                 json.dump(data, file, ensure_ascii=False, indent=4)
 
-            print(f"Данные обновлены: {data}")
+            print(f"Дата обновлена в файле данных: {data}")
+            log_error_monitor(f"Дата обновлена в файле данных: {data}")
         else:
             print("Дата не обновлена, реальная дата не больше даты из файла.")
 
+
     except FileNotFoundError:
-        print("Планировщик остановлен.")
-        print("Файл data.json не найден.")
-        log_error_monitor("Файл data.json не найден.")
+        print("Планировщик остановлен, файл data.json не найден.")
+        log_error_monitor("Планировщик остановлен, файл data.json не найден.")
         scheduler.shutdown()
     except json.JSONDecodeError:
-        print("Планировщик остановлен.")
-        print("Ошибка чтения JSON из файла.")
-        log_error_monitor("Ошибка чтения JSON из файла.")
+        print("Планировщик остановлен. Ошибка чтения JSON из файла.")
+        log_error_monitor("Планировщик остановлен. Ошибка чтения JSON из файла.")
         scheduler.shutdown()
     except Exception as e:
-        print("Планировщик остановлен.")
+        print(f"Планировщик остановлен. Ошибка:\n{e}")
         # Отключаем планировщик
         log_error_monitor(f"Планировщик остановлен.:\n{e}")
         scheduler.shutdown()
@@ -92,18 +155,25 @@ def log_error_monitor(message):
 
 # Основная секция для запуска программы
 if __name__ == '__main__':
+    # Добавим лог перед проверкой на администратора
+    print("Проверка прав администратора...")
+
     # Запуск приложения как администратора
-    run_as_admin()
+    # run_as_admin()
+
+    # Если программа дошла до этого момента, значит она запущена с нужными правами
+    print("Программа запущена с правами администратора.")
 
     # Создаем экземпляр планировщика
     scheduler = BlockingScheduler()
 
     # TODO Настройка времени для заданий в мониторинге
     # Задача 1: Следить за процессом и перезапускать, если не запущен (каждые 60 секунд)
-    scheduler.add_job(check_and_restart_program, 'interval', seconds=60)
+    scheduler.add_job(check_and_restart_program, 'interval', seconds=10)
 
     # Задача 2: Следить за датой и обновлять данные (каждый час)
-    scheduler.add_job(update_data, 'interval', hours=1)
+    # scheduler.add_job(update_data, 'interval', hours=1)
+    scheduler.add_job(update_data, 'interval', seconds=10)
 
     try:
         print("Запуск планировщика...")

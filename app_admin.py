@@ -296,16 +296,13 @@ class Window(wx.Frame):
 
         # ------------------------------------------------
         # TODO логика если есть остаточное время в файле.
-
         # Загрузка оставшегося времени из файла, если оно есть
         # Если есть остаточное время и имя в файле данных data.json
         if self.remaining_time > 0 and len(self.username_blocking) >= 1:
-            # Отключаем поле выбора пользователя
-            self.input_username.Disable()
             # Отключаем кнопку OK
-            self.btn_ok.Disable()
+            # self.btn_ok.Enable(False)
             # Включаем кнопку - Отключить блокировку
-            self.btn_disable_blocking.Enable()
+            # self.btn_disable_blocking.Enable(True)
             # Определяем какой пользователь был выбран при продолжении отсчета времени если был остаток в файле.
             # Передав это значение в поле для отображения визуального понимания для какого пользователя считается
             # остаточное время
@@ -334,8 +331,8 @@ class Window(wx.Frame):
 
         self.Bind(wx.EVT_TIMER, self.run_on_timer, self.timer)  # Событие, при запуске таймера
         self.Bind(wx.EVT_CLOSE, self.on_close)  # Событие, закрытия окна
-        self.btn_ok.Bind(wx.EVT_BUTTON, self.start_blocking)  # Событие, при нажатии кнопки OK (запуск задания)
-        self.btn_disable_blocking.Bind(wx.EVT_BUTTON, self.disable_blocking)  # Событие, нажатия - Отключить блокировку
+        self.btn_ok.Bind(wx.EVT_BUTTON, self.start_blocking)  # Событие, при нажатии  OK (запуск задания)
+        self.btn_disable_blocking.Bind(wx.EVT_BUTTON, self.disable_blocking)  # Событие - Отключить блокировку
         # События при нажатии кнопок в тулбаре
         self.Bind(wx.EVT_TOOL, self.on_run_log, self.btn_tool_log)
         self.Bind(wx.EVT_TOOL, self.on_run_timer, self.btn_tool_timer)
@@ -536,14 +533,6 @@ class Window(wx.Frame):
                                       )
             dialog.ShowModal()
         else:
-            # Сообщение
-            dialog = wx.MessageDialog(self,
-                                      _(f"(1)Пользователь - {username} - разблокирован"),
-                                      _("Предупреждение"),
-                                      wx.ICON_WARNING
-                                      )
-            dialog.ShowModal()
-
             self.timer.Stop()  # Останавливаем таймер
             self.gauge.SetValue(0)  # Стираем статус заполненности таймера
 
@@ -561,13 +550,15 @@ class Window(wx.Frame):
 
             # Сбрасываем значение времени в поле - "Осталось времени до блокировки:"
             self.timer_time.SetLabel("00:00:00")
+            self.enable_fields()
 
-            # Отключаем поле времени
-            self.input_time.Disable()
-            # Отключаем кнопку - Отключить блокировку
-            self.btn_disable_blocking.Disable()
-            # Отключаем кнопку ОК
-            self.btn_ok.Disable()
+            # Сообщение
+            dialog = wx.MessageDialog(self,
+                                      _(f"(1)Пользователь - {username} - разблокирован"),
+                                      _("Предупреждение"),
+                                      wx.ICON_WARNING
+                                      )
+            dialog.ShowModal()
 
     def disable_fields(self):
         """Функция отключения полей для ввода"""
@@ -590,7 +581,7 @@ class Window(wx.Frame):
 
     def enable_fields(self):
         """Функция включения (активации) полей для ввода"""
-        # Активируем все поля если пароль совпал.
+        # Активируем поля если пароль совпал.
         self.input_username.Enable()  # Поле имени пользователя для блокировки
         self.gauge.Enable()  # Поле прогресса времени
         # Активируем кнопки в тулбаре
@@ -608,10 +599,12 @@ class Window(wx.Frame):
     def enable_fields_if_have_time(self):
         """
         Функция включения (активации) полей для ввода.
-        Если есть ОСТАТОЧНОЕ время в файле с данными.
+        Если было ОСТАТОЧНОЕ время в файле с данными.
         """
+        self.input_username.Disable()  # Поле выбора пользователя
         self.gauge.Enable()  # Поле прогресса времени
         self.btn_disable_blocking.Enable()  # Кнопка - Отключить блокировку
+        self.tool_bar.EnableTool(self.btn_tool_clear_data.GetId(), True)  # Активируем кнопку тулбара Стереть все
 
     def seconds_to_hms(self, seconds):
         """
@@ -690,12 +683,15 @@ class Window(wx.Frame):
         function.update_json("remaining_time", 0)  # Записываем значение времени 0 в файл
         # Очищаем содержимое имени пользователя в файле
         function.update_json("username_blocking", "")  # Записываем пустую строку в файл
+
         # Активируем поле выбора имени пользователя для блокировки
         self.input_username.Enable()
         # Отключаем поле выбора времени блокировки
         self.input_time.Disable()
         # Отключаем кнопку - Отключить блокировку
         self.btn_disable_blocking.Disable()
+        # Отключаем кнопку ОК
+        self.btn_ok.Disable()
 
         # Вывод сообщения об успешной очистке
         wx.MessageBox(f"Все настройки программы сброшены !", "СБРОС ДАННЫХ", wx.OK | wx.ICON_INFORMATION)
@@ -740,14 +736,10 @@ def main():
     # Запускаем приложение как администратор
     function.run_as_admin()
 
-    # Создаем папки и файлы с данными для работы приложения в местах допуска системы windows 10/11
-    function.function_to_create_path_data_files()
-
-    # ------- Проверка кода ошибки -------
-    # Создание мьютекса
+    # ------- Создание мьютекса -------
+    # Проверка кода ошибки
     mutex = ctypes.windll.kernel32.CreateMutexW(None, False, MUTEX_NAME)
     error_code = ctypes.windll.kernel32.GetLastError()
-
     if error_code == 183:
         ctypes.windll.user32.MessageBoxW(None, f"Приложение Child PC Guard уже запущено.", "ПРЕДУПРЕЖДЕНИЕ", 0)
         # Закрываем дескриптор мьютекса, так как он не нужен
@@ -764,14 +756,17 @@ def main():
         return
     # -------------- END ---------------
 
+    # Создаем папки и файлы с данными для работы приложения в местах допуска системы windows 10/11
+    function.function_to_create_path_data_files()
+
+    username_blocking = function.read_json("username_blocking")  # Имя пользователя для блокировки из файла
+    remaining_time = function.read_json("remaining_time")  # Время задаваемой блокировки из файла
     # Выводим заставку
     main_splash()
 
-    app = wx.App(False)
-
     # Инициализируем главное окно в случае продолжения отсчета программой времени из файла данных
+    app = wx.App(False)
     main_frame = Window(None)
-
     # Деактивируем все поля главного приложения
     main_frame.disable_fields()
 
@@ -779,14 +774,9 @@ def main():
     dlg = WndPass(None)
     dlg.ShowModal()
 
-    # Активируем все поля основного приложения
-    main_frame.enable_fields()
-
-    username_blocking = function.read_json("username_blocking")  # Имя пользователя для блокировки из файла
-    remaining_time = function.read_json("remaining_time")  # Время задаваемой блокировки из файла
-
     # Проверяем если есть остаточное время в файле с данными то активируем необходимые поля главного приложения
     if username_blocking and remaining_time > 0:
+        print("=========================")
         main_frame.enable_fields_if_have_time()
     #  Иначе это чистый запуск активируем необходимое
     else:

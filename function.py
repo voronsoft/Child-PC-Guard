@@ -6,7 +6,7 @@ import json
 import ctypes
 import subprocess
 
-from datetime import datetime
+
 
 from config_app import FOLDER_DATA, path_data_file, path_log_file
 
@@ -259,12 +259,14 @@ def function_to_create_path_data_files():
     if not os.path.exists(FOLDER_DATA):
         os.makedirs(FOLDER_DATA)
         print(f"Создана папка: {FOLDER_DATA}")
-        # Изменяем права доступа к папке, чтобы все пользователи могли читать, писать и выполнять файлы
-        os.chmod(FOLDER_DATA, stat.S_IRWXU | stat.S_IRWXG | stat.S_IRWXO)
-        # S_IRWXU - полный доступ для владельца (User)
-        # S_IRWXG - полный доступ для группы (Group)
-        # S_IRWXO - полный доступ для других (Others)
-        print(f"Установлены полные права доступа к папке: {FOLDER_DATA}")
+
+        # Применяем полные права ко всем пользователям на созданную папку
+        subprocess.run(['icacls', FOLDER_DATA, '/grant', 'Everyone:F', '/T', '/C'], shell=True)
+        # /grant - предоставить права
+        # Everyone:F - разрешить полные права для всех пользователей
+        # /T - рекурсивно для всех вложенных файлов и папок
+        # /C - продолжить выполнение даже при ошибках
+        print(f"Права доступа установлены для папки: {FOLDER_DATA}")
 
     # Проверяем, существует ли файл data.json. Если нет, то создаем его и записываем начальные данные.
     if not os.path.exists(path_data_file):
@@ -276,18 +278,16 @@ def function_to_create_path_data_files():
         with open(path_data_file, 'w', encoding='utf-8') as file:
             json.dump(initial_data, file, indent=4)  # Записываем данные в формате JSON с отступами
         print(f"Создан файл: {path_data_file} с начальными данными")
-        # Устанавливаем полный доступ к файлу для всех пользователей
-        os.chmod(path_data_file, stat.S_IRWXU | stat.S_IRWXG | stat.S_IRWXO)
-        print(f"Установлены полные права доступа к файлу: {path_data_file}")
 
     # Проверяем, существует ли файл log_chpcgu.txt. Если нет, то создаем его.
     if not os.path.exists(path_log_file):
         with open(path_log_file, 'w', encoding='utf-8') as file:
             file.write("")  # Создаем пустой лог-файл
         print(f"Создан файл: {path_log_file}")
-        # Устанавливаем полный доступ к файлу для всех пользователей
-        os.chmod(path_log_file, stat.S_IRWXU | stat.S_IRWXG | stat.S_IRWXO)
-        print(f"Установлены полные права доступа к файлу: {path_log_file}")
+
+    # Применяем полные права ко всем пользователям на файлы, если они уже существуют или только что были созданы.
+    subprocess.run(['icacls', FOLDER_DATA, '/grant', 'Everyone:F', '/T', '/C'], shell=True)
+    print(f"Права доступа обновлены для папки и всех вложенных файлов: {FOLDER_DATA}")
 
 
 def check_mode_run_app():
