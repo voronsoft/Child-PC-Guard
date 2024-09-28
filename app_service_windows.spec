@@ -2,7 +2,7 @@
 
 
 a = Analysis(
-    ['app_monitor.py'],
+    ['app_service_windows.py'],
     pathex=[],
     binaries=[],
     datas=[],
@@ -22,7 +22,7 @@ exe = EXE(
     a.binaries,
     a.datas,
     [],
-    name='Windows CPG APP Monitor',
+    name='Windows CPG Monitor Service',
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,

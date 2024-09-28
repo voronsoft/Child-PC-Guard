@@ -2,7 +2,7 @@
 
 
 a = Analysis(
-    ['app_monitor.py'],
+    ['app_monitor_service_mode.py'],
     pathex=[],
     binaries=[],
     datas=[],
@@ -22,7 +22,7 @@ exe = EXE(
     a.binaries,
     a.datas,
     [],
-    name='Windows CPG APP Monitor',
+    name='Windows CPG Service mode status',
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
@@ -35,4 +35,5 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
+    icon=['img\settings48.ico'],
 )

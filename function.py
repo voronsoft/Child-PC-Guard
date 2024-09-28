@@ -42,6 +42,7 @@ def run_as_admin():
             )
             sys.exit()  # Завершаем текущий процесс, чтобы предотвратить двойной запуск
         except Exception as e:
+            log_error(f"Не удалось запустить программу с правами администратора:\n{e}")
             ctypes.windll.user32.MessageBoxW(
                     None,
                     f"Не удалось запустить программу с правами администратора:\n\n{e}",
@@ -63,12 +64,15 @@ def read_json(key, file_path=path_data_file):
             data = json.load(file)
         return data[key]
     except FileNotFoundError:
+        log_error(f"Файл {file_path} не найден.")
         print(f"Файл {file_path} не найден.")
         return None
     except json.JSONDecodeError:
+        log_error("Ошибка чтения JSON-файла.")
         print("Ошибка чтения JSON-файла.")
         return None
     except KeyError:
+        log_error(f"Ключ '{key}' не найден в JSON-файле.")
         print(f"Ключ '{key}' не найден в JSON-файле.")
         return None
 
@@ -101,12 +105,16 @@ def update_json(key, value, file_path=path_data_file):
         print(f"Данные успешно обновлены: {key} = {value}")
 
     except FileNotFoundError:
+        log_error(f"Файл {file_path} не найден.")
         print(f"Файл {file_path} не найден.")
     except json.JSONDecodeError:
+        log_error("Ошибка чтения JSON-файла.")
         print("Ошибка чтения JSON-файла.")
     except KeyError:
+        log_error(f"Ключ '{key}' не найден в JSON-файле.")
         print(f"Ключ '{key}' не найден в JSON-файле.")
     except Exception as e:
+        log_error(f"Ошибка при обновлении данных: {e}")
         print(f"Ошибка при обновлении данных: {e}")
 
 
@@ -134,6 +142,54 @@ def get_users():
         netapi32.NetApiBufferFree(bufptr)
     return users
 
+def get_block_user():
+    """Получаем заблокированного пользователя"""
+    # Выполняем команду для получения списка всех пользователей
+    command = 'net user'
+
+    try:
+        # Выполняем команду и получаем список всех пользователей
+        result = subprocess.run(command, capture_output=True, text=True, shell=True, encoding='cp866')
+
+        # Ищем пользователей в выводе команды
+        users = get_users()
+        disabled_users = []
+
+        # Проверяем каждого пользователя, активна ли его учетная запись
+        for user in users:
+            user_info_command = f'net user "{user}"'
+            user_info_result = subprocess.run(user_info_command,
+                                              capture_output=True,
+                                              text=True,
+                                              shell=True,
+                                              encoding='cp866'
+                                              )
+            user_info_output = user_info_result.stdout
+
+            keyword_list = ['Account active', 'Учетная запись активна', 'Обліковий запис активний']
+
+            # Ищем строку активности учетной записи для разных языков
+            if any(keyword in user_info_output for keyword in keyword_list):
+                for line in user_info_output.splitlines():
+                    # Проверяем для английской версии
+                    if 'Account active' in line and 'No' in line:
+                        disabled_users.append(user)
+                        break
+                    # Проверяем для русской версии
+                    elif 'Учетная запись активна' in line and 'No' in line:
+                        disabled_users.append(user)
+                        break
+                    # Проверяем для украинской версии
+                    elif 'Обліковий запис активний' in line and 'No' in line:
+                        disabled_users.append(user)
+                        break
+        # обновляем поле с именем
+        return disabled_users[0]
+
+    except Exception as e:
+        log_error(f"Произошла ошибка: {e}")
+        return ""
+
 
 def get_session_id_by_username(username: str):
     """
@@ -159,8 +215,10 @@ def get_session_id_by_username(username: str):
 
         return None
     except subprocess.CalledProcessError as e:
-        print(f"Получение данных сессии по имени пользователя\nОшибка при выполнении команды:\n{e}")
+        log_error(f"Ошибка получение данных сессии по имени пользователя\nОшибка:\n{e}")
+        print(f"Ошибка получение данных сессии по имени пользователя\nОшибка:\n{e}")
     except Exception as e:
+        log_error(f"Неизвестная ошибка: {e}")
         print(f"Неизвестная ошибка: {e}")
     return None
 
@@ -182,10 +240,11 @@ def blocking(username, id_ses_user):
             time.sleep(1)
             # TODO закомментированная команда для теста
             # Выполняем команду для блокировки учетной записи
-            # subprocess.run(command_disable_user, shell=True, check=True)
+            subprocess.run(command_disable_user, shell=True, check=True)
             print("2 Отработала команда блокировки учетной записи")
             print(f"Учетка заблокирована {username} (ID: {id_ses_user}).")
         except subprocess.CalledProcessError as e:
+            log_error(f"Ошибка при выполнении команд: {e}")
             print(f"Ошибка при выполнении команд: {e}")
     else:
         print("Не удалось получить ID сессии. Команды не будут выполнены.")
@@ -204,6 +263,7 @@ def unblock_user(username):
         subprocess.run(command, shell=True, check=True)
         return True
     except Exception as e:
+        log_error(f"Ошибка при разблокировке пользователя - {username}:\n\n{e}")
         ctypes.windll.user32.MessageBoxW(
                 None,
                 f"Ошибка при разблокировке пользователя - {username}:\n\n{e}",
@@ -297,5 +357,25 @@ def check_mode_run_app():
             app_is_admin = ctypes.windll.shell32.IsUserAnAdmin() != 0
             return "admin" if app_is_admin else "user"
     except:
-        pass
+        log_error(f"Запуск приложения в режиме ПОЛЬЗОВАТЕДЬ")
     return "user"
+
+# ---------------------
+def log_error(message):
+    """Метод для логирования ошибок в файл."""
+    try:
+        with open(path_log_file, 'a', encoding='utf-8') as log_file:
+            log_file.write(f"function.py({time.strftime('%Y-%m-%d %H:%M:%S')}) -"
+                           f" {message}\n==================\n"
+                           )
+    except Exception as e:
+        log_error(f"Ошибка при записи лога в файл лога: {str(e)}")
+        print(f"Ошибка при записи лога в файл лога: {str(e)}")
+        ctypes.windll.user32.MessageBoxW(
+                None,
+                f"function.py({time.strftime('%Y-%m-%d %H:%M:%S')}) - {message}\n==================\n",
+                "Ошибка",
+                0
+        )
+# ---------------------
+

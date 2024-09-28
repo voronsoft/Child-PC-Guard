@@ -189,7 +189,7 @@ class Window(wx.Frame):
         user_list = function.get_users()
 
         if not user_list:
-            user_list = [_("-----")]
+            user_list = [_("----")]
         self.input_username = wx.ComboBox(self, wx.ID_ANY, choices=user_list, style=wx.CB_DROPDOWN | wx.CB_READONLY)
         # self.input_username.SetSelection(-1)
         sizer_top.Add(self.input_username, 0, wx.ALL, 5)
@@ -331,7 +331,7 @@ class Window(wx.Frame):
 
         self.Bind(wx.EVT_TIMER, self.run_on_timer, self.timer)  # Событие, при запуске таймера
         self.Bind(wx.EVT_CLOSE, self.on_close)  # Событие, закрытия окна
-        self.btn_ok.Bind(wx.EVT_BUTTON, self.start_blocking)  # Событие, при нажатии  OK (запуск задания)
+        self.btn_ok.Bind(wx.EVT_BUTTON, self.start_blocking)  # Событие, при нажатии OK (запуск задания)
         self.btn_disable_blocking.Bind(wx.EVT_BUTTON, self.disable_blocking)  # Событие - Отключить блокировку
         # События при нажатии кнопок в тулбаре
         self.Bind(wx.EVT_TOOL, self.on_run_log, self.btn_tool_log)

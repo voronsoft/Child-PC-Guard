@@ -23,7 +23,6 @@ MUTEX_NAME = "Global\\Child_PC_Timer"
 ###########################################################################
 
 class TimerApp(wx.Frame):
-
     def __init__(self, parent):
         wx.Frame.__init__(self,
                           parent,

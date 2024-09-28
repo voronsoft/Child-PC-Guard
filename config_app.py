@@ -26,6 +26,8 @@ path_log_file = os.path.join(FOLDER_DATA, "log_chpcgu.txt")
 path_timer_exe = os.path.join(DISK_LETTER, "Program Files (x86)", "Child PC Guard", "Child PC Timer.exe")
 path_monitor_exe = os.path.join(DISK_LETTER, "Program Files (x86)", "Child PC Guard", "Windows CPG Monitor.exe")
 path_unblock_usr_exe = os.path.join(DISK_LETTER, "Program Files (x86)", "Child PC Guard", "Child PC Unlock User.exe")
+# Путь к главному приложению
+path_main_app = os.path.join(DISK_LETTER, "Program Files (x86)", "Child PC Guard", "Child PC Guard.exe")
 
 
 
