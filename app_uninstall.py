@@ -8,6 +8,7 @@ import wx.xrc
 import gettext
 
 from config_app import FOLDER_IMG
+from function import auto_close
 
 _ = gettext.gettext
 
@@ -197,7 +198,8 @@ class UninstallerFrame(wx.Frame):
             self.Close()
         except Exception as e:
             ctypes.windll.user32.MessageBoxW(None, f"Ошибка при удалении самого деинсталлятора:\n{e}", "ОШИБКА", 0)
-
+            # Автоматически закрываем сообщение
+            auto_close("ОШИБКА")
 
     def log_message(self, message):
         """Отображает сообщение в лог поле (self.log_text) и в консоли"""
@@ -242,6 +244,8 @@ def run_as_admin():
                     "Ошибка",
                     0
             )
+            # Автоматически закрываем сообщение
+            auto_close("Ошибка")
 
 def main():
     # Запускаем приложение как администратор

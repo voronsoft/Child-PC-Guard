@@ -299,6 +299,8 @@ class UnblockUser(wx.Dialog):
                     "Успешно",
                     0
             )
+            # Автоматически закрываем сообщение
+            function.auto_close("Успешно")
         else:
             # Сообщение записываем в log
             self.log_error(f"Ошибка при разблокировке пользователя: {self.USERNAME}")
@@ -308,6 +310,8 @@ class UnblockUser(wx.Dialog):
                     "Ошибка",
                     0
             )
+            # Автоматически закрываем сообщение
+            function.auto_close("Ошибка")
 
     @staticmethod
     def log_error(message):
@@ -325,6 +329,8 @@ class UnblockUser(wx.Dialog):
                     "Ошибка",
                     0
             )
+            # Автоматически закрываем сообщение
+            function.auto_close("Ошибка")
 
 
 def main():
@@ -336,17 +342,26 @@ def main():
     mutex = ctypes.windll.kernel32.CreateMutexW(None, False, MUTEX_NAME)
     error_code = ctypes.windll.kernel32.GetLastError()
 
-    if error_code == 183 or error_code == 5:
-        ctypes.windll.user32.MessageBoxW(None, f"Приложение Unlock User CPGuard уже запущено.",
-                                         "ПРЕДУПРЕЖДЕНИЕ", 0
-                                         )
-        # Закрываем дескриптор мьютекса, так как он не нужен
-        ctypes.windll.kernel32.CloseHandle(mutex)
+    if error_code == 183:
+        ctypes.windll.user32.MessageBoxW(None, f"Приложение Unlock User CPGuard уже запущено.", "ПРЕДУПРЕЖДЕНИЕ", 0)
+        # Автоматически закрываем сообщение
+        function.auto_close("ПРЕДУПРЕЖДЕНИЕ")
+        return
+    elif error_code == 5:  # ERROR_ACCESS_DENIED
+        if mutex != 0:  # Проверяем, что дескриптор валиден перед закрытием
+            ctypes.windll.kernel32.CloseHandle(mutex)
+        ctypes.windll.user32.MessageBoxW(None, "Доступ к мьютексу запрещен.", "ОШИБКА", 0)
+        # Автоматически закрываем сообщение
+        function.auto_close("ОШИБКА")
         return
     elif error_code != 0:
+        if mutex != 0:  # Проверяем, что дескриптор валиден перед закрытием
+            ctypes.windll.kernel32.CloseHandle(mutex)
         ctypes.windll.user32.MessageBoxW(None, f"Неизвестная ошибка:\n{error_code}", "ОШИБКА", 0)
-        # Закрываем дескриптор мьютекса
-        ctypes.windll.kernel32.CloseHandle(mutex)
+
+        # Автоматически закрываем сообщение
+        function.auto_close("ОШИБКА")
+
         return
     # -------------- END ---------------
 

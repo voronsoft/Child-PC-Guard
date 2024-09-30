@@ -10,7 +10,7 @@ import psutil
 from datetime import datetime
 from apscheduler.schedulers.blocking import BlockingScheduler
 from config_app import path_data_file, DISK_LETTER, path_log_file
-from function import run_as_admin
+from function import run_as_admin, auto_close
 
 # Имя мьютекса (должно быть уникальным)
 MUTEX_NAME = "Global\\CPG_MONITOR"
@@ -99,6 +99,8 @@ def log_error_monitor(message):
                 "Ошибка",
                 0
         )
+        # Автоматически закрываем сообщение
+        auto_close("Ошибка")
 
 
 def main():
@@ -111,15 +113,24 @@ def main():
     mutex = ctypes.windll.kernel32.CreateMutexW(None, False, MUTEX_NAME)
     error_code = ctypes.windll.kernel32.GetLastError()
 
-    if error_code == 183 or error_code == 5:
+    if error_code == 183:
         ctypes.windll.user32.MessageBoxW(None, f"Приложение CPG MONITOR уже запущено.", "ПРЕДУПРЕЖДЕНИЕ", 0)
-        # Закрываем дескриптор мьютекса, так как он не нужен
-        ctypes.windll.kernel32.CloseHandle(mutex)
+        # Автоматически закрываем сообщение
+        auto_close("ПРЕДУПРЕЖДЕНИЕ")
+        return
+    elif error_code == 5:  # ERROR_ACCESS_DENIED
+        if mutex != 0:  # Проверяем, что дескриптор валиден перед закрытием
+            ctypes.windll.kernel32.CloseHandle(mutex)
+        ctypes.windll.user32.MessageBoxW(None, "Доступ к мьютексу запрещен.", "ОШИБКА", 0)
+        # Автоматически закрываем сообщение
+        auto_close("ОШИБКА")
         return
     elif error_code != 0:
+        if mutex != 0:  # Проверяем, что дескриптор валиден перед закрытием
+            ctypes.windll.kernel32.CloseHandle(mutex)
         ctypes.windll.user32.MessageBoxW(None, f"Неизвестная ошибка:\n{error_code}", "ОШИБКА", 0)
-        # Закрываем дескриптор мьютекса
-        ctypes.windll.kernel32.CloseHandle(mutex)
+        # Автоматически закрываем сообщение
+        auto_close("ОШИБКА")
         return
     # -------------- END ---------------
 
@@ -142,7 +153,8 @@ def main():
         scheduler.shutdown()
         print("Планировщик остановлен.")
 
+    # Основная секция для запуска программы
 
-# Основная секция для запуска программы
+
 if __name__ == '__main__':
     main()

@@ -299,10 +299,6 @@ class Window(wx.Frame):
         # Загрузка оставшегося времени из файла, если оно есть
         # Если есть остаточное время и имя в файле данных data.json
         if self.remaining_time > 0 and len(self.username_blocking) >= 1:
-            # Отключаем кнопку OK
-            # self.btn_ok.Enable(False)
-            # Включаем кнопку - Отключить блокировку
-            # self.btn_disable_blocking.Enable(True)
             # Определяем какой пользователь был выбран при продолжении отсчета времени если был остаток в файле.
             # Передав это значение в поле для отображения визуального понимания для какого пользователя считается
             # остаточное время
@@ -728,7 +724,8 @@ class Window(wx.Frame):
         except Exception as e:
             print(f"(1)Ошибка при записи лога в файл: {str(e)}")
             ctypes.windll.user32.MessageBoxW(None, f"Ошибка при записи в файл лога:\n{str(e)}", "ОШИБКА", 0)
-
+            # Автоматически закрываем сообщение
+            function.auto_close("ОШИБКА")
     # =============================================================================================================
 
 
@@ -736,23 +733,29 @@ def main():
     # Запускаем приложение как администратор
     function.run_as_admin()
 
-    # ------- Создание мьютекса -------
-    # Проверка кода ошибки
+    # ------- Проверка кода ошибки -------
+    # Создание мьютекса
     mutex = ctypes.windll.kernel32.CreateMutexW(None, False, MUTEX_NAME)
     error_code = ctypes.windll.kernel32.GetLastError()
+
     if error_code == 183:
         ctypes.windll.user32.MessageBoxW(None, f"Приложение Child PC Guard уже запущено.", "ПРЕДУПРЕЖДЕНИЕ", 0)
-        # Закрываем дескриптор мьютекса, так как он не нужен
-        ctypes.windll.kernel32.CloseHandle(mutex)
+        # Автоматически закрываем сообщение
+        function.auto_close("ПРЕДУПРЕЖДЕНИЕ")
         return
     elif error_code == 5:  # ERROR_ACCESS_DENIED
+        if mutex != 0:  # Проверяем, что дескриптор валиден перед закрытием
+            ctypes.windll.kernel32.CloseHandle(mutex)
         ctypes.windll.user32.MessageBoxW(None, "Доступ к мьютексу запрещен.", "ОШИБКА", 0)
-        ctypes.windll.kernel32.CloseHandle(mutex)
+        # Автоматически закрываем сообщение
+        function.auto_close("ОШИБКА")
         return
     elif error_code != 0:
+        if mutex != 0:  # Проверяем, что дескриптор валиден перед закрытием
+            ctypes.windll.kernel32.CloseHandle(mutex)
         ctypes.windll.user32.MessageBoxW(None, f"Неизвестная ошибка:\n{error_code}", "ОШИБКА", 0)
-        # Закрываем дескриптор мьютекса
-        ctypes.windll.kernel32.CloseHandle(mutex)
+        # Автоматически закрываем сообщение
+        function.auto_close("ОШИБКА")
         return
     # -------------- END ---------------
 
@@ -761,18 +764,19 @@ def main():
 
     username_blocking = function.read_json("username_blocking")  # Имя пользователя для блокировки из файла
     remaining_time = function.read_json("remaining_time")  # Время задаваемой блокировки из файла
+
     # Выводим заставку
     main_splash()
 
     # Инициализируем главное окно в случае продолжения отсчета программой времени из файла данных
     app = wx.App(False)
+    # TODO Создаем и отображаем окно ввода пароля(в основном приложении)
+    dlg = WndPass(None)
+    dlg.ShowModal()
+
     main_frame = Window(None)
     # Деактивируем все поля главного приложения
     main_frame.disable_fields()
-
-    # Создаем и отображаем окно ввода пароля
-    dlg = WndPass(None)
-    dlg.ShowModal()
 
     # Проверяем если есть остаточное время в файле с данными то активируем необходимые поля главного приложения
     if username_blocking and remaining_time > 0:
@@ -783,13 +787,20 @@ def main():
         # Активируем все поля если пароль совпал
         main_frame.enable_fields()
 
-    if dlg.password_check:
+    # Логика поведения главной программы
+    if dlg.password_check:  # Если пароль совпал отображаем главное окно
         main_frame.Show()
+    elif not dlg.password_check:  # Если нет закрываем все приложение
+        dlg.Destroy()  #
+        main_frame.Destroy()  #
+        sys.exit()  # Завершаем процесс (закрытие программы)
 
     app.MainLoop()
 
     # Закрываем дескриптор мьютекса, когда приложение завершает работу
-    ctypes.windll.kernel32.CloseHandle(mutex)
+    if mutex != 0:  # Проверяем, что дескриптор валиден перед закрытием
+        ctypes.windll.kernel32.CloseHandle(mutex)
+
 
 
 if __name__ == "__main__":

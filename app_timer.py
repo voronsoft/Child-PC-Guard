@@ -9,7 +9,7 @@ import ctypes
 import sys
 
 import config_app
-from function import read_json, function_to_create_path_data_files
+from function import read_json, function_to_create_path_data_files, auto_close
 
 _ = gettext.gettext
 
@@ -140,9 +140,11 @@ class TimerApp(wx.Frame):
         except Exception as e:
             print(f"(1)Ошибка при записи лога в файл: {str(e)}")
             ctypes.windll.user32.MessageBoxW(None, f"Ошибка при записи в файл лога:\n{str(e)}", "ОШИБКА", 0)
+            # Автоматически закрываем сообщение
+            auto_close("ОШИБКА")
 
+        # =============================================================================================================
 
-# =============================================================================================================
 
 def main():
     # ------- Проверка кода ошибки -------
@@ -150,15 +152,24 @@ def main():
     mutex = ctypes.windll.kernel32.CreateMutexW(None, False, MUTEX_NAME)
     error_code = ctypes.windll.kernel32.GetLastError()
 
-    if error_code == 183 or error_code == 5:
+    if error_code == 183:
         ctypes.windll.user32.MessageBoxW(None, f"Приложение Child PC Timer уже запущено.", "ПРЕДУПРЕЖДЕНИЕ", 0)
-        # Закрываем дескриптор мьютекса, так как он не нужен
-        ctypes.windll.kernel32.CloseHandle(mutex)
+        # Автоматически закрываем сообщение
+        auto_close("ПРЕДУПРЕЖДЕНИЕ")
+        return
+    elif error_code == 5:  # ERROR_ACCESS_DENIED
+        if mutex != 0:  # Проверяем, что дескриптор валиден перед закрытием
+            ctypes.windll.kernel32.CloseHandle(mutex)
+        ctypes.windll.user32.MessageBoxW(None, "Доступ к мьютексу запрещен.", "ОШИБКА", 0)
+        # Автоматически закрываем сообщение
+        auto_close("ОШИБКА")
         return
     elif error_code != 0:
+        if mutex != 0:  # Проверяем, что дескриптор валиден перед закрытием
+            ctypes.windll.kernel32.CloseHandle(mutex)
         ctypes.windll.user32.MessageBoxW(None, f"Неизвестная ошибка:\n{error_code}", "ОШИБКА", 0)
-        # Закрываем дескриптор мьютекса
-        ctypes.windll.kernel32.CloseHandle(mutex)
+        # Автоматически закрываем сообщение
+        auto_close("ОШИБКА")
         return
     # -------------- END ---------------
 

@@ -7,6 +7,8 @@ import time
 import ctypes
 import subprocess
 
+from function import auto_close
+
 # Определяем корневую папку проекта
 PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
 # Получаем имя диска (вид С:\)
@@ -33,6 +35,8 @@ def log_error(message):
                 "Ошибка",
                 0
         )
+        # Автоматически закрываем сообщение
+        auto_close("Ошибка")
 
 
 # ---------------------
@@ -74,6 +78,8 @@ def run_as_admin():
                     "Ошибка",
                     0
             )
+            # Автоматически закрываем сообщение
+            auto_close("Ошибка")
 
 
 def run_powershell_script(script_path):

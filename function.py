@@ -1,12 +1,9 @@
 import os
 import sys
 import time
-import stat  # Импортируем модуль для управления правами доступа к файлам
 import json
 import ctypes
 import subprocess
-
-
 
 from config_app import FOLDER_DATA, path_data_file, path_log_file
 
@@ -49,6 +46,8 @@ def run_as_admin():
                     "Ошибка",
                     0
             )
+            # Автоматически закрываем сообщение
+            auto_close("Ошибка")
 
 
 def read_json(key, file_path=path_data_file):
@@ -141,6 +140,7 @@ def get_users():
                 users.append(username)
         netapi32.NetApiBufferFree(bufptr)
     return users
+
 
 def get_block_user():
     """Получаем заблокированного пользователя"""
@@ -270,6 +270,9 @@ def unblock_user(username):
                 "Ошибка",
                 0
         )
+        # Автоматически закрываем сообщение
+        auto_close("Ошибка")
+
         return False
 
 
@@ -279,35 +282,14 @@ def username_session():
     return username_session
 
 
-def show_message(username, time):
-    """
-    Показывает сообщение о предстоящей блокировке.
-
-    :param username: Имя пользователя для отображения в сообщении.
-    """
-    username_session = os.getlogin()
-    if username != username_session:
-        ctypes.windll.user32.MessageBoxW(
-                None,
-                f"У вас есть - {time} секунд(ы).\nПо истечении этого времени вы будете заблокированы.",
-                "Автоматическое закрытие",
-                0
-        )
-    if username == username_session:
-        ctypes.windll.user32.MessageBoxW(
-                None,
-                "Блокировка отключена.\nВы не можете блокировать самого себя.\n\nПрограмма будет закрыта.",
-                "Автоматическое закрытие",
-                0
-        )
-
-
-def auto_close():
+def auto_close(window_title):
     """
     Автоматически закрывает окно сообщения через 5 секунд.
+    :param window_title: -(str) принимает заголовок окна как идентификатор для закрытия окна
+    :return:
     """
-    time.sleep(5)
-    hwnd = ctypes.windll.user32.FindWindowW(None, "Автоматическое закрытие")
+    time.sleep(5)  # Задержка на 5 секунд
+    hwnd = ctypes.windll.user32.FindWindowW(None, window_title)
     if hwnd:
         ctypes.windll.user32.PostMessageW(hwnd, 0x0010, 0, 0)  # 0x0010 — это WM_CLOSE, команда закрытия окна.
 
@@ -319,6 +301,7 @@ def function_to_create_path_data_files():
     if not os.path.exists(FOLDER_DATA):
         os.makedirs(FOLDER_DATA)
         print(f"Создана папка: {FOLDER_DATA}")
+        log_error(f"Создана папка: {FOLDER_DATA}")
 
         # Применяем полные права ко всем пользователям на созданную папку
         subprocess.run(['icacls', FOLDER_DATA, '/grant', 'Everyone:F', '/T', '/C'], shell=True)
@@ -327,6 +310,7 @@ def function_to_create_path_data_files():
         # /T - рекурсивно для всех вложенных файлов и папок
         # /C - продолжить выполнение даже при ошибках
         print(f"Права доступа установлены для папки: {FOLDER_DATA}")
+        log_error(f"Права доступа установлены для папки: {FOLDER_DATA}")
 
     # Проверяем, существует ли файл data.json. Если нет, то создаем его и записываем начальные данные.
     if not os.path.exists(path_data_file):
@@ -338,27 +322,31 @@ def function_to_create_path_data_files():
         with open(path_data_file, 'w', encoding='utf-8') as file:
             json.dump(initial_data, file, indent=4)  # Записываем данные в формате JSON с отступами
         print(f"Создан файл: {path_data_file} с начальными данными")
+        log_error(f"Создан файл: {path_data_file} с начальными данными")
 
     # Проверяем, существует ли файл log_chpcgu.txt. Если нет, то создаем его.
     if not os.path.exists(path_log_file):
         with open(path_log_file, 'w', encoding='utf-8') as file:
             file.write("")  # Создаем пустой лог-файл
         print(f"Создан файл: {path_log_file}")
+        log_error(f"Создан файл: {path_log_file}")
 
     # Применяем полные права ко всем пользователям на файлы, если они уже существуют или только что были созданы.
     subprocess.run(['icacls', FOLDER_DATA, '/grant', 'Everyone:F', '/T', '/C'], shell=True)
-    print(f"Права доступа обновлены для папки и всех вложенных файлов: {FOLDER_DATA}")
+    print(f"Права доступа обновлены для папки и вложенных файлов: {FOLDER_DATA}")
+    log_error(f"Права доступа обновлены для папки и вложенных файлов: {FOLDER_DATA}")
 
 
 def check_mode_run_app():
     """Проверяет, запущено ли приложение от имени администратора."""
     try:
         if os.name == 'nt':
-            app_is_admin = ctypes.windll.shell32.IsUserAnAdmin() != 0
+            app_is_admin = bool(ctypes.windll.shell32.IsUserAnAdmin())
             return "admin" if app_is_admin else "user"
     except:
         log_error(f"Запуск приложения в режиме ПОЛЬЗОВАТЕДЬ")
     return "user"
+
 
 # ---------------------
 def log_error(message):
@@ -376,5 +364,6 @@ def log_error(message):
                 "Ошибка",
                 0
         )
-# ---------------------
-
+        # Автоматически закрываем сообщение
+        auto_close("Ошибка")
+    # ---------------------

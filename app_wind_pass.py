@@ -21,7 +21,8 @@ class WndPass(wx.Dialog):
                            title=_("ВХОД"),
                            pos=wx.DefaultPosition,
                            size=wx.Size(400, 150),
-                           style=wx.DEFAULT_DIALOG_STYLE & ~(wx.CLOSE_BOX) | wx.STAY_ON_TOP
+                           # style=wx.DEFAULT_DIALOG_STYLE & ~(wx.CLOSE_BOX) | wx.STAY_ON_TOP
+                           style=wx.DEFAULT_DIALOG_STYLE | wx.STAY_ON_TOP
                            )
         # TODO ВАЖНО - изменить пароль для программы !!! (app_wind_pass.py)
         self.password = "123"  # Пароль, который нужно ввести
@@ -100,15 +101,24 @@ class WndPass(wx.Dialog):
         # Привязка событий
         self.m_text_ctrl1.Bind(wx.EVT_TEXT_ENTER, self.on_ok)  # Привязка нажатия Enter к полю для пароля
         self.btn_ok.SetDefault()  # Установка кнопки OK как кнопки по умолчанию для Enter
+        # self.Bind(wx.EVT_CLOSE, self.on_close)  # Событие, закрытия окна
 
-    # Обработчик нажатия кнопки OK
+    # Обработчики
     def on_ok(self, event):
+        """Обработчик нажатия кнопки OK"""
         # Получаем значение из поля ввода
         if self.password == self.m_text_ctrl1.GetValue():
             self.password_check = True
             self.Destroy()  # Закрытие окна и завершение процесса питон
         else:
             wx.MessageBox(_("Неверный пароль. Попробуйте снова."), _("Ошибка"), wx.OK | wx.ICON_ERROR)
+
+    # def on_close(self, event):
+    #     """Обработчик закрытия программы"""
+    #     print("Попытка закрытия окна")
+    #     # Закрытие приложения
+    #     self.Destroy()
+
 
 
 if __name__ == "__main__":
