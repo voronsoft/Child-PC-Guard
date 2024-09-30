@@ -10,11 +10,11 @@ DISK_LETTER = os.path.splitdrive(PROJECT_ROOT)[0] + "\\"
 FOLDER_DATA = os.path.join(DISK_LETTER, "ProgramData", "Child PC Guard Data")
 
 # Путь к папке с изображениями
-FOLDER_IMG = os.path.join("img")
+FOLDER_IMG = os.path.join(DISK_LETTER, "Program Files (x86)", "Child PC Guard", "img")
 
 # Путь к главному изображению программы на заставку
-SCREENSAVER1 = os.path.join("img", "screensaver1.png")
-SCREENSAVER2 = os.path.join("img", "screensaver2.png")
+SCREENSAVER1 = os.path.join(FOLDER_IMG, "screensaver1.png")
+SCREENSAVER2 = os.path.join(FOLDER_IMG, "screensaver2.png")
 
 # Путь к файлу данных - data.json
 path_data_file = os.path.join(FOLDER_DATA, "data.json")
@@ -39,3 +39,4 @@ if __name__ == "__main__":
     print("FOLDER_IMG", FOLDER_IMG)
     print("path_data_file", path_data_file)
     print("path_log_file", path_log_file)
+    print("SCREENSAVER1", SCREENSAVER1)

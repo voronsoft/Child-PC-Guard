@@ -369,7 +369,6 @@ def log_error(message):
                            f" {message}\n==================\n"
                            )
     except Exception as e:
-        log_error(f"Ошибка при записи лога в файл лога: {str(e)}")
         print(f"Ошибка при записи лога в файл лога: {str(e)}")
         ctypes.windll.user32.MessageBoxW(
                 None,

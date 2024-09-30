@@ -2,7 +2,7 @@ import os
 import wx
 import gettext
 
-from config_app import FOLDER_IMG
+from config_app import SCREENSAVER1
 
 _ = gettext.gettext
 
@@ -19,7 +19,7 @@ class SplashScreen(wx.Frame):
                           )
 
         # Загрузка изображения
-        image_path = os.path.join(FOLDER_IMG, 'screensaver1.png')
+        image_path = SCREENSAVER1
         self.bitmap = wx.Bitmap(image_path)
 
         # Установка размеров окна по размерам изображения
