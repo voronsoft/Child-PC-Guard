@@ -1,4 +1,6 @@
 import os
+import sys
+import time
 
 # Определяем корневую папку проекта
 PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
@@ -9,8 +11,46 @@ DISK_LETTER = os.path.splitdrive(PROJECT_ROOT)[0] + "\\"
 # Путь к папке с данными
 FOLDER_DATA = os.path.join(DISK_LETTER, "ProgramData", "Child PC Guard Data")
 
+# # =============================== Путь к папке с изображениями =============================
+# # Возвращает правильный путь к файлу, чтобы exe-приложение могло найти ресурс.
+# # Если приложение запущено в виде exe, sys._MEIPASS указывает на временную папку, где хранятся все распакованные файлы.
+# # Если приложение запущено как Python-скрипт, путь строится относительно текущего каталога.
+# try:
+#     # Если приложение запущено как exe, _MEIPASS указывает на временную папку
+#     FOLDER_IMG = os.path.join(sys._MEIPASS, "img")
+#     # print("exe_path_run", FOLDER_IMG)
+#
+# except AttributeError:
+#     # Если запущено как обычный скрипт, используем текущий каталог
+#     FOLDER_IMG = os.path.join(os.path.abspath("."), "img")
+#     # print("py_path_run", FOLDER_IMG)
+# # ========================================== END ==========================================
+# =============================== Путь к папке с изображениями =============================
+# Возвращает правильный путь к файлу, чтобы exe-приложение могло найти ресурс.
+def resource_path(relative_path):
+    """ Возвращает путь к папке img с изображениями относительно исполняемого файла или скрипта """
+    if getattr(sys, 'frozen', False):
+        # Если приложение запущено как .exe
+        # Получаем директорию, где находится .exe
+        base_path = os.path.dirname(sys.executable)
+    else:
+        # Если приложение запущено как обычный скрипт .py
+        # Получаем директорию, где находится .py файл
+        base_path = os.path.dirname(os.path.abspath(__file__))
+
+    # Возвращаем полный путь к папке img
+    return os.path.join(base_path, "img")
+
+
+# Определяем путь к папке с изображениями
+FOLDER_IMG = resource_path("img")
+
+# Для проверки пути (можно раскомментировать при необходимости)
+print("Path to images folder:", FOLDER_IMG)
+# ========================================== END ==========================================
+
 # Путь к папке с изображениями
-FOLDER_IMG = os.path.join(DISK_LETTER, "Program Files (x86)", "Child PC Guard", "img")
+# FOLDER_IMG = os.path.join(DISK_LETTER, "Program Files (x86)", "Child PC Guard", "img")
 
 # Путь к главному изображению программы на заставку
 SCREENSAVER1 = os.path.join(FOLDER_IMG, "screensaver1.png")

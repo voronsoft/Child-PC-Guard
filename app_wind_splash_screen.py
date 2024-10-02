@@ -1,8 +1,9 @@
 import os
 import wx
+import random
 import gettext
 
-from config_app import SCREENSAVER1
+from config_app import SCREENSAVER1, SCREENSAVER2
 
 _ = gettext.gettext
 
@@ -18,8 +19,8 @@ class SplashScreen(wx.Frame):
                           style=wx.FRAME_SHAPED | wx.STAY_ON_TOP
                           )
 
-        # Загрузка изображения
-        image_path = SCREENSAVER1
+        # Загрузка изображения для заставки, выбирается рандомно одно из изображений из папки с изображениями
+        image_path = random.choice([SCREENSAVER1, SCREENSAVER2])  # Случайно выбираем одно из изображений
         self.bitmap = wx.Bitmap(image_path)
 
         # Установка размеров окна по размерам изображения

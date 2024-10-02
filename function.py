@@ -326,7 +326,8 @@ def function_to_create_path_data_files():
         initial_data = {
                 "username_blocking": "",
                 "remaining_time": 0,
-                "date": "0001-02-03"
+                "date": "0001-02-03",
+                "password": ""
         }
         with open(path_data_file, 'w', encoding='utf-8') as file:
             json.dump(initial_data, file, indent=4)  # Записываем данные в формате JSON с отступами
@@ -368,6 +369,7 @@ def log_error(message):
     except Exception as e:
         print(f"Ошибка при записи лога в файл лога: {str(e)}")
         show_message_with_auto_close(f"function.py({time.strftime('%Y-%m-%d %H:%M:%S')}) - {message}\n==================\n",
-                "Ошибка")
+                                     "Ошибка"
+                                     )
 
     # ---------------------

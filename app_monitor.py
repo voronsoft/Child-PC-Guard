@@ -128,13 +128,14 @@ def main():
     # Создаем экземпляр планировщика
     scheduler = BlockingScheduler()
 
-    # TODO Настройка времени для заданий в мониторинге
+    # TODO Настройка времени для заданий в мониторинге (релиз\разработка)
     # Задача 1: Следить за процессом и перезапускать, если не запущен (каждые 60 секунд)
-    scheduler.add_job(check_and_restart_program, 'interval', seconds=10)
+    # scheduler.add_job(check_and_restart_program, 'interval', seconds=60)  # TODO Включить в момент релиза
+    scheduler.add_job(check_and_restart_program, 'interval', seconds=10)  # Отключить после разработки
 
     # Задача 2: Следить за датой и обновлять данные (каждый час)
-    # scheduler.add_job(update_data, 'interval', hours=1)
-    scheduler.add_job(update_data, 'interval', seconds=10)
+    # scheduler.add_job(update_data, 'interval', hours=1)  # TODO Включить в момент релиза
+    scheduler.add_job(update_data, 'interval', seconds=10)  # Отключить после разработки
 
     try:
         print("Запуск планировщика...")
