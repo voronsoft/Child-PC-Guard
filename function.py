@@ -3,6 +3,7 @@ import sys
 import time
 import json
 import ctypes
+import threading
 import subprocess
 
 from config_app import FOLDER_DATA, path_data_file, path_log_file
@@ -40,14 +41,10 @@ def run_as_admin():
             sys.exit()  # Завершаем текущий процесс, чтобы предотвратить двойной запуск
         except Exception as e:
             log_error(f"Не удалось запустить программу с правами администратора:\n{e}")
-            ctypes.windll.user32.MessageBoxW(
-                    None,
+            show_message_with_auto_close(
                     f"Не удалось запустить программу с правами администратора:\n\n{e}",
-                    "Ошибка",
-                    0
+                    "Ошибка"
             )
-            # Автоматически закрываем сообщение
-            auto_close("Ошибка")
 
 
 def read_json(key, file_path=path_data_file):
@@ -264,15 +261,9 @@ def unblock_user(username):
         return True
     except Exception as e:
         log_error(f"Ошибка при разблокировке пользователя - {username}:\n\n{e}")
-        ctypes.windll.user32.MessageBoxW(
-                None,
-                f"Ошибка при разблокировке пользователя - {username}:\n\n{e}",
-                "Ошибка",
-                0
-        )
-        # Автоматически закрываем сообщение
-        auto_close("Ошибка")
-
+        show_message_with_auto_close(f"Ошибка при разблокировке пользователя - {username}:\n\n{e}",
+                                     "Ошибка"
+                                     )
         return False
 
 
@@ -282,16 +273,34 @@ def username_session():
     return username_session
 
 
-def auto_close(window_title):
+def show_message_with_auto_close(message, title="Сообщение", delay=5):
     """
-    Автоматически закрывает окно сообщения через 5 секунд.
-    :param window_title: -(str) принимает заголовок окна как идентификатор для закрытия окна
-    :return:
+    Показывает сообщение в окне и закрывает его через заданное количество секунд.
+
+    :param message: Сообщение для отображения
+    :param title: Заголовок окна (по умолчанию "Сообщение")
+    :param delay: Время задержки перед закрытием (в секундах), по умолчанию 5 секунд
     """
-    time.sleep(5)  # Задержка на 5 секунд
-    hwnd = ctypes.windll.user32.FindWindowW(None, window_title)
-    if hwnd:
-        ctypes.windll.user32.PostMessageW(hwnd, 0x0010, 0, 0)  # 0x0010 — это WM_CLOSE, команда закрытия окна.
+
+    # Функция для отображения сообщения
+    def display_message():
+        ctypes.windll.user32.MessageBoxW(None, message, title, 0)
+
+    # Функция для автоматического закрытия окна
+    def auto_close():
+        # Ждем указанное количество секунд
+        time.sleep(delay)
+        # Ищем окно по заголовку
+        hwnd = ctypes.windll.user32.FindWindowW(None, title)
+        if hwnd:
+            # Отправляем команду на закрытие окна (WM_CLOSE)
+            ctypes.windll.user32.PostMessageW(hwnd, 0x0010, 0, 0)  # 0x0010 — это WM_CLOSE
+        else:
+            print(f"Окно с заголовком '{title}' не найдено.")
+
+    # Запускаем отображение сообщения и авто-закрытие в отдельных потоках
+    threading.Thread(target=display_message).start()
+    threading.Thread(target=auto_close).start()
 
 
 def function_to_create_path_data_files():
@@ -358,12 +367,7 @@ def log_error(message):
                            )
     except Exception as e:
         print(f"Ошибка при записи лога в файл лога: {str(e)}")
-        ctypes.windll.user32.MessageBoxW(
-                None,
-                f"function.py({time.strftime('%Y-%m-%d %H:%M:%S')}) - {message}\n==================\n",
-                "Ошибка",
-                0
-        )
-        # Автоматически закрываем сообщение
-        auto_close("Ошибка")
+        show_message_with_auto_close(f"function.py({time.strftime('%Y-%m-%d %H:%M:%S')}) - {message}\n==================\n",
+                "Ошибка")
+
     # ---------------------

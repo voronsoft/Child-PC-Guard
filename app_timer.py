@@ -1,15 +1,12 @@
 import wx
 import wx.xrc
 import gettext
-import json
 import os
 import threading
 import time
 import ctypes
-import sys
-
 import config_app
-from function import read_json, function_to_create_path_data_files, auto_close
+from function import read_json, function_to_create_path_data_files, show_message_with_auto_close
 
 _ = gettext.gettext
 
@@ -139,9 +136,7 @@ class TimerApp(wx.Frame):
                                )
         except Exception as e:
             print(f"(1)Ошибка при записи лога в файл: {str(e)}")
-            ctypes.windll.user32.MessageBoxW(None, f"Ошибка при записи в файл лога:\n{str(e)}", "ОШИБКА", 0)
-            # Автоматически закрываем сообщение
-            auto_close("ОШИБКА")
+            show_message_with_auto_close(f"Ошибка при записи в файл лога:\n{str(e)}", "ОШИБКА")
 
         # =============================================================================================================
 
@@ -153,23 +148,19 @@ def main():
     error_code = ctypes.windll.kernel32.GetLastError()
 
     if error_code == 183:
-        ctypes.windll.user32.MessageBoxW(None, f"Приложение Child PC Timer уже запущено.", "ПРЕДУПРЕЖДЕНИЕ", 0)
-        # Автоматически закрываем сообщение
-        auto_close("ПРЕДУПРЕЖДЕНИЕ")
+        show_message_with_auto_close(f"Приложение Child PC Timer уже запущено.", "ПРЕДУПРЕЖДЕНИЕ")
         return
     elif error_code == 5:  # ERROR_ACCESS_DENIED
         if mutex != 0:  # Проверяем, что дескриптор валиден перед закрытием
             ctypes.windll.kernel32.CloseHandle(mutex)
-        ctypes.windll.user32.MessageBoxW(None, "Доступ к мьютексу запрещен.", "ОШИБКА", 0)
-        # Автоматически закрываем сообщение
-        auto_close("ОШИБКА")
+        show_message_with_auto_close("Доступ к мьютексу запрещен.", "ОШИБКА")
+
         return
     elif error_code != 0:
         if mutex != 0:  # Проверяем, что дескриптор валиден перед закрытием
             ctypes.windll.kernel32.CloseHandle(mutex)
-        ctypes.windll.user32.MessageBoxW(None, f"Неизвестная ошибка:\n{error_code}", "ОШИБКА", 0)
-        # Автоматически закрываем сообщение
-        auto_close("ОШИБКА")
+        show_message_with_auto_close(f"Неизвестная ошибка:\n{error_code}", "ОШИБКА")
+
         return
     # -------------- END ---------------
 

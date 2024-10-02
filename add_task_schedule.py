@@ -1,13 +1,12 @@
 # Файл отвечает за автоматизацию процесса добавления задания (для запуска мониторинга за программой Child PC Guard),
-# в планировщик заданий.
+# в планировщике заданий.
 #
 import os
 import sys
 import time
 import ctypes
 import subprocess
-
-from function import auto_close
+from function import show_message_with_auto_close
 
 # Определяем корневую папку проекта
 PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
@@ -17,6 +16,24 @@ DISK_LETTER = os.path.splitdrive(PROJECT_ROOT)[0] + "\\"
 FOLDER_DATA = os.path.join(DISK_LETTER, "ProgramData", "Child PC Guard Data")
 # Путь к файлу логов - log_chpcgu.txt
 path_log_file = os.path.join(FOLDER_DATA, "log_chpcgu.txt")
+
+# Получаем путь к файлу XML
+if getattr(sys, 'frozen', False):
+    # Если приложение запущено как исполняемый файл, используем _MEIPASS
+    base_path = sys._MEIPASS  # noqa
+
+else:
+    # Если приложение запущено из исходного кода, используем текущую директорию
+    base_path = os.path.dirname(__file__)
+# Указываем путь к XML файлу (относительный путь к файлу XML)
+xml_path = os.path.join(base_path, "task_data.xml")
+
+print("путь к XML файлу: ", xml_path)
+
+
+# --------------------------------------------------- XML -------------------------------------------------------------
+
+# -------------------------------------------------END XML ------------------------------------------------------------
 
 
 # ---------------------
@@ -28,15 +45,7 @@ def log_error(message):
                            f" {message}\n==================\n"
                            )
     except Exception as e:
-        print(f"Ошибка при записи лога в файл лога: {str(e)}")
-        ctypes.windll.user32.MessageBoxW(
-                None,
-                f"function.py({time.strftime('%Y-%m-%d %H:%M:%S')}) - {message}\n==================\n",
-                "Ошибка",
-                0
-        )
-        # Автоматически закрываем сообщение
-        auto_close("Ошибка")
+        show_message_with_auto_close(f"Ошибка при записи лога в файл:\n{str(e)}", "Ошибка")
 
 
 # ---------------------
@@ -72,44 +81,79 @@ def run_as_admin():
             sys.exit()  # Завершаем текущий процесс, чтобы предотвратить двойной запуск
         except Exception as e:
             log_error(f"Не удалось запустить программу с правами администратора:\n{e}")
-            ctypes.windll.user32.MessageBoxW(
-                    None,
+            show_message_with_auto_close(
                     f"Не удалось запустить программу с правами администратора:\n\n{e}",
-                    "Ошибка",
-                    0
+                    "Ошибка"
             )
-            # Автоматически закрываем сообщение
-            auto_close("Ошибка")
 
 
-def run_powershell_script(script_path):
+def run_powershell_commands():
     """
-    Запускает PowerShell для изменения политики выполнения и запуска указанного скрипта.
-
-    :param script_path: Путь к скрипту PowerShell для выполнения.
+    Выполняет команды PowerShell для установки политики выполнения, получения пути к XML
+    и регистрации задачи в планировщике заданий.
     """
-    # Формируем команду PowerShell для изменения политики и запуска скрипта
-    command = (
-            f"Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process; "
-            f"& '{script_path}'"
-    )
+    # Устанавливаем политику выполнения для текущей сессии
+    set_policy_command = "Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process"
+
+    # Команда для чтения XML файла и регистрации задачи в планировщике заданий
+    register_task_command = f"""
+    $xmlContent = Get-Content -Path '{xml_path}' -Raw;
+    Register-ScheduledTask -Xml $xmlContent -TaskName 'Start CPG Monitor';
+    """
+
+    # Выполняем команды в PowerShell
+    try:
+        # Выполняем команду для установки политики выполнения
+        subprocess.run(["powershell", "-Command", set_policy_command], check=True)
+
+        # Выполняем команду для регистрации задачи через PowerShell
+        subprocess.run(["powershell", "-Command", register_task_command], check=True)
+
+        show_message_with_auto_close(
+                f"Задача 'Start CPG Monitor'\nуспешно зарегистрирована в планировщике заданий.",
+                "Успешно"
+        )
+
+    except subprocess.CalledProcessError as e:
+        show_message_with_auto_close(
+                f"Произошла ошибка при выполнении PowerShell команд:\n - {e}",
+                "Ошибка"
+        )
+
+        sys.exit(1)  # Завершаем программу с кодом ошибки
+
+
+def check_task_exists(task_name):
+    """
+    Проверяет, существует ли задача в планировщике задач.
+
+    :param task_name: Имя задачи для проверки.
+    :return: True, если задача существует, иначе False.
+    """
 
     try:
-        # Запускаем PowerShell с указанной командой
-        subprocess.run(["powershell", "-NoProfile", "-ExecutionPolicy", "Bypass", "-Command", command], check=True)
-        print("Скрипт успешно выполнен с правами администратора.")
-    except subprocess.CalledProcessError as e:
-        print(f"Произошла ошибка при выполнении скрипта: {e}")
+        # Выполняем команду для проверки существования задания
+        command = ['schtasks', '/Query', '/TN', task_name]
+        subprocess.run(command, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        return True
+    except subprocess.CalledProcessError:
+        return False
 
 
 if __name__ == '__main__':
     run_as_admin()  # Проверяем и запускаем от имени администратора
 
-    # Указываем путь к скрипту task_schedule_import_powershell.ps1
-    script_path = os.path.join(PROJECT_ROOT, "task_schedule_import_powershell.ps1")
+    # Указываем имя задачи для проверки
+    task_name = "Start CPG Monitor"
+    # Проверяем, существует ли задача
+    if check_task_exists(task_name):
+        show_message_with_auto_close(
+                f"Задача '{task_name}'\nуже существует в планировщике задач. Установка отменена.",
+                "Предупреждение"
+        )
 
-    # Проверяем, существует ли файл
-    if os.path.isfile(script_path):
-        run_powershell_script(script_path)  # Запускаем скрипт PowerShell
+        sys.exit()  # Завершаем выполнение, если задача уже существует
     else:
-        print(f"Скрипт не найден по пути: {script_path}")
+        run_powershell_commands()  # Выполняем команды PowerShell напрямую из Python
+
+        sys.exit(1)  # Завершаем программу с кодом ошибки

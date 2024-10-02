@@ -10,7 +10,7 @@ import psutil
 from datetime import datetime
 from apscheduler.schedulers.blocking import BlockingScheduler
 from config_app import path_data_file, DISK_LETTER, path_log_file
-from function import run_as_admin, auto_close
+from function import run_as_admin, show_message_with_auto_close
 
 # Имя мьютекса (должно быть уникальным)
 MUTEX_NAME = "Global\\CPG_MONITOR"
@@ -93,14 +93,10 @@ def log_error_monitor(message):
                            )
     except Exception as e:
         print(f"Ошибка при записи лога в файл лога: {str(e)}")
-        ctypes.windll.user32.MessageBoxW(
-                None,
+        show_message_with_auto_close(
                 f"MONITOR_CPG({time.strftime('%Y-%m-%d %H:%M:%S')}) - {message}\n==================\n",
-                "Ошибка",
-                0
+                "Ошибка"
         )
-        # Автоматически закрываем сообщение
-        auto_close("Ошибка")
 
 
 def main():
@@ -114,23 +110,18 @@ def main():
     error_code = ctypes.windll.kernel32.GetLastError()
 
     if error_code == 183:
-        ctypes.windll.user32.MessageBoxW(None, f"Приложение CPG MONITOR уже запущено.", "ПРЕДУПРЕЖДЕНИЕ", 0)
-        # Автоматически закрываем сообщение
-        auto_close("ПРЕДУПРЕЖДЕНИЕ")
+        # show_message_with_auto_close(f"Приложение Windows CPG MONITOR уже запущено.", "ПРЕДУПРЕЖДЕНИЕ")
         return
     elif error_code == 5:  # ERROR_ACCESS_DENIED
         if mutex != 0:  # Проверяем, что дескриптор валиден перед закрытием
             ctypes.windll.kernel32.CloseHandle(mutex)
-        ctypes.windll.user32.MessageBoxW(None, "Доступ к мьютексу запрещен.", "ОШИБКА", 0)
-        # Автоматически закрываем сообщение
-        auto_close("ОШИБКА")
+        show_message_with_auto_close("Доступ к мьютексу запрещен.", "ОШИБКА")
         return
     elif error_code != 0:
         if mutex != 0:  # Проверяем, что дескриптор валиден перед закрытием
             ctypes.windll.kernel32.CloseHandle(mutex)
-        ctypes.windll.user32.MessageBoxW(None, f"Неизвестная ошибка:\n{error_code}", "ОШИБКА", 0)
-        # Автоматически закрываем сообщение
-        auto_close("ОШИБКА")
+        show_message_with_auto_close(f"Неизвестная ошибка:\n{error_code}", "ОШИБКА")
+
         return
     # -------------- END ---------------
 

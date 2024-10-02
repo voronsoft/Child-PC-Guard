@@ -5,7 +5,7 @@ import wx.xrc
 import ctypes
 import gettext
 import function
-from function import unblock_user
+from function import unblock_user, show_message_with_auto_close
 from config_app import FOLDER_IMG, path_log_file
 
 _ = gettext.gettext
@@ -293,25 +293,15 @@ class UnblockUser(wx.Dialog):
         self.log_error(f"Пользователь {self.USERNAME} разблокирован !")
 
         if answer:
-            ctypes.windll.user32.MessageBoxW(
-                    None,
-                    f"Пользователь {self.USERNAME} разблокирован !",
-                    "Успешно",
-                    0
-            )
-            # Автоматически закрываем сообщение
-            function.auto_close("Успешно")
+            show_message_with_auto_close(f"Пользователь {self.USERNAME} разблокирован !",
+                                         "Успешно"
+                                         )
         else:
             # Сообщение записываем в log
             self.log_error(f"Ошибка при разблокировке пользователя: {self.USERNAME}")
-            ctypes.windll.user32.MessageBoxW(
-                    None,
-                    f"(a_l_u_u)\nОшибка при разблокировке пользователя: {self.USERNAME}\n",
-                    "Ошибка",
-                    0
-            )
-            # Автоматически закрываем сообщение
-            function.auto_close("Ошибка")
+            show_message_with_auto_close(f"(a_l_u_u)\nОшибка при разблокировке пользователя: {self.USERNAME}\n",
+                                         "Ошибка"
+                                         )
 
     @staticmethod
     def log_error(message):
@@ -323,14 +313,9 @@ class UnblockUser(wx.Dialog):
                                )
         except Exception as e:
             print(f"Ошибка при записи лога в файл лога: {str(e)}")
-            ctypes.windll.user32.MessageBoxW(
-                    None,
-                    f"CPG_UNLOCK_USER({time.strftime('%Y-%m-%d %H:%M:%S')}) - {message}\n==================\n",
-                    "Ошибка",
-                    0
-            )
-            # Автоматически закрываем сообщение
-            function.auto_close("Ошибка")
+            show_message_with_auto_close(f"CPG_UNLOCK_USER({time.strftime('%Y-%m-%d %H:%M:%S')}) - {message}\n==================\n",
+                                         "Ошибка"
+                                         )
 
 
 def main():
@@ -343,24 +328,19 @@ def main():
     error_code = ctypes.windll.kernel32.GetLastError()
 
     if error_code == 183:
-        ctypes.windll.user32.MessageBoxW(None, f"Приложение Unlock User CPGuard уже запущено.", "ПРЕДУПРЕЖДЕНИЕ", 0)
-        # Автоматически закрываем сообщение
-        function.auto_close("ПРЕДУПРЕЖДЕНИЕ")
+        show_message_with_auto_close(f"Приложение Unlock User CPGuard уже запущено.", "ПРЕДУПРЕЖДЕНИЕ")
+
         return
     elif error_code == 5:  # ERROR_ACCESS_DENIED
         if mutex != 0:  # Проверяем, что дескриптор валиден перед закрытием
             ctypes.windll.kernel32.CloseHandle(mutex)
-        ctypes.windll.user32.MessageBoxW(None, "Доступ к мьютексу запрещен.", "ОШИБКА", 0)
-        # Автоматически закрываем сообщение
-        function.auto_close("ОШИБКА")
+        show_message_with_auto_close("Доступ к мьютексу запрещен.", "ОШИБКА")
+
         return
     elif error_code != 0:
         if mutex != 0:  # Проверяем, что дескриптор валиден перед закрытием
             ctypes.windll.kernel32.CloseHandle(mutex)
-        ctypes.windll.user32.MessageBoxW(None, f"Неизвестная ошибка:\n{error_code}", "ОШИБКА", 0)
-
-        # Автоматически закрываем сообщение
-        function.auto_close("ОШИБКА")
+        show_message_with_auto_close(f"Неизвестная ошибка:\n{error_code}", "ОШИБКА")
 
         return
     # -------------- END ---------------

@@ -14,6 +14,7 @@ from app_wind_splash_screen import main_splash
 from app_wind_pass import WndPass
 from app_wind_tray_icon import TrayIcon
 from config_app import FOLDER_IMG, path_timer_exe, path_monitor_exe, path_unblock_usr_exe, path_log_file
+from function import show_message_with_auto_close
 
 _ = gettext.gettext
 
@@ -723,9 +724,8 @@ class Window(wx.Frame):
                                )
         except Exception as e:
             print(f"(1)Ошибка при записи лога в файл: {str(e)}")
-            ctypes.windll.user32.MessageBoxW(None, f"Ошибка при записи в файл лога:\n{str(e)}", "ОШИБКА", 0)
-            # Автоматически закрываем сообщение
-            function.auto_close("ОШИБКА")
+            show_message_with_auto_close(f"Ошибка при записи в файл лога:\n{str(e)}", "ОШИБКА")
+
     # =============================================================================================================
 
 
@@ -739,23 +739,19 @@ def main():
     error_code = ctypes.windll.kernel32.GetLastError()
 
     if error_code == 183:
-        ctypes.windll.user32.MessageBoxW(None, f"Приложение Child PC Guard уже запущено.", "ПРЕДУПРЕЖДЕНИЕ", 0)
-        # Автоматически закрываем сообщение
-        function.auto_close("ПРЕДУПРЕЖДЕНИЕ")
+        # show_message_with_auto_close(f"Приложение Child PC Guard уже запущено.", "ПРЕДУПРЕЖДЕНИЕ")
         return
     elif error_code == 5:  # ERROR_ACCESS_DENIED
         if mutex != 0:  # Проверяем, что дескриптор валиден перед закрытием
             ctypes.windll.kernel32.CloseHandle(mutex)
-        ctypes.windll.user32.MessageBoxW(None, "Доступ к мьютексу запрещен.", "ОШИБКА", 0)
-        # Автоматически закрываем сообщение
-        function.auto_close("ОШИБКА")
+        show_message_with_auto_close("Доступ к мьютексу запрещен.", "ОШИБКА")
+
         return
     elif error_code != 0:
         if mutex != 0:  # Проверяем, что дескриптор валиден перед закрытием
             ctypes.windll.kernel32.CloseHandle(mutex)
-        ctypes.windll.user32.MessageBoxW(None, f"Неизвестная ошибка:\n{error_code}", "ОШИБКА", 0)
-        # Автоматически закрываем сообщение
-        function.auto_close("ОШИБКА")
+        show_message_with_auto_close(f"Неизвестная ошибка:\n{error_code}", "ОШИБКА")
+
         return
     # -------------- END ---------------
 
