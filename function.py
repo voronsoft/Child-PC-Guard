@@ -6,7 +6,7 @@ import ctypes
 import threading
 import subprocess
 
-from config_app import FOLDER_DATA, path_data_file, path_log_file
+from config_app import FOLDER_DATA, path_data_file, path_log_file, path_install_info_file
 
 
 def is_admin():
@@ -302,7 +302,8 @@ def show_message_with_auto_close(message, title="Сообщение", delay=5):
     threading.Thread(target=display_message).start()
     threading.Thread(target=auto_close).start()
 
-
+# TODO Поправить пути исходя из данных куда было установленно приложение пользователем (динамические ссылки на
+#  приложения)
 def function_to_create_path_data_files():
     """Функция проверки и создания файлов данных для приложения"""
 
@@ -341,7 +342,15 @@ def function_to_create_path_data_files():
         print(f"Создан файл: {path_log_file}")
         log_error(f"Создан файл: {path_log_file}")
 
+    # Проверяем, существует ли файл install_info.json. Если нет, то создаем его.
+    if not os.path.exists(path_install_info_file):
+        with open(path_install_info_file, 'w', encoding='utf-8') as file:
+            file.write("")  # Создаем пустой лог-файл
+        print(f"Создан файл: {path_install_info_file}")
+        log_error(f"Создан файл: {path_install_info_file}")
+
     # Применяем полные права ко всем пользователям на файлы, если они уже существуют или только что были созданы.
+    # Задаем доступ для всех на запись чтение изменение.
     subprocess.run(['icacls', FOLDER_DATA, '/grant', 'Everyone:F', '/T', '/C'], shell=True)
     print(f"Права доступа обновлены для папки и вложенных файлов: {FOLDER_DATA}")
     log_error(f"Права доступа обновлены для папки и вложенных файлов: {FOLDER_DATA}")

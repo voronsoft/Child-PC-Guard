@@ -7,14 +7,12 @@ import ctypes
 import gettext
 import function
 import subprocess
-
 from app_wind_documentation import DocWindow
 from app_wind_exit_prog import WndCloseApp
 from app_wind_splash_screen import main_splash
 from app_wind_pass import WndPass
 from app_wind_tray_icon import TrayIcon
 from config_app import FOLDER_IMG, path_timer_exe, path_monitor_exe, path_unblock_usr_exe, path_log_file
-from function import show_message_with_auto_close
 
 _ = gettext.gettext
 
@@ -724,7 +722,7 @@ class Window(wx.Frame):
                                )
         except Exception as e:
             print(f"(1)Ошибка при записи лога в файл: {str(e)}")
-            show_message_with_auto_close(f"Ошибка при записи в файл лога:\n{str(e)}", "ОШИБКА")
+            function.show_message_with_auto_close(f"Ошибка при записи в файл лога:\n{str(e)}", "ОШИБКА")
 
     # =============================================================================================================
 
@@ -744,13 +742,13 @@ def main():
     elif error_code == 5:  # ERROR_ACCESS_DENIED
         if mutex != 0:  # Проверяем, что дескриптор валиден перед закрытием
             ctypes.windll.kernel32.CloseHandle(mutex)
-        show_message_with_auto_close("Доступ к мьютексу запрещен.", "ОШИБКА")
+        function.show_message_with_auto_close("Доступ к мьютексу запрещен.", "ОШИБКА")
 
         return
     elif error_code != 0:
         if mutex != 0:  # Проверяем, что дескриптор валиден перед закрытием
             ctypes.windll.kernel32.CloseHandle(mutex)
-        show_message_with_auto_close(f"Неизвестная ошибка:\n{error_code}", "ОШИБКА")
+        function.show_message_with_auto_close(f"Неизвестная ошибка:\n{error_code}", "ОШИБКА")
 
         return
     # -------------- END ---------------

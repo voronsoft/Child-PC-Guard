@@ -12,7 +12,7 @@ from function import show_message_with_auto_close
 PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
 # Получаем имя диска (вид С:\)
 DISK_LETTER = os.path.splitdrive(PROJECT_ROOT)[0] + "\\"
-# Путь к папке с данными
+# TODO Путь к папке с данными
 FOLDER_DATA = os.path.join(DISK_LETTER, "ProgramData", "Child PC Guard Data")
 # Путь к файлу логов - log_chpcgu.txt
 path_log_file = os.path.join(FOLDER_DATA, "log_chpcgu.txt")

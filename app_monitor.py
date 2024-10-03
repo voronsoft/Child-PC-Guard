@@ -7,15 +7,16 @@ import os
 import time
 import ctypes
 import psutil
+import traceback
 from datetime import datetime
 from apscheduler.schedulers.blocking import BlockingScheduler
-from config_app import path_data_file, DISK_LETTER, path_log_file
+from config_app import path_data_file, DISK_LETTER, path_log_file, path_main_app
 from function import run_as_admin, show_message_with_auto_close
 
 # Имя мьютекса (должно быть уникальным)
 MUTEX_NAME = "Global\\CPG_MONITOR"
-# Путь к .exe файлу, который нужно мониторить
-path_to_program = os.path.join(DISK_LETTER, "Program Files (x86)", "Child PC Guard", "Child PC Guard.exe")
+# TODO Путь к .exe файлу, который нужно мониторить
+path_to_program = path_main_app
 
 
 # Функция для проверки, запущена ли программа
@@ -32,14 +33,16 @@ def check_and_restart_program():
         log_error_monitor(f"Программа не запущена. Перезапуск...")
 
         try:
-
             os.startfile(path_to_program)  # Перезапуск программы
 
         except Exception as e:
-            print("Планировщик остановлен.")
+            print("1 Планировщик остановлен.")
             # Отключаем планировщик
-            log_error_monitor(f"Планировщик остановлен.:\n{e}")
-            scheduler.shutdown()
+            log_error_monitor(f"1 Планировщик остановлен.:\n{e}")
+            # Вывод ошибки на рабочий стол если приложение не найдено по указанному пути.
+            show_message_with_auto_close(f"1 CPG Monitor({time.strftime('%Y-%m-%d %H:%M:%S')})\n{e}", "Ошибка")
+            # Закрываем планировщик
+            scheduler.shutdown(wait=False)
 
 
 # Функция для обновления данных в файле
@@ -68,20 +71,18 @@ def update_data():
             print("Дата не обновлена, реальная дата не больше даты из файла.")
 
     except FileNotFoundError:
-        print("Планировщик остановлен.")
-        print("Файл data.json не найден.")
-        log_error_monitor("Файл data.json не найден.")
-        scheduler.shutdown()
+        print("2 Файл data.json не найден. Планировщик остановлен.")
+        log_error_monitor("2 Файл data.json не найден. Планировщик остановлен.")
+        scheduler.shutdown(wait=False)
     except json.JSONDecodeError:
-        print("Планировщик остановлен.")
-        print("Ошибка чтения JSON из файла.")
-        log_error_monitor("Ошибка чтения JSON из файла.")
-        scheduler.shutdown()
+        print("3 Ошибка чтения JSON из файла. Планировщик остановлен.")
+        log_error_monitor("3 Ошибка чтения JSON из файла. Планировщик остановлен.")
+        scheduler.shutdown(wait=False)
     except Exception as e:
-        print("Планировщик остановлен.")
+        print("4 Планировщик остановлен.")
         # Отключаем планировщик
-        log_error_monitor(f"Планировщик остановлен.:\n{e}")
-        scheduler.shutdown()
+        log_error_monitor(f"4 Планировщик остановлен.:\n{e}")
+        scheduler.shutdown(wait=False)
 
 
 def log_error_monitor(message):
@@ -140,10 +141,16 @@ def main():
     try:
         print("Запуск планировщика...")
         scheduler.start()
+
+    except Exception as e:
+        log_error_monitor(f"Ошибка в главном цикле планировщика: {str(e)}\n{traceback.format_exc()}")
+        if scheduler.running:
+            scheduler.shutdown(wait=False)
+
     except (KeyboardInterrupt, SystemExit):
         # Отключаем планировщик
         scheduler.shutdown()
-        print("Планировщик остановлен.")
+        print("5 Планировщик остановлен.")
 
     # Основная секция для запуска программы
 
