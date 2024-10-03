@@ -336,6 +336,7 @@ class Window(wx.Frame):
         self.Bind(wx.EVT_TOOL, self.on_run_unblock, self.btn_tool_run_unblock_usr)
         self.Bind(wx.EVT_TOOL, self.on_run_info, self.btn_tool_info)
         self.Bind(wx.EVT_TOOL, self.on_block_interface, self.btn_tool_block_interface)
+        # Событие при нажатии кнопки - Разблокировать интерфейс
         self.Bind(wx.EVT_TOOL, self.on_unblock_interface, self.btn_tool_unblock_interface)
         # END ---------------------------------------------
 
@@ -591,15 +592,14 @@ class Window(wx.Frame):
         self.tool_bar.EnableTool(self.btn_tool_block_interface.GetId(), True)
         self.tool_bar.Enable(True)
 
-    def enable_fields_if_have_time(self):
+    def enable_fields_tool_bar(self):
         """
         Функция включения (активации) полей для ввода.
         Если было ОСТАТОЧНОЕ время в файле с данными.
         """
-        self.input_username.Disable()  # Поле выбора пользователя
-        self.gauge.Enable()  # Поле прогресса времени
-        self.btn_disable_blocking.Enable()  # Кнопка - Отключить блокировку
-        self.tool_bar.EnableTool(self.btn_tool_clear_data.GetId(), True)  # Активируем кнопку тулбара Стереть все
+        self.tool_bar.EnableTool(self.btn_tool_unblock_interface.GetId(), True)
+        self.tool_bar.ToggleTool(self.btn_tool_block_interface.GetId(), True)
+
 
     def seconds_to_hms(self, seconds):
         """
@@ -707,11 +707,13 @@ class Window(wx.Frame):
     def on_unblock_interface(self, event):
         """Разблокировка интерфейса при попытке нажать в тулбаре на кнопку - Разблокировать интерфейс"""
         # Отображаем окно ввода пароля
-        dlg = WndPass(None)
+        dlg = WndPass(self)
         dlg.ShowModal()
 
-        # Активируем все поля для разблокировки если пароль совпал
-        self.enable_fields()
+        if not dlg.password_check:
+            self.Close()
+
+        self.enable_fields_tool_bar()
 
     def log_error(self, message):
         """Логирование ошибок в файл."""
@@ -765,29 +767,15 @@ def main():
     # Инициализируем главное окно в случае продолжения отсчета программой времени из файла данных
     app = wx.App(False)
     # TODO Создаем и отображаем окно ввода пароля(в основном приложении)
-    dlg = WndPass(None)
-    dlg.ShowModal()
+    # dlg = WndPass(None)
+    # dlg.ShowModal()
 
     main_frame = Window(None)
     # Деактивируем все поля главного приложения
     main_frame.disable_fields()
-
-    # Проверяем если есть остаточное время в файле с данными то активируем необходимые поля главного приложения
-    if username_blocking and remaining_time > 0:
-        print("=========================")
-        main_frame.enable_fields_if_have_time()
-    #  Иначе это чистый запуск активируем необходимое
-    else:
-        # Активируем все поля если пароль совпал
-        main_frame.enable_fields()
-
-    # Логика поведения главной программы
-    if dlg.password_check:  # Если пароль совпал отображаем главное окно
-        main_frame.Show()
-    elif not dlg.password_check:  # Если нет закрываем все приложение
-        dlg.Destroy()  #
-        main_frame.Destroy()  #
-        sys.exit()  # Завершаем процесс (закрытие программы)
+    main_frame.Show()
+    #
+    main_frame.enable_fields_tool_bar()
 
     app.MainLoop()
 

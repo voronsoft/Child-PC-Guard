@@ -256,12 +256,9 @@ class UnblockUser(wx.Dialog):
         self.SetSizer(sizer_main)
         self.Layout()
 
-        self.Centre(wx.BOTH)
-
-        # Создаем и отображаем окно ввода пароля
-        self.pass_dialog = Pass(self)  # Передаем ссылку на родительское окно
-        self.pass_dialog.ShowModal()
         self.Centre(wx.BOTH)  # Центровка окна
+
+
 
         # Привязка событий
         self.Bind(wx.EVT_CLOSE, self.on_close)  # Событие при закрытии окна
@@ -347,7 +344,14 @@ def main():
 
     app = wx.App(False)
     main_frame = UnblockUser(None)
-    main_frame.ShowModal()
+
+    # Создаем и отображаем окно ввода пароля
+    pass_dialog = Pass(main_frame)  # Передаем ссылку на родительское окно
+    pass_dialog.ShowModal()
+
+    if pass_dialog.password_check:
+        main_frame.ShowModal()
+
     app.MainLoop()
 
 

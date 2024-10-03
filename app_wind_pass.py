@@ -101,7 +101,7 @@ class WndPass(wx.Dialog):
         # Привязка событий
         self.m_text_ctrl1.Bind(wx.EVT_TEXT_ENTER, self.on_ok)  # Привязка нажатия Enter к полю для пароля
         self.btn_ok.SetDefault()  # Установка кнопки OK как кнопки по умолчанию для Enter
-        # self.Bind(wx.EVT_CLOSE, self.on_close)  # Событие, закрытия окна
+        self.Bind(wx.EVT_CLOSE, self.on_close)  # Событие, закрытия окна
 
     # Обработчики
     def on_ok(self, event):
@@ -113,11 +113,11 @@ class WndPass(wx.Dialog):
         else:
             wx.MessageBox(_("Неверный пароль. Попробуйте снова."), _("Ошибка"), wx.OK | wx.ICON_ERROR)
 
-    # def on_close(self, event):
-    #     """Обработчик закрытия программы"""
-    #     print("Попытка закрытия окна")
-    #     # Закрытие приложения
-    #     self.Destroy()
+    def on_close(self, event):
+        """Обработчик закрытия программы"""
+        print("Попытка закрытия окна")
+        # Закрытие приложения
+        self.Destroy()
 
 
 
