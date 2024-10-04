@@ -59,10 +59,12 @@ Name: "{commondesktop}\Child PC Timer"; Filename: "{app}\Child PC Timer.exe"; Wo
 [Run]
 ; Запуск приложения создания задачи в планировщике заданий в момент установки (приложение должно быть в одной папке и на одном уровне с файлом инсталляции программы)
 Filename: "{app}\add_task_schedule.exe"; Flags: waituntilterminated
+; Запуск Обновление файла install_info.json записываем путь куда установилось приложение
+Filename: "{app}\UpdateInstallInfoFile.exe"; Flags: runhidden
 
 [UninstallRun]
 ; Удаление задачи - 'Start CPG Monitor', через CMD из планировщика заданий (для деинсталлятора)
-Filename: "{cmd}"; Parameters: "/C schtasks /Delete /TN ""Start CPG Monitor"" /F"; Flags: runhidden
+Filename: "{cmd}"; Parameters: "/C schtasks /Delete /TN ""Start CPG Monitor"" /F"; Flags: runhidden; RunOnceId: "RemoveTaskCPGMonitor"
 
 ; Код выполняет запись в файл (install_info.json) пути установки программы для последующего считывания приложением
 [Code]
@@ -77,19 +79,15 @@ var
 begin
   // Определяем полный путь к файлу install_info.json в папке с данными приложения
   InfoFilePath := ExpandConstant('{commonappdata}\Child PC Guard Data\install_info.json');
-
   // Получаем полный путь установки приложения
   InstallPath := ExpandConstant('{app}');
-
   // Формируем строку в формате JSON
   JsonContent := '{"app_ins_path": "' + InstallPath + '"}';
-
   // Создаем строковый список для записи информации в файл
   with TStringList.Create do
   try
     // Добавляем JSON-контент в строковый список
     Add(JsonContent);
-
     // Сохраняем данные в указанный файл
     SaveToFile(InfoFilePath);
   finally
