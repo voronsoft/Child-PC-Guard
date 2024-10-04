@@ -23,6 +23,7 @@ DisableProgramGroupPage=yes
 UninstallDisplayName=CPG uninstall
 ; Иконка деинсталлятора в панели управления (Будет отображаться в апплете панели управления "Удаление или изменение программы".)
 UninstallDisplayIcon={app}\img\uninstall.ico
+PrivilegesRequired=admin
 
 [Dirs]
 ; Создание папки с доступом на изменение для всех пользователей
@@ -59,12 +60,17 @@ Name: "{commondesktop}\Child PC Timer"; Filename: "{app}\Child PC Timer.exe"; Wo
 [Run]
 ; Запуск приложения создания задачи в планировщике заданий в момент установки (приложение должно быть в одной папке и на одном уровне с файлом инсталляции программы)
 Filename: "{app}\add_task_schedule.exe"; Flags: waituntilterminated
-; Запуск Обновление файла install_info.json записываем путь куда установилось приложение
-Filename: "{app}\UpdateInstallInfoFile.exe"; Flags: runhidden
 
 [UninstallRun]
 ; Удаление задачи - 'Start CPG Monitor', через CMD из планировщика заданий (для деинсталлятора)
 Filename: "{cmd}"; Parameters: "/C schtasks /Delete /TN ""Start CPG Monitor"" /F"; Flags: runhidden; RunOnceId: "RemoveTaskCPGMonitor"
+
+[UninstallDelete]
+; Удаление файлов внутри папки
+Type: files; Name: "{commonappdata}\Child PC Guard Data\*"
+; Удаление самой папки
+Type: dirifempty; Name: "{commonappdata}\Child PC Guard Data"
+
 
 ; Код выполняет запись в файл (install_info.json) пути установки программы для последующего считывания приложением
 [Code]
@@ -93,5 +99,15 @@ begin
   finally
     // Освобождаем память, занятую TStringList
     Free;
+  end;
+end;
+
+  // Вызов функции для выполнения записи пути в файл
+procedure CurStepChanged(CurStep: TSetupStep);
+begin
+  // Выполняем запись в файл после копирования файлов
+  if CurStep = ssPostInstall then
+  begin
+    UpdateInstallInfoFile;
   end;
 end;
