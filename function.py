@@ -1,13 +1,33 @@
+import hashlib
+import hmac
 import os
 import sys
 import time
 import json
+import winreg
 import ctypes
 import threading
 import subprocess
 
-from config_app import FOLDER_DATA, path_data_file, path_log_file, path_install_info_file
+from config_app import FOLDER_DATA, PATH_DATA_FILE, PATH_LOG_FILE, PATH_INSTALL_INFO_FILE, SECRET_KEY
 
+
+# ----------------------------------- Логирование ----------------------------
+def log_error(message):
+    """Метод для логирования ошибок в файл."""
+    try:
+        with open(PATH_LOG_FILE, 'a', encoding='utf-8') as log_file:
+            log_file.write(f"function.py({time.strftime('%Y-%m-%d %H:%M:%S')}) -"
+                           f" {message}\n==================\n"
+                           )
+    except Exception as e:
+        print(f"Ошибка при записи лога в файл лога: {str(e)}")
+        show_message_with_auto_close(f"function.py({time.strftime('%Y-%m-%d %H:%M:%S')}) - {message}\n==================\n",
+                                     "Ошибка"
+                                     )
+
+
+# -------------------------------------- END ---------------------------------
 
 def is_admin():
     """
@@ -47,7 +67,7 @@ def run_as_admin():
             )
 
 
-def read_json(key, file_path=path_data_file):
+def read_json(key, file_path=PATH_DATA_FILE):
     """
     Читает данные из JSON-файла и возвращает их в виде словаря.
 
@@ -73,7 +93,7 @@ def read_json(key, file_path=path_data_file):
         return None
 
 
-def update_json(key, value, file_path=path_data_file):
+def update_json(key, value, file_path=PATH_DATA_FILE):
     """
     Изменяет данные в JSON-файле по указанному ключу и сохраняет их обратно в файл.
 
@@ -273,7 +293,7 @@ def username_session():
     return username_session
 
 
-def show_message_with_auto_close(message, title="Сообщение", delay=5):
+def show_message_with_auto_close(message, title="Сообщение", delay=3):
     """
     Показывает сообщение в окне и закрывает его через заданное количество секунд.
 
@@ -302,6 +322,7 @@ def show_message_with_auto_close(message, title="Сообщение", delay=5):
     threading.Thread(target=display_message).start()
     threading.Thread(target=auto_close).start()
 
+
 # TODO Поправить пути исходя из данных куда было установленно приложение пользователем (динамические ссылки на
 #  приложения)
 def function_to_create_path_data_files():
@@ -323,31 +344,31 @@ def function_to_create_path_data_files():
         log_error(f"Права доступа установлены для папки: {FOLDER_DATA}")
 
     # Проверяем, существует ли файл data.json. Если нет, то создаем его и записываем начальные данные.
-    if not os.path.exists(path_data_file):
+    if not os.path.exists(PATH_DATA_FILE):
         initial_data = {
                 "username_blocking": "",
                 "remaining_time": 0,
                 "date": "0001-02-03",
                 "password": ""
         }
-        with open(path_data_file, 'w', encoding='utf-8') as file:
+        with open(PATH_DATA_FILE, 'w', encoding='utf-8') as file:
             json.dump(initial_data, file, indent=4)  # Записываем данные в формате JSON с отступами
-        print(f"Создан файл: {path_data_file} с начальными данными")
-        log_error(f"Создан файл: {path_data_file} с начальными данными")
+        print(f"Создан файл: {PATH_DATA_FILE} с начальными данными")
+        log_error(f"Создан файл: {PATH_DATA_FILE} с начальными данными")
 
     # Проверяем, существует ли файл log_chpcgu.txt. Если нет, то создаем его.
-    if not os.path.exists(path_log_file):
-        with open(path_log_file, 'w', encoding='utf-8') as file:
+    if not os.path.exists(PATH_LOG_FILE):
+        with open(PATH_LOG_FILE, 'w', encoding='utf-8') as file:
             file.write("")  # Создаем пустой лог-файл
-        print(f"Создан файл: {path_log_file}")
-        log_error(f"Создан файл: {path_log_file}")
+        print(f"Создан файл: {PATH_LOG_FILE}")
+        log_error(f"Создан файл: {PATH_LOG_FILE}")
 
     # Проверяем, существует ли файл install_info.json. Если нет, то создаем его.
-    if not os.path.exists(path_install_info_file):
-        with open(path_install_info_file, 'w', encoding='utf-8') as file:
+    if not os.path.exists(PATH_INSTALL_INFO_FILE):
+        with open(PATH_INSTALL_INFO_FILE, 'w', encoding='utf-8') as file:
             file.write("")  # Создаем пустой лог-файл
-        print(f"Создан файл: {path_install_info_file}")
-        log_error(f"Создан файл: {path_install_info_file}")
+        print(f"Создан файл: {PATH_INSTALL_INFO_FILE}")
+        log_error(f"Создан файл: {PATH_INSTALL_INFO_FILE}")
 
     # Применяем полные права ко всем пользователям на файлы, если они уже существуют или только что были созданы.
     # Задаем доступ для всех на запись чтение изменение.
@@ -367,23 +388,82 @@ def check_mode_run_app():
     return "user"
 
 
-# -----------------------------------
+# --------------------------Работа с паролем для приложения-------------------
+def hash_password(password: str) -> str:
+    """Хеширует пароль с использованием HMAC и секретного ключа."""
+    hash_psw = hmac.new(SECRET_KEY, password.encode('utf-8'), hashlib.sha256).hexdigest()
+    return hash_psw
 
-# -----------------------------------
+
+def check_password(input_password: str, stored_hashed_password: str) -> bool:
+    """
+    Сравнивает хеш введённого пароля с хранимым хешем.
+
+    :param input_password: Пароль из поля
+    :param stored_hashed_password: Пароль из БД
+    :return:
+    """
+    hashed_input = hash_password(input_password)
+    return hashed_input == stored_hashed_password
 
 
-# ---------------------
-def log_error(message):
-    """Метод для логирования ошибок в файл."""
+# -------------------------------------- END ---------------------------------
+
+# -------------------------------- Работа с реестром -------------------------
+def set_password_in_registry(password: str):
+    """Записывает пароль в реестр."""
+    # Путь в реестре - Компьютер-HKEY_LOCAL_MACHINE-SOFTWARE-CPG Password
+    key_path = r"Software\CPG Password"
+
+    # Открываем или создаем ключ реестра
     try:
-        with open(path_log_file, 'a', encoding='utf-8') as log_file:
-            log_file.write(f"function.py({time.strftime('%Y-%m-%d %H:%M:%S')}) -"
-                           f" {message}\n==================\n"
-                           )
+        key = winreg.CreateKey(winreg.HKEY_LOCAL_MACHINE, key_path)
+        winreg.SetValueEx(key, "Password", 0, winreg.REG_SZ, password)
+        winreg.CloseKey(key)
+        print("Пароль успешно сохранен в реестр.")
+        log_error("Пароль успешно сохранен в реестр.")
     except Exception as e:
-        print(f"Ошибка при записи лога в файл лога: {str(e)}")
-        show_message_with_auto_close(f"function.py({time.strftime('%Y-%m-%d %H:%M:%S')}) - {message}\n==================\n",
-                                     "Ошибка"
-                                     )
+        print(f"Ошибка при записи пароля в реестр: {e}")
+        log_error(f"{e}")
 
-    # ---------------------
+
+def get_password_from_registry():
+    """Читает пароль из реестра."""
+    key_path = r"Software\CPG Password"
+
+    try:
+        # Открываем ключ реестра
+        key = winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, key_path)
+        password, _ = winreg.QueryValueEx(key, "Password")
+        winreg.CloseKey(key)
+        return password
+    except FileNotFoundError:
+        print("Пароль не найден в реестре.")
+        log_error("Пароль не найден в реестре.")
+        return False
+    except Exception as e:
+        print(f"Ошибка при чтении пароля из реестра: {e}")
+        log_error(f"{e}")
+        return False
+
+
+def delete_password_from_registry():
+    """Удаляет запись пароля из реестра."""
+    key_path = r"Software\CPG Password"
+
+    try:
+        # Открываем ключ реестра с правами на запись
+        key = winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, key_path, 0, winreg.KEY_SET_VALUE)
+        winreg.DeleteValue(key, "Password")
+        winreg.CloseKey(key)
+        print("Пароль удален из реестра.")
+        log_error("Пароль удален из реестра.")
+    except FileNotFoundError:
+        print("Запись не найдена в реестре.")
+        log_error("Запись не найдена в реестре.")
+    except Exception as e:
+        print(f"Ошибка при удалении записи пароля: {e}")
+        log_error(f"Ошибка при удалении записи пароля: {e}")
+
+# -------------------------------------- END ---------------------------------
+#delete_password_from_registry()

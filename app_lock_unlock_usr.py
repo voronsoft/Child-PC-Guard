@@ -5,8 +5,8 @@ import wx.xrc
 import ctypes
 import gettext
 import function
-from function import unblock_user, show_message_with_auto_close
-from config_app import FOLDER_IMG, path_log_file
+from function import unblock_user, show_message_with_auto_close, read_json
+from config_app import FOLDER_IMG, PATH_LOG_FILE
 
 _ = gettext.gettext
 
@@ -20,13 +20,12 @@ class Pass(wx.Dialog):
     def __init__(self, parent):
         wx.Dialog.__init__(self, parent,
                            id=wx.ID_ANY,
-                           title=_("ВХОД"),
+                           title=_("ВВЕДИТЕ ПАРОЛЬ"),
                            pos=wx.DefaultPosition,
                            size=wx.Size(400, 150),
                            style=wx.DEFAULT_DIALOG_STYLE | wx.STAY_ON_TOP
                            )
         # TODO ВАЖНО - изменить пароль для программы !!! (app_wind_pass.py)
-        self.password = "123"  # Пароль, который нужно ввести
         self.password_check = False  # Флаг проверки правильности пароля
 
         # Установка минимального размера окна
@@ -48,23 +47,6 @@ class Pass(wx.Dialog):
 
         # Основной вертикальный слайзер
         sizer_main = wx.BoxSizer(wx.VERTICAL)
-
-        # Верхний текст
-        self.m_static_text2 = wx.StaticText(self,
-                                            wx.ID_ANY,
-                                            _("Если фон главного окна КРАСНОГО цвета, "
-                                              "значит программа запущена без прав АДМИНИСТРАТОРА.\n"
-                                              "Необходимо перезапустить программу от имени АДМИНИСТРАТОРА"
-                                              ),
-                                            wx.DefaultPosition,
-                                            wx.DefaultSize,
-                                            0
-                                            )
-        # Устанавливаем шрифт с размером 10
-        self.m_static_text2.SetFont(wx.Font(10, wx.FONTFAMILY_SWISS, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False))
-        self.m_static_text2.SetForegroundColour(wx.Colour(217, 47, 38))  # Задаем цвет шрифту
-        self.m_static_text2.Wrap(-1)
-        sizer_main.Add(self.m_static_text2, 0, wx.ALL | wx.ALIGN_CENTER_HORIZONTAL, 10)
 
         # Поле ввода пароля и кнопка OK
         sizer_input = wx.BoxSizer(wx.HORIZONTAL)
@@ -106,8 +88,8 @@ class Pass(wx.Dialog):
 
     # Обработчик нажатия кнопки OK
     def on_ok(self, event):
-        # Получаем значение из поля ввода
-        if self.password == self.m_text_ctrl1.GetValue():
+        # Получаем значение из поля ввода пароля и сравниваем со значением из БД
+        if function.check_password(self.m_text_ctrl1.GetValue(), function.read_json("password")):
             self.password_check = True
             self.Destroy()  # Закрытие окна и завершение процесса питон
         else:
@@ -304,7 +286,7 @@ class UnblockUser(wx.Dialog):
     def log_error(message):
         """Метод для логирования ошибок в файл."""
         try:
-            with open(path_log_file, 'a', encoding='utf-8') as log_file:
+            with open(PATH_LOG_FILE, 'a', encoding='utf-8') as log_file:
                 log_file.write(f"CPG_UNLOCK_USER({time.strftime('%Y-%m-%d %H:%M:%S')}) -"
                                f" {message}\n==================\n"
                                )

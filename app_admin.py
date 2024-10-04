@@ -7,12 +7,15 @@ import ctypes
 import gettext
 import function
 import subprocess
-from app_wind_documentation import DocWindow
-from app_wind_exit_prog import WndCloseApp
-from app_wind_splash_screen import main_splash
+from function import read_json
+import app_wnd_input_first_pass
 from app_wind_pass import WndPass
 from app_wind_tray_icon import TrayIcon
-from config_app import FOLDER_IMG, path_timer_exe, path_monitor_exe, path_unblock_usr_exe, path_log_file
+from app_wind_exit_prog import WndCloseApp
+from app_wind_documentation import DocWindow
+from app_wind_splash_screen import main_splash
+from config_app import FOLDER_IMG, path_timer_exe, path_monitor_exe, path_unblock_usr_exe, PATH_LOG_FILE
+
 
 _ = gettext.gettext
 
@@ -50,7 +53,7 @@ class Window(wx.Frame):
         self.username_blocking = function.read_json("username_blocking")  # Имя пользователя для блокировки из файла
         self.remaining_time = function.read_json("remaining_time")  # Время задаваемой блокировки из файла
         self.elapsed_time = 0  #
-
+        self.passwort_registry = ""
         # Определяем режим работы приложения, если не АДМИНИСТРАТОР фон красный окно не активно
         self.mode_run_app = function.check_mode_run_app()
         if self.mode_run_app != "admin":
@@ -118,7 +121,9 @@ class Window(wx.Frame):
                                                          wx.NullBitmap,
                                                          wx.ITEM_NORMAL,
                                                          _(r"Очистить все"),
-                                                         _(r"Удаляет все данные задания для блокировки. БЛОКИРОВКУ НЕ ОТКЛЮЧАЕТ"),
+                                                         _(r"Удаляет пароль и все данные задания для блокировки. "
+                                                           r"БЛОКИРОВКУ НЕ ОТКЛЮЧАЕТ"
+                                                           ),
                                                          None
                                                          )
         self.tool_bar.AddStretchableSpace()  # Вставляем гибкое пространство
@@ -335,6 +340,7 @@ class Window(wx.Frame):
         self.Bind(wx.EVT_TOOL, self.on_run_clear_data, self.btn_tool_clear_data)
         self.Bind(wx.EVT_TOOL, self.on_run_unblock, self.btn_tool_run_unblock_usr)
         self.Bind(wx.EVT_TOOL, self.on_run_info, self.btn_tool_info)
+        # Событие при нажатии кнопки заблокировать интерфейс
         self.Bind(wx.EVT_TOOL, self.on_block_interface, self.btn_tool_block_interface)
         # Событие при нажатии кнопки - Разблокировать интерфейс
         self.Bind(wx.EVT_TOOL, self.on_unblock_interface, self.btn_tool_unblock_interface)
@@ -541,11 +547,13 @@ class Window(wx.Frame):
             self.input_time.SetSelection(0)
             # Очищаем значение времени в файле
             function.update_json("remaining_time", 0)  # Удаляем значение времени в файле.
-            # Стираем значение атрибута времени для бокировки в классе
+            # Стираем значение атрибута времени для блокировки в классе
             self.remaining_time = function.read_json("remaining_time")
 
             # Сбрасываем значение времени в поле - "Осталось времени до блокировки:"
             self.timer_time.SetLabel("00:00:00")
+            # Отключаем кнопку - Отключить блокировку
+            self.btn_disable_blocking.Disable()
             self.enable_fields()
 
             # Сообщение
@@ -587,10 +595,9 @@ class Window(wx.Frame):
         self.tool_bar.EnableTool(self.btn_tool_clear_data.GetId(), True)
         self.tool_bar.EnableTool(self.btn_tool_run_unblock_usr.GetId(), True)
         self.tool_bar.EnableTool(self.btn_tool_info.GetId(), True)
-
         self.tool_bar.EnableTool(self.btn_tool_unblock_interface.GetId(), True)
         self.tool_bar.EnableTool(self.btn_tool_block_interface.GetId(), True)
-        self.tool_bar.Enable(True)
+        # self.tool_bar.EnableTool(True)
 
     def enable_fields_tool_bar(self):
         """
@@ -599,7 +606,6 @@ class Window(wx.Frame):
         """
         self.tool_bar.EnableTool(self.btn_tool_unblock_interface.GetId(), True)
         self.tool_bar.ToggleTool(self.btn_tool_block_interface.GetId(), True)
-
 
     def seconds_to_hms(self, seconds):
         """
@@ -620,7 +626,7 @@ class Window(wx.Frame):
     def on_run_log(self, event):
         """Запуск просмотра логов программы"""
         try:
-            os.startfile(path_log_file)  # Открываем файл в ассоциированном приложении (обычно Блокнот)
+            os.startfile(PATH_LOG_FILE)  # Открываем файл в ассоциированном приложении (обычно Блокнот)
         except Exception as e:
             wx.MessageBox(f"Не удалось открыть файл: {str(e)}", "Ошибка", wx.OK | wx.ICON_ERROR)
 
@@ -712,13 +718,23 @@ class Window(wx.Frame):
 
         if not dlg.password_check:
             self.Close()
-
-        self.enable_fields_tool_bar()
+            print(1111123231144, dlg.password_check)
+            self.enable_fields()
+            print("1 Должен активироваться интерфейс")
+        # Если пароль совпал и есть остаточное время в БД
+        elif dlg.password_check and function.read_json("remaining_time"):
+            self.enable_fields()
+            self.input_username.Enable(False)
+            self.btn_disable_blocking.Enable(True)
+            print("2 Должен активироваться интерфейс")
+        elif dlg.password_check:
+            self.enable_fields()
+            print("3 Должен активироваться интерфейс")
 
     def log_error(self, message):
         """Логирование ошибок в файл."""
         try:
-            with open(path_log_file, 'a', encoding="utf-8") as log_file:
+            with open(PATH_LOG_FILE, 'a', encoding="utf-8") as log_file:
                 log_file.write(f"CPG({time.strftime('%Y-%m-%d %H:%M:%S')}) - "
                                f"{message}\n==================\n"
                                )
@@ -760,29 +776,29 @@ def main():
 
     username_blocking = function.read_json("username_blocking")  # Имя пользователя для блокировки из файла
     remaining_time = function.read_json("remaining_time")  # Время задаваемой блокировки из файла
-
-    # Выводим заставку
-    main_splash()
+    password_from_registry = function.get_password_from_registry() # Считываем пароль
+    # TODO Создаем и отображаем окно ввода пароля для приложения
+    # Проверка есть ли у приложения пароль
+    if not password_from_registry:
+        app_wnd_input_first_pass.main()
+        # Выводим заставку
+        main_splash()
 
     # Инициализируем главное окно в случае продолжения отсчета программой времени из файла данных
     app = wx.App(False)
-    # TODO Создаем и отображаем окно ввода пароля(в основном приложении)
-    # dlg = WndPass(None)
-    # dlg.ShowModal()
 
-    main_frame = Window(None)
-    # Деактивируем все поля главного приложения
-    main_frame.disable_fields()
-    main_frame.Show()
+    main_frame = Window(None) # Выводим главное окно
+    main_frame.disable_fields()  # Деактивируем все поля главного приложения
+    main_frame.enable_fields_tool_bar()  #  Активируем кнопки блок\актив интерфейса
+    main_frame.Show() # Отображаем окно
     #
-    main_frame.enable_fields_tool_bar()
+
 
     app.MainLoop()
 
     # Закрываем дескриптор мьютекса, когда приложение завершает работу
     if mutex != 0:  # Проверяем, что дескриптор валиден перед закрытием
         ctypes.windll.kernel32.CloseHandle(mutex)
-
 
 
 if __name__ == "__main__":

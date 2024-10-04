@@ -87,9 +87,6 @@ begin
   // Создаем строковый список для записи информации в файл
   with TStringList.Create do
   try
-    // Устанавливаем кодировку UTF-8 для сохранения
-    Encoding := TEncoding.UTF8;
-
     // Добавляем JSON-контент в строковый список
     Add(JsonContent);
 

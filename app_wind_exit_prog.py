@@ -5,6 +5,7 @@ import wx.xrc
 import gettext
 
 from config_app import FOLDER_IMG
+from function import get_password_from_registry, check_password
 
 _ = gettext.gettext
 
@@ -25,7 +26,7 @@ class WndCloseApp(wx.Dialog):
                            style=wx.DEFAULT_DIALOG_STYLE & ~(wx.CLOSE_BOX) | wx.STAY_ON_TOP
                            )
         # TODO ВАЖНО - изменить пароль для программы !!! (app_wind_pass.py)
-        self.password = "123"  # Пароль, который нужно ввести
+        self.password_from_registry= get_password_from_registry()  # Пароль, который нужно ввести
         self.password_check = False  # Флаг проверки правильности пароля
 
         # Установка минимального размера окна
@@ -109,7 +110,7 @@ class WndCloseApp(wx.Dialog):
     def on_ok(self, event):
         """Обработчик нажатия кнопки OK"""
         # Получаем значение из поля ввода
-        if self.password == self.input_pass_txt.GetValue():
+        if check_password(self.input_pass_txt.GetValue(), self.password_from_registry):
             self.password_check = True
             self.EndModal(wx.ID_OK)  # Закрыть диалог с результатом OK
         else:

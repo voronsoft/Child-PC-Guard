@@ -42,7 +42,7 @@ class TimerApp(wx.Frame):
         # Таймер для обновления каждую секунду
         self.timer = wx.Timer(self)
         # Путь к файлу с временем
-        self.json_file = config_app.path_data_file
+        self.json_file = config_app.PATH_DATA_FILE
 
         sizer_main = wx.BoxSizer(wx.VERTICAL)
         sizer_main.SetMinSize(wx.Size(300, -1))
@@ -130,7 +130,7 @@ class TimerApp(wx.Frame):
     def log_error(self, message):
         """Логирование ошибок в файл."""
         try:
-            with open(config_app.path_log_file, 'a', encoding="utf-8") as log_file:
+            with open(config_app.PATH_LOG_FILE, 'a', encoding="utf-8") as log_file:
                 log_file.write(f"TIMER({time.strftime('%Y-%m-%d %H:%M:%S')}) - "
                                f"{message}\n==================\n"
                                )

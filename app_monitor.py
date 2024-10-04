@@ -10,7 +10,7 @@ import psutil
 import traceback
 from datetime import datetime
 from apscheduler.schedulers.blocking import BlockingScheduler
-from config_app import path_data_file, DISK_LETTER, path_log_file, path_main_app
+from config_app import PATH_DATA_FILE, DISK_LETTER, PATH_LOG_FILE, path_main_app
 from function import run_as_admin, show_message_with_auto_close
 
 # Имя мьютекса (должно быть уникальным)
@@ -48,7 +48,7 @@ def check_and_restart_program():
 # Функция для обновления данных в файле
 def update_data():
     try:
-        with open(path_data_file, 'r', encoding='utf-8') as file:
+        with open(PATH_DATA_FILE, 'r', encoding='utf-8') as file:
             data = json.load(file)
 
         current_date = datetime.now().date()  # Получаем дату нынешнего дня
@@ -61,7 +61,7 @@ def update_data():
             username = os.getlogin()  # Получаем имя пользователя сессии в которой запущена программа
             data['username_blocking'] = f'{username}'  # Записываем в файл имя пользователя для блокировки
 
-            with open(path_data_file, 'w', encoding='utf-8') as file:
+            with open(PATH_DATA_FILE, 'w', encoding='utf-8') as file:
                 json.dump(data, file, ensure_ascii=False, indent=4)
 
             print(f"Данные обновлены: {data}")
@@ -88,7 +88,7 @@ def update_data():
 def log_error_monitor(message):
     """Метод для логирования ошибок в файл."""
     try:
-        with open(path_log_file, 'a', encoding='utf-8') as log_file:
+        with open(PATH_LOG_FILE, 'a', encoding='utf-8') as log_file:
             log_file.write(f"MONITOR_CPG({time.strftime('%Y-%m-%d %H:%M:%S')}) -"
                            f" {message}\n==================\n"
                            )

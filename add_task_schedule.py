@@ -15,7 +15,7 @@ DISK_LETTER = os.path.splitdrive(PROJECT_ROOT)[0] + "\\"
 # TODO Путь к папке с данными
 FOLDER_DATA = os.path.join(DISK_LETTER, "ProgramData", "Child PC Guard Data")
 # Путь к файлу логов - log_chpcgu.txt
-path_log_file = os.path.join(FOLDER_DATA, "log_chpcgu.txt")
+PATH_LOG_FILE = os.path.join(FOLDER_DATA, "log_chpcgu.txt")
 
 # Получаем путь к файлу XML
 if getattr(sys, 'frozen', False):
@@ -40,7 +40,7 @@ print("путь к XML файлу: ", xml_path)
 def log_error(message):
     """Метод для логирования ошибок в файл."""
     try:
-        with open(path_log_file, 'a', encoding='utf-8') as log_file:
+        with open(PATH_LOG_FILE, 'a', encoding='utf-8') as log_file:
             log_file.write(f"ADD_TASK_SCHEDULE({time.strftime('%Y-%m-%d %H:%M:%S')}) -"
                            f" {message}\n==================\n"
                            )

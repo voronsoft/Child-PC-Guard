@@ -1,10 +1,9 @@
 import os
-
 import wx
 import wx.xrc
 import gettext
-
-from config_app import FOLDER_IMG
+from config_app import FOLDER_IMG, read_json
+from function import get_password_from_registry, check_password
 
 _ = gettext.gettext
 
@@ -25,7 +24,7 @@ class WndPass(wx.Dialog):
                            style=wx.DEFAULT_DIALOG_STYLE | wx.STAY_ON_TOP
                            )
         # TODO ВАЖНО - изменить пароль для программы !!! (app_wind_pass.py)
-        self.password = "123"  # Пароль, который нужно ввести
+        self.password_from_registry= get_password_from_registry()  # Пароль, который нужно ввести
         self.password_check = False  # Флаг проверки правильности пароля
 
         # Установка минимального размера окна
@@ -49,21 +48,21 @@ class WndPass(wx.Dialog):
         sizer_main = wx.BoxSizer(wx.VERTICAL)
 
         # Верхний текст
-        self.m_static_text2 = wx.StaticText(self,
-                                            wx.ID_ANY,
-                                            _("Если фон главного окна КРАСНОГО цвета, "
-                                              "значит программа запущена без прав АДМИНИСТРАТОРА.\n"
-                                              "Необходимо перезапустить программу от имени АДМИНИСТРАТОРА"
-                                              ),
-                                            wx.DefaultPosition,
-                                            wx.DefaultSize,
-                                            0
-                                            )
-        # Устанавливаем шрифт с размером 10
-        self.m_static_text2.SetFont(wx.Font(10, wx.FONTFAMILY_SWISS, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False))
-        self.m_static_text2.SetForegroundColour(wx.Colour(217, 47, 38))  # Задаем цвет шрифту
-        self.m_static_text2.Wrap(-1)
-        sizer_main.Add(self.m_static_text2, 0, wx.ALL | wx.ALIGN_CENTER_HORIZONTAL, 10)
+        # self.m_static_text2 = wx.StaticText(self,
+        #                                     wx.ID_ANY,
+        #                                     _("Если фон главного окна КРАСНОГО цвета, "
+        #                                       "значит программа запущена без прав АДМИНИСТРАТОРА.\n"
+        #                                       "Необходимо перезапустить программу от имени АДМИНИСТРАТОРА"
+        #                                       ),
+        #                                     wx.DefaultPosition,
+        #                                     wx.DefaultSize,
+        #                                     0
+        #                                     )
+        # # Устанавливаем шрифт с размером 10
+        # self.m_static_text2.SetFont(wx.Font(10, wx.FONTFAMILY_SWISS, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False))
+        # self.m_static_text2.SetForegroundColour(wx.Colour(217, 47, 38))  # Задаем цвет шрифту
+        # self.m_static_text2.Wrap(-1)
+        # sizer_main.Add(self.m_static_text2, 0, wx.ALL | wx.ALIGN_CENTER_HORIZONTAL, 10)
 
         # Поле ввода пароля и кнопка OK
         sizer_input = wx.BoxSizer(wx.HORIZONTAL)
@@ -106,10 +105,11 @@ class WndPass(wx.Dialog):
     # Обработчики
     def on_ok(self, event):
         """Обработчик нажатия кнопки OK"""
-        # Получаем значение из поля ввода
-        if self.password == self.m_text_ctrl1.GetValue():
+        # Сравниваем пароли из БД и поля для ввода
+        print("результат сравнения паролей: ", check_password(self.m_text_ctrl1.GetValue(), self.password_from_registry))
+        if check_password(self.m_text_ctrl1.GetValue(), self.password_from_registry):
             self.password_check = True
-            self.Destroy()  # Закрытие окна и завершение процесса питон
+            self.Destroy()  # Закрытие окна и завершение процесса
         else:
             wx.MessageBox(_("Неверный пароль. Попробуйте снова."), _("Ошибка"), wx.OK | wx.ICON_ERROR)
 
