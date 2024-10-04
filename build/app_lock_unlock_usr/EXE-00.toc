@@ -108,7 +108,7 @@
  [],
  False,
  False,
- 1728014149,
+ 1728060607,
  [('run.exe',
    'C:\\child_control\\.venv\\Lib\\site-packages\\PyInstaller\\bootloader\\Windows-64bit-intel\\run.exe',
    'EXECUTABLE')],

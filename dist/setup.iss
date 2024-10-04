@@ -64,7 +64,6 @@ Filename: "{app}\add_task_schedule.exe"; Flags: waituntilterminated
 [UninstallRun]
 ; Удаление задачи - 'Start CPG Monitor', через CMD из планировщика заданий (для деинсталлятора)
 Filename: "{cmd}"; Parameters: "/C schtasks /Delete /TN ""Start CPG Monitor"" /F"; Flags: runhidden; RunOnceId: "RemoveTaskCPGMonitor"
-
 [UninstallDelete]
 ; Удаление файлов внутри папки
 Type: files; Name: "{commonappdata}\Child PC Guard Data\*"
