@@ -6,7 +6,6 @@ import sys
 import time
 import ctypes
 import subprocess
-from function import show_message_with_auto_close
 
 # Определяем корневую папку проекта
 PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
@@ -19,35 +18,66 @@ PATH_LOG_FILE = os.path.join(FOLDER_DATA, "log_chpcgu.txt")
 
 # Получаем путь к файлу XML
 if getattr(sys, 'frozen', False):
-    # Если приложение запущено как исполняемый файл, используем _MEIPASS
+    # Если приложение запущено как исполняемый файл (.exe), используем _MEIPASS
     base_path = sys._MEIPASS  # noqa
-
 else:
-    # Если приложение запущено из исходного кода, используем текущую директорию
+    # Если приложение запущено из исходного кода (.py), используем текущую директорию
     base_path = os.path.dirname(__file__)
+
 # Указываем путь к XML файлу (относительный путь к файлу XML)
 xml_path = os.path.join(base_path, "task_data.xml")
 
-print("путь к XML файлу: ", xml_path)
-
-
-# --------------------------------------------------- XML -------------------------------------------------------------
-
-# -------------------------------------------------END XML ------------------------------------------------------------
+print("=============================================================")
+print("PROJECT_ROOT: ", PROJECT_ROOT)
+print("DISK_LETTER  - ", DISK_LETTER)
+print("FOLDER_DATA  - ", FOLDER_DATA)
+print("PATH_LOG_FILE  - ", PATH_LOG_FILE)
+print("путь к XML файлу  - : ", xml_path)
+print("=============================================================")
 
 
 # ---------------------
+def set_full_access(directory_path):
+    """Устанавливает полный доступ для всех пользователей к указанной папке и её вложениям."""
+    try:
+        # Выполняем команду icacls для установки полных прав на папку и все вложенные файлы
+        command = f'icacls "{directory_path}" /grant Everyone:F /T /C'
+        subprocess.run(command, shell=True, check=True)
+        print(f"Полный доступ установлен для {directory_path}")
+    except subprocess.CalledProcessError as e:
+        print(f"Ошибка при установке прав доступа:\n{str(e)}")
+
+def create_directory_with_permissions(directory_path):
+    """Создаёт папку и устанавливает полный доступ для всех пользователей."""
+    try:
+        # Создаём папку, если её ещё нет
+        if not os.path.exists(directory_path):
+            os.makedirs(directory_path)
+            print(f"Папка создана: {directory_path}")
+        # Устанавливаем полный доступ
+        set_full_access(directory_path)
+    except Exception as e:
+        print(f"Ошибка при создании папки или установке прав:\n{str(e)}")
+
 def log_error(message):
     """Метод для логирования ошибок в файл."""
+    directory_path = os.path.dirname(PATH_LOG_FILE)
+
+    # Проверяем, существует ли папка для логов
+    if not os.path.exists(directory_path):
+        create_directory_with_permissions(directory_path)
+
     try:
-        with open(PATH_LOG_FILE, 'a', encoding='utf-8') as log_file:
+        # Проверяем, существует ли файл
+        mode = 'w' if not os.path.exists(PATH_LOG_FILE) else 'a'
+        with open(PATH_LOG_FILE, mode, encoding='utf-8') as log_file:
             log_file.write(f"ADD_TASK_SCHEDULE({time.strftime('%Y-%m-%d %H:%M:%S')}) -"
                            f" {message}\n==================\n"
                            )
+        if mode == 'w':
+            print(f"Лог-файл был создан: {PATH_LOG_FILE}")
     except Exception as e:
-        show_message_with_auto_close(f"Ошибка при записи лога в файл:\n{str(e)}", "Ошибка")
-
-
+        print(f"(add_task_schedule) Ошибка при записи в лог-файл:\n{str(e)}")
 # ---------------------
 
 def is_admin():
@@ -81,10 +111,6 @@ def run_as_admin():
             sys.exit()  # Завершаем текущий процесс, чтобы предотвратить двойной запуск
         except Exception as e:
             log_error(f"Не удалось запустить программу с правами администратора:\n{e}")
-            show_message_with_auto_close(
-                    f"Не удалось запустить программу с правами администратора:\n\n{e}",
-                    "Ошибка"
-            )
 
 
 def run_powershell_commands():
@@ -108,17 +134,10 @@ def run_powershell_commands():
 
         # Выполняем команду для регистрации задачи через PowerShell
         subprocess.run(["powershell", "-Command", register_task_command], check=True)
-
-        show_message_with_auto_close(
-                f"Задача 'Start CPG Monitor'\nуспешно зарегистрирована в планировщике заданий.",
-                "Успешно"
-        )
+        log_error(f"Задача 'Start CPG Monitor'\nуспешно зарегистрирована в планировщике заданий.")
 
     except subprocess.CalledProcessError as e:
-        show_message_with_auto_close(
-                f"Произошла ошибка при выполнении PowerShell команд:\n - {e}",
-                "Ошибка"
-        )
+        log_error(f"Произошла ошибка при выполнении PowerShell команд:\n - {e}")
 
         sys.exit(1)  # Завершаем программу с кодом ошибки
 
@@ -147,10 +166,7 @@ if __name__ == '__main__':
     task_name = "Start CPG Monitor"
     # Проверяем, существует ли задача
     if check_task_exists(task_name):
-        show_message_with_auto_close(
-                f"Задача '{task_name}'\nуже существует в планировщике задач. Установка отменена.",
-                "Предупреждение"
-        )
+        log_error(f"Задача '{task_name}'\nуже существует в планировщике задач. Установка отменена.")
 
         sys.exit()  # Завершаем выполнение, если задача уже существует
     else:
