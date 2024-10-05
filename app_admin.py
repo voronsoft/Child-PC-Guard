@@ -7,7 +7,6 @@ import ctypes
 import gettext
 import function
 import subprocess
-from function import read_json
 import app_wnd_input_first_pass
 from app_wind_pass import WndPass
 from app_wind_tray_icon import TrayIcon
@@ -121,7 +120,7 @@ class Window(wx.Frame):
                                                          wx.NullBitmap,
                                                          wx.ITEM_NORMAL,
                                                          _(r"Очистить все"),
-                                                         _(r"Удаляет пароль и все данные задания для блокировки. "
+                                                         _(r"Удаляет все данные задания для блокировки. "
                                                            r"БЛОКИРОВКУ НЕ ОТКЛЮЧАЕТ"
                                                            ),
                                                          None
@@ -323,26 +322,31 @@ class Window(wx.Frame):
             # Очищаем время блокировки в файле
             function.update_json("remaining_time", 0)
         # END - логика если есть остаточное время в файле.
-        # ------------------------------------------------
+        # -------------------------------------------------
 
-        # Подключаемые события в программе ---------------
+        # Подключаемые события в программе ----------------
         self.input_username.Bind(wx.EVT_TEXT, self.on_input_changed)  # Событие при выборе имени пользователя
         self.input_time.Bind(wx.EVT_COMBOBOX, self.on_input_changed)  # Событие при выборе времени для блокировки
-
         self.Bind(wx.EVT_TIMER, self.run_on_timer, self.timer)  # Событие, при запуске таймера
         self.Bind(wx.EVT_CLOSE, self.on_close)  # Событие, закрытия окна
         self.btn_ok.Bind(wx.EVT_BUTTON, self.start_blocking)  # Событие, при нажатии OK (запуск задания)
         self.btn_disable_blocking.Bind(wx.EVT_BUTTON, self.disable_blocking)  # Событие - Отключить блокировку
-        # События при нажатии кнопок в тулбаре
+        # События при нажатии кнопок в тулбаре ------------
+        # Просмотр логов
         self.Bind(wx.EVT_TOOL, self.on_run_log, self.btn_tool_log)
+        # Запуск окошка таймера
         self.Bind(wx.EVT_TOOL, self.on_run_timer, self.btn_tool_timer)
+        # Запуск мониторинга приложения
         self.Bind(wx.EVT_TOOL, self.on_run_monitor, self.btn_tool_monitor)
+        # Стирает все данные приложения и пароль
         self.Bind(wx.EVT_TOOL, self.on_run_clear_data, self.btn_tool_clear_data)
+        # Запуск приложения разблокировки пользователя
         self.Bind(wx.EVT_TOOL, self.on_run_unblock, self.btn_tool_run_unblock_usr)
+        # Справка о программе
         self.Bind(wx.EVT_TOOL, self.on_run_info, self.btn_tool_info)
-        # Событие при нажатии кнопки заблокировать интерфейс
+        # Блокировка интерфейса
         self.Bind(wx.EVT_TOOL, self.on_block_interface, self.btn_tool_block_interface)
-        # Событие при нажатии кнопки - Разблокировать интерфейс
+        # Разблокировать интерфейс
         self.Bind(wx.EVT_TOOL, self.on_unblock_interface, self.btn_tool_unblock_interface)
         # END ---------------------------------------------
 
@@ -622,7 +626,7 @@ class Window(wx.Frame):
         # Форматируем результат с ведущими нулями
         return f"{hours:02}:{minutes:02}:{secs:02}"
 
-    # Обработчики тулбара
+    # Обработчики тулбара --------------------------------
     def on_run_log(self, event):
         """Запуск просмотра логов программы"""
         try:
@@ -646,6 +650,7 @@ class Window(wx.Frame):
         try:
             # Запускаем .exe файл через subprocess
             subprocess.Popen([path_monitor_exe])
+            wx.MessageBox(f"Мониторинг запущен", "Запуск", wx.OK | wx.ICON_INFORMATION)
         except Exception as e:
             # Выводим сообщение об ошибке, если не удалось запустить приложение
             wx.MessageBox(f"{path_monitor_exe} {str(e)}", "Ошибка", wx.OK | wx.ICON_ERROR)
@@ -695,7 +700,7 @@ class Window(wx.Frame):
         self.btn_ok.Disable()
 
         # Вывод сообщения об успешной очистке
-        wx.MessageBox(f"Все настройки программы сброшены !", "СБРОС ДАННЫХ", wx.OK | wx.ICON_INFORMATION)
+        wx.MessageBox(f"Настройки программы сброшены !", "СБРОС ДАННЫХ", wx.OK | wx.ICON_INFORMATION)
 
     def on_run_info(self, event):
         """Запуск окна справки"""

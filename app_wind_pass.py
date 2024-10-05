@@ -2,7 +2,7 @@ import os
 import wx
 import wx.xrc
 import gettext
-from config_app import FOLDER_IMG, read_json
+from config_app import FOLDER_IMG
 from function import get_password_from_registry, check_password
 
 _ = gettext.gettext
@@ -23,8 +23,7 @@ class WndPass(wx.Dialog):
                            # style=wx.DEFAULT_DIALOG_STYLE & ~(wx.CLOSE_BOX) | wx.STAY_ON_TOP
                            style=wx.DEFAULT_DIALOG_STYLE | wx.STAY_ON_TOP
                            )
-        # TODO ВАЖНО - изменить пароль для программы !!! (app_wind_pass.py)
-        self.password_from_registry= get_password_from_registry()  # Пароль, который нужно ввести
+        self.password_from_registry= get_password_from_registry()  # Пароль из БД
         self.password_check = False  # Флаг проверки правильности пароля
 
         # Установка минимального размера окна

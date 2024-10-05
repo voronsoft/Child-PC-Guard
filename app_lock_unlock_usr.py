@@ -25,7 +25,7 @@ class Pass(wx.Dialog):
                            size=wx.Size(400, 150),
                            style=wx.DEFAULT_DIALOG_STYLE | wx.STAY_ON_TOP
                            )
-        # TODO ВАЖНО - изменить пароль для программы !!! (app_wind_pass.py)
+        self.password_from_registry = function.get_password_from_registry()  # Пароль из БД
         self.password_check = False  # Флаг проверки правильности пароля
 
         # Установка минимального размера окна
@@ -70,29 +70,34 @@ class Pass(wx.Dialog):
         # Добавляем слайзер с вводом и кнопкой в главный слайзер
         sizer_main.Add(sizer_input, 0, wx.ALL | wx.ALIGN_CENTER_HORIZONTAL, 5)
 
-        # Установка главного слайзера
+        # Установка главного сайзера
         self.SetSizer(sizer_main)
         self.Layout()
         sizer_main.Fit(self)
         # Центровка окна
         self.Centre(wx.BOTH)
 
-        # Кнопка ОК
-        self.btn_ok.Bind(wx.EVT_BUTTON, self.on_ok)
-
         # Привязка событий
+        self.btn_ok.Bind(wx.EVT_BUTTON, self.on_ok)  # Кнопка ОК
         self.m_text_ctrl1.Bind(wx.EVT_TEXT_ENTER, self.on_ok)  # Привязка нажатия Enter к полю для пароля
         self.btn_ok.SetDefault()  # Установка кнопки OK как кнопки по умолчанию для Enter
-        # Привязка события закрытия
-        self.Bind(wx.EVT_CLOSE, self.on_close)
+        self.Bind(wx.EVT_CLOSE, self.on_close)  # Событие закрытие окна
 
-    # Обработчик нажатия кнопки OK
+    # Обработчик событий
     def on_ok(self, event):
+        """Определяет поведение окна исходя из веденного пароля (принять или вывести сообщение если нет)"""
         # Получаем значение из поля ввода пароля и сравниваем со значением из БД
-        if function.check_password(self.m_text_ctrl1.GetValue(), function.read_json("password")):
+        if function.check_password(self.m_text_ctrl1.GetValue(), self.password_from_registry):
             self.password_check = True
             self.Destroy()  # Закрытие окна и завершение процесса питон
+        elif not function.get_password_from_registry():
+            wx.MessageBox(_("Не задан пароль для главного приложения.\n"
+                            "Откройте главное приложение и задайте пароль для главной программы.\n"
+                            "Потом вернитесь и введите пароль опять, что-бы получить доступ"),
+                          _("Ошибка"), wx.OK | wx.ICON_STOP)
         else:
+            print("Введенный пароль: ", self.m_text_ctrl1.GetValue())
+            print("Пароль из БД: ", self.password_from_registry)
             wx.MessageBox(_("Неверный пароль. Попробуйте снова."), _("Ошибка"), wx.OK | wx.ICON_ERROR)
 
     def on_close(self, event):
@@ -325,12 +330,14 @@ def main():
     # -------------- END ---------------
 
     app = wx.App(False)
+    # Создаем главное окно
     main_frame = UnblockUser(None)
 
     # Создаем и отображаем окно ввода пароля
     pass_dialog = Pass(main_frame)  # Передаем ссылку на родительское окно
     pass_dialog.ShowModal()
 
+    # Проверяем пароль если совпал отображаем главное окно
     if pass_dialog.password_check:
         main_frame.ShowModal()
 

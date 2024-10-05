@@ -8,10 +8,11 @@ import time
 import ctypes
 import psutil
 import traceback
+import subprocess
 from datetime import datetime
 from apscheduler.schedulers.blocking import BlockingScheduler
-from config_app import PATH_DATA_FILE, DISK_LETTER, PATH_LOG_FILE, path_main_app
 from function import run_as_admin, show_message_with_auto_close
+from config_app import PATH_DATA_FILE, PATH_LOG_FILE, path_main_app
 
 # Имя мьютекса (должно быть уникальным)
 MUTEX_NAME = "Global\\CPG_MONITOR"
@@ -33,8 +34,9 @@ def check_and_restart_program():
         log_error_monitor(f"Программа не запущена. Перезапуск...")
 
         try:
-            os.startfile(path_to_program)  # Перезапуск программы
-
+            # Запускаем .exe файл через subprocess
+            # subprocess.Popen([path_to_program])
+            os.startfile(path_to_program)
         except Exception as e:
             print("1 Планировщик остановлен.")
             # Отключаем планировщик
@@ -131,8 +133,8 @@ def main():
 
     # TODO Настройка времени для заданий в мониторинге (релиз\разработка)
     # Задача 1: Следить за процессом и перезапускать, если не запущен (каждые 60 секунд)
-    # scheduler.add_job(check_and_restart_program, 'interval', seconds=60)  # TODO Включить в момент релиза
-    scheduler.add_job(check_and_restart_program, 'interval', seconds=10)  # Отключить после разработки
+    scheduler.add_job(check_and_restart_program, 'interval', seconds=60)  # TODO Включить в момент релиза
+    # scheduler.add_job(check_and_restart_program, 'interval', seconds=10)  # Отключить после разработки
 
     # Задача 2: Следить за датой и обновлять данные (каждый час)
     # scheduler.add_job(update_data, 'interval', hours=1)  # TODO Включить в момент релиза

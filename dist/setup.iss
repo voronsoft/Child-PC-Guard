@@ -43,8 +43,8 @@ Source: "img\*"; DestDir: "{app}\img"; Flags: ignoreversion recursesubdirs creat
 Source: "data.json"; DestDir: "{commonappdata}\Child PC Guard Data"; Flags: ignoreversion; Permissions: "everyone-full"
 ; Копируем файл log_chpcgu.txt с правами на изменение (файл находится на одном уровне с .iss)
 Source: "log_chpcgu.txt"; DestDir: "{commonappdata}\Child PC Guard Data"; Flags: ignoreversion; Permissions: "everyone-full"
-; Копируем install_info.json с правами на изменение (файл находится на одном уровне с .iss)
-Source: "install_info.json"; DestDir: "{commonappdata}\Child PC Guard Data"; Flags: ignoreversion; Permissions: "everyone-full"
+; Копируем install_info.txt с правами на изменение (файл находится на одном уровне с .iss)
+Source: "install_info.txt"; DestDir: "{commonappdata}\Child PC Guard Data"; Flags: ignoreversion; Permissions: "everyone-full"
 
 [Icons]
 ; Создание ярлыков в меню "Пуск" в общей папке для всех пользователей - (C:\ProgramData\Microsoft\Windows\Start Menu\Programs\)
@@ -71,28 +71,30 @@ Type: files; Name: "{commonappdata}\Child PC Guard Data\*"
 Type: dirifempty; Name: "{commonappdata}\Child PC Guard Data"
 
 
-; Код выполняет запись в файл (install_info.json) пути установки программы для последующего считывания приложением
+; Код выполняет запись в файл (install_info.txt) пути установки программы для последующего считывания приложением
 [Code]
 procedure UpdateInstallInfoFile;
 var
-  // Переменная для хранения пути к файлу install_info.json
+  // Переменная для хранения пути к файлу install_info.txt
   InfoFilePath: String;
   // Переменная для хранения полного пути установки
   InstallPath: String;
   // Переменная для хранения строки в формате JSON
-  JsonContent: String;
+  TxtContent: String;
 begin
-  // Определяем полный путь к файлу install_info.json в папке с данными приложения
-  InfoFilePath := ExpandConstant('{commonappdata}\Child PC Guard Data\install_info.json');
+  // Определяем полный путь к файлу install_info.txt в папке с данными приложения
+  InfoFilePath := ExpandConstant('{commonappdata}\\Child PC Guard Data\\install_info.txt');
   // Получаем полный путь установки приложения
   InstallPath := ExpandConstant('{app}');
-  // Формируем строку в формате JSON
-  JsonContent := '{"app_ins_path": "' + InstallPath + '"}';
+
+  // Формируем строку с адресом для записи
+  TxtContent := InstallPath;
+
   // Создаем строковый список для записи информации в файл
   with TStringList.Create do
   try
-    // Добавляем JSON-контент в строковый список
-    Add(JsonContent);
+    // Добавляем TXT-контент в строковый список
+    Add(TxtContent);
     // Сохраняем данные в указанный файл
     SaveToFile(InfoFilePath);
   finally

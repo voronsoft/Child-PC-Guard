@@ -363,7 +363,7 @@ def function_to_create_path_data_files():
         print(f"Создан файл: {PATH_LOG_FILE}")
         log_error(f"Создан файл: {PATH_LOG_FILE}")
 
-    # Проверяем, существует ли файл install_info.json. Если нет, то создаем его.
+    # Проверяем, существует ли файл install_info.txt. Если нет, то создаем его.
     if not os.path.exists(PATH_INSTALL_INFO_FILE):
         with open(PATH_INSTALL_INFO_FILE, 'w', encoding='utf-8') as file:
             file.write("")  # Создаем пустой лог-файл
