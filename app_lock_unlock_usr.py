@@ -5,7 +5,7 @@ import wx.xrc
 import ctypes
 import gettext
 import function
-from function import unblock_user, show_message_with_auto_close, read_json
+from function import unblock_user, show_message_with_auto_close, read_data_json
 from config_app import FOLDER_IMG, PATH_LOG_FILE
 
 _ = gettext.gettext
@@ -259,16 +259,16 @@ class UnblockUser(wx.Dialog):
         wx.Exit()  # Завершение основного цикла приложения
 
     def search_user_block(self, event):
-        """Обработчик поиска заблокированного пользователя для 3х языковых версий"""
+        """Обработчик поиска заблокированного пользователя для 3 языковых версий"""
         self.USERNAME = function.get_block_user()
 
     def unblock(self, event):
         # Снимаем блокировку
         answer = unblock_user(self.USERNAME)
         # Очищаем имя пользователя для блокировки в файле
-        function.update_json("username_blocking", "")
+        function.update_data_json("username_blocking", "")
         # Очищаем время блокировки в файле
-        function.update_json("remaining_time", 0)
+        function.update_data_json("remaining_time", 0)
         # Сбрасываем поле с именем пользователя
         self.static_txt.SetLabel(f"Нет заблокированных")
         # Отключаем кнопку

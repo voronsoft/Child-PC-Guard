@@ -6,7 +6,7 @@ import threading
 import time
 import ctypes
 import config_app
-from function import read_json, function_to_create_path_data_files, show_message_with_auto_close
+from function import read_data_json, function_to_create_path_data_files, show_message_with_auto_close
 
 _ = gettext.gettext
 
@@ -79,7 +79,7 @@ class TimerApp(wx.Frame):
 
     def update_time(self, event):
         """Обработчик обновления времени каждую секунду"""
-        remaining_time = read_json("remaining_time")
+        remaining_time = read_data_json("remaining_time")
         print(remaining_time)
         if remaining_time is not None:
             if remaining_time > 0:

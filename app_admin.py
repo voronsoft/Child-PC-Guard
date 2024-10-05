@@ -49,8 +49,8 @@ class Window(wx.Frame):
 
         # Основные переменные ==========================================
         self.timer = wx.Timer(self)  # Таймеp
-        self.username_blocking = function.read_json("username_blocking")  # Имя пользователя для блокировки из файла
-        self.remaining_time = function.read_json("remaining_time")  # Время задаваемой блокировки из файла
+        self.username_blocking = function.read_data_json("username_blocking")  # Имя пользователя для блокировки из файла
+        self.remaining_time = function.read_data_json("remaining_time")  # Время задаваемой блокировки из файла
         self.elapsed_time = 0  #
         self.passwort_registry = ""
         # Определяем режим работы приложения, если не АДМИНИСТРАТОР фон красный окно не активно
@@ -318,9 +318,9 @@ class Window(wx.Frame):
         # Если время есть, а имени нет
         elif self.remaining_time > 0 and len(self.username_blocking) == 0:
             # Очищаем имя пользователя для блокировки в файле
-            function.update_json("username_blocking", "")
+            function.update_data_json("username_blocking", "")
             # Очищаем время блокировки в файле
-            function.update_json("remaining_time", 0)
+            function.update_data_json("remaining_time", 0)
         # END - логика если есть остаточное время в файле.
         # -------------------------------------------------
 
@@ -364,17 +364,17 @@ class Window(wx.Frame):
             # Если время больше ноля и имя пользователя не пустое
             if self.remaining_time > 0 and len(self.username_blocking) >= 1:
                 # Запись времени в файл
-                function.update_json("remaining_time", self.remaining_time - self.elapsed_time)
+                function.update_data_json("remaining_time", self.remaining_time - self.elapsed_time)
             # Если время равно 0
             elif self.remaining_time == 0:
                 # Удаляем значение времени если таймер не активен
-                function.update_json("remaining_time", 0)
+                function.update_data_json("remaining_time", 0)
                 # Удаляем значение с именем пользователя для блокировки
-                function.update_json("username_blocking", "")
+                function.update_data_json("username_blocking", "")
             # Если время больше ноля, но имя пустое
             elif self.remaining_time > 0 and len(self.username_blocking) == 0:
                 # Очищаем время если таймер не активен
-                function.update_json("remaining_time", 0)
+                function.update_data_json("remaining_time", 0)
                 # Сбрасываем поле с временем на 0
                 self.input_time.SetSelection(0)
 
@@ -401,16 +401,16 @@ class Window(wx.Frame):
         username_choice = self.input_username.GetValue()  # Получаем имя пользователя для блокировки
         print("Произошло событие в поле выбора пользователя:", username_choice)
         # Записываем имя пользователя для блокировки в файл данных.
-        function.update_json("username_blocking", username_choice)
+        function.update_data_json("username_blocking", username_choice)
         # Обновляем атрибут в классе
-        self.username_blocking = function.read_json("username_blocking")
+        self.username_blocking = function.read_data_json("username_blocking")
 
         # Время блокировки получаем из поля выбора и записываем в файл данных переведя в секунды
         time_choice = int(self.input_time.GetValue()) * 60  # TODO Перевести значение в часы после разработки (*3600)
         # Записывает выбранное время для блокировки в файл данных.
-        function.update_json("remaining_time", time_choice)
+        function.update_data_json("remaining_time", time_choice)
         # Обновляем атрибут в классе
-        self.remaining_time = function.read_json("remaining_time")
+        self.remaining_time = function.read_data_json("remaining_time")
 
         # Получаем данные о сессии
         session_id = function.get_session_id_by_username(self.username_blocking)
@@ -437,12 +437,12 @@ class Window(wx.Frame):
 
             # Сбрасываем выбор пользователя
             self.input_username.SetSelection(-1)  # Сбрасываем поле имени
-            function.update_json("username_blocking", "")  # Стираем имя пользователя в файле
-            self.username_blocking = function.read_json("username_blocking")  # Обновляем атрибут имени пользователя
+            function.update_data_json("username_blocking", "")  # Стираем имя пользователя в файле
+            self.username_blocking = function.read_data_json("username_blocking")  # Обновляем атрибут имени пользователя
             # Сбрасываем выбор времени
             self.input_time.SetSelection(0)  # Обнуляем время в поле
-            function.update_json("remaining_time", 0)  # Стираем значение времени в файле
-            self.remaining_time = function.update_json("remaining_time", 0)  # Обновляем атрибут времени блокировки
+            function.update_data_json("remaining_time", 0)  # Стираем значение времени в файле
+            self.remaining_time = function.update_data_json("remaining_time", 0)  # Обновляем атрибут времени блокировки
         else:
             self.input_time.Enable()  # Активируем поле выбора времени
             self.btn_disable_blocking.Enable()  # Активируем кнопку - Отключить блокировку
@@ -489,13 +489,13 @@ class Window(wx.Frame):
         Обработчик таймера.
         """
         # Сохраняем имя пользователя для блокировки в файл
-        function.update_json("username_blocking", self.username_blocking)
+        function.update_data_json("username_blocking", self.username_blocking)
 
         if self.elapsed_time < self.remaining_time:
             self.elapsed_time += 1  # Увеличиваем прошедшее время
             self.gauge.SetValue(self.elapsed_time)  # Обновляем значение шкалы по мере увеличения времени
             # Сохраняем оставшееся время в файл при каждом тике таймера
-            function.update_json("remaining_time", self.remaining_time - self.elapsed_time)
+            function.update_data_json("remaining_time", self.remaining_time - self.elapsed_time)
             # Обновление значения текста в таймере главного окна (01:10:23)
             self.timer_time.SetLabel(self.seconds_to_hms(self.remaining_time - self.elapsed_time))
 
@@ -513,8 +513,8 @@ class Window(wx.Frame):
             # После того как отработала блокировка пользователя настраиваем интерфейс и обновляем данные.
             self.gauge.SetValue(0)  # Обнуляем статус строку
 
-            function.update_json("remaining_time", 0)  # Удаляем значение времени в файле.
-            function.update_json("username_blocking", "")  # Удаляем значение имени пользователя в файле.
+            function.update_data_json("remaining_time", 0)  # Удаляем значение времени в файле.
+            function.update_data_json("username_blocking", "")  # Удаляем значение имени пользователя в файле.
 
             self.input_username.SetSelection(-1)  # Стираем значение в поле имя пользователя.
             self.input_username.Enable()  # Активируем поле выбора имени
@@ -545,14 +545,14 @@ class Window(wx.Frame):
             # Стираем значение в поле имя пользователя.
             self.input_username.SetSelection(-1)
             # Очищаем значение имени пользователя в файле
-            function.update_json("username_blocking", "")  # Удаляем значение с именем пользователя для блокировки.
+            function.update_data_json("username_blocking", "")  # Удаляем значение с именем пользователя для блокировки.
 
             # Стираем значение в поле выбора времени для блокировки
             self.input_time.SetSelection(0)
             # Очищаем значение времени в файле
-            function.update_json("remaining_time", 0)  # Удаляем значение времени в файле.
+            function.update_data_json("remaining_time", 0)  # Удаляем значение времени в файле.
             # Стираем значение атрибута времени для блокировки в классе
-            self.remaining_time = function.read_json("remaining_time")
+            self.remaining_time = function.read_data_json("remaining_time")
 
             # Сбрасываем значение времени в поле - "Осталось времени до блокировки:"
             self.timer_time.SetLabel("00:00:00")
@@ -686,9 +686,9 @@ class Window(wx.Frame):
         # Сбрасываем значение времени в поле - "Осталось времени до блокировки:"
         self.timer_time.SetLabel("00:00:00")
         # Очищаем содержимое времени в файле
-        function.update_json("remaining_time", 0)  # Записываем значение времени 0 в файл
+        function.update_data_json("remaining_time", 0)  # Записываем значение времени 0 в файл
         # Очищаем содержимое имени пользователя в файле
-        function.update_json("username_blocking", "")  # Записываем пустую строку в файл
+        function.update_data_json("username_blocking", "")  # Записываем пустую строку в файл
 
         # Активируем поле выбора имени пользователя для блокировки
         self.input_username.Enable()
@@ -727,7 +727,7 @@ class Window(wx.Frame):
             self.enable_fields()
             print("1 Должен активироваться интерфейс")
         # Если пароль совпал и есть остаточное время в БД
-        elif dlg.password_check and function.read_json("remaining_time"):
+        elif dlg.password_check and function.read_data_json("remaining_time"):
             self.enable_fields()
             self.input_username.Enable(False)
             self.btn_disable_blocking.Enable(True)
@@ -779,8 +779,8 @@ def main():
     # Создаем папки и файлы с данными для работы приложения в местах допуска системы windows 10/11
     function.function_to_create_path_data_files()
 
-    username_blocking = function.read_json("username_blocking")  # Имя пользователя для блокировки из файла
-    remaining_time = function.read_json("remaining_time")  # Время задаваемой блокировки из файла
+    username_blocking = function.read_data_json("username_blocking")  # Имя пользователя для блокировки из файла
+    remaining_time = function.read_data_json("remaining_time")  # Время задаваемой блокировки из файла
     password_from_registry = function.get_password_from_registry() # Считываем пароль
     # TODO Создаем и отображаем окно ввода пароля для приложения
     # Проверка есть ли у приложения пароль

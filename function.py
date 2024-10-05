@@ -6,6 +6,7 @@ import time
 import json
 import winreg
 import ctypes
+import requests
 import threading
 import subprocess
 
@@ -67,7 +68,7 @@ def run_as_admin():
             )
 
 
-def read_json(key, file_path=PATH_DATA_FILE):
+def read_data_json(key, file_path=PATH_DATA_FILE):
     """
     Читает данные из JSON-файла и возвращает их в виде словаря.
 
@@ -93,7 +94,7 @@ def read_json(key, file_path=PATH_DATA_FILE):
         return None
 
 
-def update_json(key, value, file_path=PATH_DATA_FILE):
+def update_data_json(key, value, file_path=PATH_DATA_FILE):
     """
     Изменяет данные в JSON-файле по указанному ключу и сохраняет их обратно в файл.
 
@@ -349,7 +350,10 @@ def function_to_create_path_data_files():
                 "username_blocking": "",
                 "remaining_time": 0,
                 "date": "0001-02-03",
-                "password": ""
+                "password": "",
+                "id_tg_bot_parent": 631191214,
+                "bot_token_telegram": "7456533985:AAEGOk3VUU04Z4bk9B83kzy4MW5zem3hbYw",
+                "chat_id": ""
         }
         with open(PATH_DATA_FILE, 'w', encoding='utf-8') as file:
             json.dump(initial_data, file, indent=4)  # Записываем данные в формате JSON с отступами
@@ -465,5 +469,33 @@ def delete_password_from_registry():
         print(f"Ошибка при удалении записи пароля: {e}")
         log_error(f"Ошибка при удалении записи пароля: {e}")
 
+
 # -------------------------------------- END ---------------------------------
-#delete_password_from_registry()
+
+
+def send_telegram_message(bot_token=read_data_json("bot_token_telegram"), chat_id=read_data_json("chat_id"), message="Default text"):
+    """
+    Отправляет сообщение в Telegram через указанный бот.
+
+    :param bot_token: Токен Telegram-бота.
+    :param chat_id: ID чата, куда будет отправлено сообщение.
+    :param message: Сообщение, которое нужно отправить.
+    :return: None
+    """
+    # URL для отправки сообщения
+    url = f"https://api.telegram.org/bot{bot_token}/sendMessage"
+
+    # Данные, которые будут отправлены
+    data = {
+            'chat_id': chat_id,
+            'text': message,
+    }
+
+    # Отправка POST-запроса к API Telegram
+    response = requests.post(url, data=data)
+
+    # Проверка ответа от Telegram
+    if response.status_code == 200:
+        print("Сообщение успешно отправлено.")
+    else:
+        print(f"Ошибка при отправке сообщения: {response.status_code} - {response.text}")

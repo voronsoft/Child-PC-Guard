@@ -42,10 +42,10 @@ def resource_path(relative_path=""):
 
 def read_file(file_path):
     """
-    Считывает файл и ищет строку с указанным ключом.
+    Считывает файл и ищет строку с указанным ключом
 
-    :param file_path (str): путь к файлу.
-    :return str: значение или None, если ключ не найден.
+    :param file_path str: Путь к файлу
+    :return str: Значение или None, если ключ не найден.
     """
     try:
         # Открываем файл для чтения
