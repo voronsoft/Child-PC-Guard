@@ -21,6 +21,7 @@ _ = gettext.gettext
 
 ###########################################################################
 ## Class DocWindow
+## Класс окна для документации
 ###########################################################################
 
 class DocWindow(wx.Dialog):
@@ -44,7 +45,7 @@ class DocWindow(wx.Dialog):
 
         sizer_main = wx.BoxSizer(wx.VERTICAL)
 
-        sizer_main.SetMinSize(wx.Size(700, 450))
+        sizer_main.SetMinSize(wx.Size(700, 500))
         self.rich_txt = wx.richtext.RichTextCtrl(self,
                                                  wx.ID_ANY,
                                                  _("ТЕКСТ ЗАПОЛНИТЕЛЬ - документация в разработке\n\n"
