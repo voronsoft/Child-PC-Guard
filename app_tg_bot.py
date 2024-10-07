@@ -1,10 +1,9 @@
-import ctypes
 import os
 import sys
-import function
+import ctypes
 import asyncio
 import logging
-import threading
+import function
 from telegram import ReplyKeyboardMarkup, KeyboardButton, InlineKeyboardButton, InlineKeyboardMarkup, Update
 from telegram.ext import Application, CommandHandler, ContextTypes, MessageHandler, filters, CallbackQueryHandler
 
