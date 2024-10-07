@@ -332,8 +332,6 @@ def show_message_with_auto_close(message, title="Сообщение", delay=3):
     threading.Thread(target=auto_close).start()
 
 
-# TODO Поправить пути исходя из данных куда было установленно приложение пользователем (динамические ссылки на
-#  приложения)
 def function_to_create_path_data_files():
     """Функция проверки и создания файлов данных для приложения"""
     # Проверяем, существует ли папка. Если нет, то создаем её.
@@ -533,10 +531,10 @@ def delete_password_from_registry():
 
 # -------------------------------------- END ---------------------------------
 
-
+# ----------------------------------- Работа с BOT ---------------------------
 def send_telegram_message(bot_token=read_data_json("bot_token_telegram"),
                           chat_id=read_data_json("chat_id"),
-                          message="Default text"
+                          message="Default test text message."
                           ):
     """
     Отправляет сообщение в Telegram через указанный бот.
@@ -561,5 +559,8 @@ def send_telegram_message(bot_token=read_data_json("bot_token_telegram"),
     # Проверка ответа от Telegram
     if response.status_code == 200:
         print("Сообщение успешно отправлено.")
+        log_error(f"MSG -> BOT:\n{message}")
     else:
         print(f"Ошибка при отправке сообщения: {response.status_code} - {response.text}")
+        log_error(f"Ошибка при отправке сообщения: {response.status_code} - {response.text}")
+# -------------------------------------- END ---------------------------------
