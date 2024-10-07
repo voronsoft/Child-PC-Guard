@@ -797,8 +797,10 @@ def main():
         function.show_message_with_auto_close(f"Неизвестная ошибка:\n{error_code}", "ОШИБКА")
         return
 
+    print("1 Создаются папка и файлы перед запуском")
     # Создаем папки и файлы с данными для работы приложения если они не существуют
     function.function_to_create_path_data_files()
+    print("2 Конец создания нужных паок и файлов")
 
     password_from_registry = function.get_password_from_registry()
 

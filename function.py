@@ -1,16 +1,24 @@
-import hashlib
-import hmac
 import os
 import sys
 import time
 import json
+import hmac
 import winreg
 import ctypes
+import hashlib
 import requests
 import threading
 import subprocess
-
 from config_app import FOLDER_DATA, PATH_DATA_FILE, PATH_LOG_FILE, PATH_INSTALL_INFO_FILE, SECRET_KEY
+
+FOLDER_DATA_PRGM_DATA = os.path.join(os.environ.get('PROGRAMDATA'), "Child PC Guard Data")
+PATH_DATA_FILE_PRGM_DATA = os.path.join(FOLDER_DATA_PRGM_DATA, "data.json")
+PATH_LOG_FILE_PRGM_DATA = os.path.join(FOLDER_DATA_PRGM_DATA, "log_chpcgu.txt")
+PATH_INSTALL_INFO_FILE_PRGM_DATA = os.path.join(FOLDER_DATA_PRGM_DATA, "install_info.txt")
+print("111-FOLDER_DATA_PRGM_DATA", FOLDER_DATA_PRGM_DATA)
+print("111-PATH_DATA_FILE_PRGM_DATA", PATH_DATA_FILE_PRGM_DATA)
+print("111-PATH_LOG_FILE_PRGM_DATA", PATH_LOG_FILE_PRGM_DATA)
+print("111-PATH_INSTALL_INFO_FILE_PRGM_DATA", PATH_INSTALL_INFO_FILE_PRGM_DATA)
 
 
 # ----------------------------------- Логирование ----------------------------
@@ -328,7 +336,6 @@ def show_message_with_auto_close(message, title="Сообщение", delay=3):
 #  приложения)
 def function_to_create_path_data_files():
     """Функция проверки и создания файлов данных для приложения"""
-
     # Проверяем, существует ли папка. Если нет, то создаем её.
     if not os.path.exists(FOLDER_DATA):
         os.makedirs(FOLDER_DATA)
@@ -379,6 +386,60 @@ def function_to_create_path_data_files():
     subprocess.run(['icacls', FOLDER_DATA, '/grant', 'Everyone:F', '/T', '/C'], shell=True)
     print(f"Права доступа обновлены для папки и вложенных файлов: {FOLDER_DATA}")
     log_error(f"Права доступа обновлены для папки и вложенных файлов: {FOLDER_DATA}")
+    #
+    # -------------------------------------------------------------------------------------
+    # TODO В момент релиза можно удалить эту часть кода, необходим в момент разработки при запуске exe файлов
+    # -------------------------------------------------------------------------------------
+    #
+    if not os.path.exists(FOLDER_DATA_PRGM_DATA):
+        os.makedirs(FOLDER_DATA_PRGM_DATA)
+        print(f"2Создана папка: {FOLDER_DATA_PRGM_DATA}")
+        log_error(f"2Создана папка: {FOLDER_DATA_PRGM_DATA}")
+
+        # Применяем полные права ко всем пользователям на созданную папку
+        subprocess.run(['icacls', FOLDER_DATA_PRGM_DATA, '/grant', 'Everyone:F', '/T', '/C'], shell=True)
+        # /grant - предоставить права
+        # Everyone:F - разрешить полные права для всех пользователей
+        # /T - рекурсивно для всех вложенных файлов и папок
+        # /C - продолжить выполнение даже при ошибках
+        print(f"2Права доступа установлены для папки: {FOLDER_DATA_PRGM_DATA}")
+        log_error(f"2Права доступа установлены для папки: {FOLDER_DATA_PRGM_DATA}")
+
+    # Проверяем, существует ли файл data.json. Если нет, то создаем его и записываем начальные данные.
+    if not os.path.exists(PATH_DATA_FILE_PRGM_DATA):
+        initial_data = {
+                "username_blocking": "",
+                "remaining_time": 0,
+                "date": "0001-02-03",
+                "password": "",
+                "id_tg_bot_parent": 0,
+                "bot_token_telegram": "7456533985:AAEGOk3VUU04Z4bk9B83kzy4MW5zem3hbYw",
+                "chat_id": ""
+        }
+        with open(PATH_DATA_FILE_PRGM_DATA, 'w', encoding='utf-8') as file:
+            json.dump(initial_data, file, indent=4)  # Записываем данные в формате JSON с отступами
+        print(f"2Создан файл: {PATH_DATA_FILE_PRGM_DATA} с начальными данными")
+        log_error(f"2Создан файл: {PATH_DATA_FILE_PRGM_DATA} с начальными данными")
+
+    # Проверяем, существует ли файл log_chpcgu.txt. Если нет, то создаем его.
+    if not os.path.exists(PATH_LOG_FILE_PRGM_DATA):
+        with open(PATH_LOG_FILE_PRGM_DATA, 'w', encoding='utf-8') as file:
+            file.write("")  # Создаем пустой лог-файл
+        print(f"2Создан файл: {PATH_LOG_FILE_PRGM_DATA}")
+        log_error(f"2Создан файл: {PATH_LOG_FILE_PRGM_DATA}")
+
+    # Проверяем, существует ли файл install_info.txt. Если нет, то создаем его.
+    if not os.path.exists(PATH_INSTALL_INFO_FILE_PRGM_DATA):
+        with open(PATH_INSTALL_INFO_FILE_PRGM_DATA, 'w', encoding='utf-8') as file:
+            file.write("")  # Создаем пустой лог-файл
+        print(f"2Создан файл: {PATH_INSTALL_INFO_FILE_PRGM_DATA}")
+        log_error(f"2Создан файл: {PATH_INSTALL_INFO_FILE_PRGM_DATA}")
+
+    # Применяем полные права ко всем пользователям на файлы, если они уже существуют или только что были созданы.
+    # Задаем доступ для всех на запись чтение изменение.
+    subprocess.run(['icacls', FOLDER_DATA_PRGM_DATA, '/grant', 'Everyone:F', '/T', '/C'], shell=True)
+    print(f"2Права доступа обновлены для папки и вложенных файлов: {FOLDER_DATA_PRGM_DATA}")
+    log_error(f"2Права доступа обновлены для папки и вложенных файлов: {FOLDER_DATA_PRGM_DATA}")
 
 
 def check_mode_run_app():
@@ -473,7 +534,10 @@ def delete_password_from_registry():
 # -------------------------------------- END ---------------------------------
 
 
-def send_telegram_message(bot_token=read_data_json("bot_token_telegram"), chat_id=read_data_json("chat_id"), message="Default text"):
+def send_telegram_message(bot_token=read_data_json("bot_token_telegram"),
+                          chat_id=read_data_json("chat_id"),
+                          message="Default text"
+                          ):
     """
     Отправляет сообщение в Telegram через указанный бот.
 

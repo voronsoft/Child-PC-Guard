@@ -105,30 +105,31 @@ PATH_LOG_FILE = os.path.join(FOLDER_DATA, "log_chpcgu.txt")
 PATH_INSTALL_INFO_FILE = os.path.join(FOLDER_DATA, "install_info.txt")
 
 # =================================== Путь к приложениям ==================================
-# TODO Путь к приложениям Блокировщик, Таймер, Монитор, Разблокировать
 path_main_app = os.path.join(FOLDER_INSTALL_APP, "Child PC Guard.exe")  # Путь к главному приложению
-path_timer_exe = os.path.join(FOLDER_INSTALL_APP, "Child PC Timer.exe")  # Путь к таймеру
-path_monitor_exe = os.path.join(FOLDER_INSTALL_APP, "Windows CPG Monitor.exe")  # Путь к Монитору
-path_unblock_usr_exe = os.path.join(FOLDER_INSTALL_APP, "Child PC Unlock User.exe")  # Путь к разблокировке
+path_timer_exe = os.path.join(FOLDER_INSTALL_APP, "Child PC Timer.exe")  # Путь к приложению Таймер
+path_monitor_exe = os.path.join(FOLDER_INSTALL_APP, "Windows CPG Monitor.exe")  # Путь к приложению Монитор
+path_unblock_usr_exe = os.path.join(FOLDER_INSTALL_APP, "Child PC Unlock User.exe")  # Путь к приложению Разблокировки
+path_bot_tg_exe = os.path.join(FOLDER_INSTALL_APP, "run_bot_telegram.exe.")  # Путь к приложению Бота
 # ========================================== END ==========================================
 
 
 if __name__ == "__main__":
     ...
-    print("PROJECT_ROOT: ", PROJECT_ROOT)
-    print("DISK_LETTER: ", DISK_LETTER)
-    print("FOLDER_DATA: ", FOLDER_DATA)
-    print("FOLDER_IMG: ", FOLDER_IMG)
-    print("FOLDER_INSTALL_APP: ", FOLDER_INSTALL_APP)
-    print("SCREENSAVER1: ", SCREENSAVER1)
-    print("SCREENSAVER2: ", SCREENSAVER2)
-    print("PATH_DATA_FILE: ", PATH_DATA_FILE)
-    print("PATH_LOG_FILE: ", PATH_LOG_FILE)
-    print("PATH_INSTALL_INFO_FILE: ", PATH_INSTALL_INFO_FILE)
+print("PROJECT_ROOT: ", PROJECT_ROOT)
+print("DISK_LETTER: ", DISK_LETTER)
+print("FOLDER_DATA: ", FOLDER_DATA)
+print("FOLDER_IMG: ", FOLDER_IMG)
+print("FOLDER_INSTALL_APP: ", FOLDER_INSTALL_APP)
+print("SCREENSAVER1: ", SCREENSAVER1)
+print("SCREENSAVER2: ", SCREENSAVER2)
+print("PATH_DATA_FILE: ", PATH_DATA_FILE)
+print("PATH_LOG_FILE: ", PATH_LOG_FILE)
+print("PATH_INSTALL_INFO_FILE: ", PATH_INSTALL_INFO_FILE)
 
-    print("===============================app exe===================================")
-    print("path_timer_exe: ", path_timer_exe)
-    print("path_monitor_exe", path_monitor_exe)
-    print("path_unblock_usr_exe", path_unblock_usr_exe)
-    print("path_main_app", path_main_app)
-    print("===============================app exe===================================")
+print("===============================app exe===================================")
+print("path_timer_exe: ", path_timer_exe)
+print("path_monitor_exe", path_monitor_exe)
+print("path_unblock_usr_exe", path_unblock_usr_exe)
+print("path_main_app", path_main_app)
+print("path_bot_tg_exe", path_bot_tg_exe)
+print("===============================app exe===================================")

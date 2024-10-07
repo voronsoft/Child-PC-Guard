@@ -1,9 +1,11 @@
 import os
 import wx
+import time
 import wx.xrc
 import gettext
 import function
-from config_app import FOLDER_IMG
+import subprocess
+from config_app import FOLDER_IMG, PATH_LOG_FILE, path_bot_tg_exe
 
 _ = gettext.gettext
 
@@ -168,19 +170,30 @@ class BotWindow(wx.Dialog):
     # Обработчики событий --------------------------------
     def on_close(self, event):
         """Обработчик закрытия окна"""
-        self.Hide()
-        self.Close()
-        wx.Exit()
+        self.Destroy()
 
-    def on_ok(self, event, id_tg_bot_parent=None):
+    def on_ok(self, event):
         """Обработчик нажатия кнопки ОК"""
         # Получаем пароль из поля ввода
         id_chat = self.input_id_chat_bot.GetValue()
         # Записываем значение в БД
         if id_chat.isdigit():
-            function.update_data_json("id_tg_bot_parent", id_chat)
-            # Выводим сообщение об успешной операции
-            function.show_message_with_auto_close("ID записан в БД", "Успешно")
+            try:
+                # Запись
+                function.update_data_json("id_tg_bot_parent", id_chat)
+                # Попутка запуска приложения БОТА .exe файл через subprocess
+                subprocess.Popen([path_bot_tg_exe])
+                # Выводим сообщение об успешной операции
+                function.show_message_with_auto_close(
+                        "ID записан в БД\nБот Telegram запущен и настроен для уведомлений о работе программы",
+                        "Успешно"
+                )
+            except Exception as e:
+                # Выводим сообщение об ошибке, если не удалось запустить приложение
+                wx.MessageBox(f"(app_w_bot) {path_bot_tg_exe}: {str(e)}", "Ошибка", wx.OK | wx.ICON_ERROR)
+                # Записываем лог
+                self.log_error(f"{path_bot_tg_exe} {str(e)}")
+
             self.Destroy()
         else:
             dialog = wx.MessageDialog(self,
@@ -193,6 +206,18 @@ class BotWindow(wx.Dialog):
             dialog.ShowModal()
             # Очищаем ввод если это не цифры
             self.input_id_chat_bot.SetLabel("")
+
+    def log_error_(self, message):
+        """Логирование ошибок в файл."""
+        try:
+            with open(PATH_LOG_FILE, 'a', encoding="utf-8") as log_file:
+                log_file.write(f"app_wind_bot({time.strftime('%Y-%m-%d %H:%M:%S')}) - "
+                               f"{message}\n==================\n"
+                               )
+        except Exception as e:
+            print(f"(1)Ошибка при записи лога в файл: {str(e)}")
+            function.show_message_with_auto_close(f"Ошибка при записи в файл лога:\n{str(e)}", "ОШИБКА")
+
 
 # Основная секция для запуска программы
 if __name__ == '__main__':
