@@ -12,8 +12,7 @@ TOKEN = function.read_data_json("bot_token_telegram")
 
 # Глобальная переменная для приложения
 application = None
-# Глобальная переменная для отслеживания состояния работы бота
-BOT_THREAD = None
+
 
 # Включаем логирование для отладки
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
@@ -162,6 +161,10 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def main_bot_run():
     global application  # Объявляем application глобальной переменной
+
+    # Проверяем, если бот уже запущен
+    check_if_running()  # Проверяем перед запуском
+
     # Создаем приложение Telegram
     application = Application.builder().token(TOKEN).build()
 
@@ -188,36 +191,13 @@ async def main_bot_run():
     # Корректное завершение работы бота
     await shutdown(application)
 
-
-# --------------------------------------------------------------------------------------------------
-def run_bot():
-    """Запуск бота в асинхронном режиме для вызова в месте где используется синхронный подход"""
-    global BOT_THREAD
-    if BOT_THREAD is None:  # Проверка, запущен ли бот
-        BOT_THREAD = threading.Thread(target=asyncio.run, args=(main_bot_run(),))
-        BOT_THREAD.start()  # Запускаем поток с ботом
-
-
-def stop_bot():
-    """Функция для остановки работы бота."""
-    global BOT_THREAD, application
-    if BOT_THREAD is not None:
-        # Останавливаем бота
-        # asyncio.run(shutdown(application))  # Асинхронно завершаем работу бота
-
-        # Завершаем поток бота
-        if BOT_THREAD.is_alive():  # Проверяем, активен ли поток
-            BOT_THREAD.join(timeout=1)  # Ожидаем завершения потока
-            print("Поток бота завершён.")
-        BOT_THREAD = None  # Очищаем переменную потока
-        # Завершаем процесс (закрытие программы)
-        sys.exit()
+    # Удаляем PID-файл при завершении
+    remove_pid_file()  # Удаляем PID-файл при завершении
 
 
 # --------------------------------------------------------------------------------------------------
+
+
 if __name__ == '__main__':
-    check_if_running()  # Проверяем перед запуском
-    try:
-        asyncio.run(main_bot_run())  # Запускаем бота
-    finally:
-        remove_pid_file()  # Удаляем PID-файл при завершении
+    # Запускаем бота
+    asyncio.run(main_bot_run())

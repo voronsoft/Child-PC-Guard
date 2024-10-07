@@ -2,7 +2,7 @@ import os
 import wx
 import wx.xrc
 import gettext
-
+import function
 from config_app import FOLDER_IMG
 
 _ = gettext.gettext
@@ -161,6 +161,38 @@ class BotWindow(wx.Dialog):
 
         self.Centre(wx.BOTH)
 
+        # Подключаемые события в программе ----------------
+        self.sizer_btnOK.Bind(wx.EVT_BUTTON, self.on_ok)  # Событие, нажатия OK
+        self.sizer_btnCancel.Bind(wx.EVT_BUTTON, self.on_close)  # Событие, нажатия Cancel
+
+    # Обработчики событий --------------------------------
+    def on_close(self, event):
+        """Обработчик закрытия окна"""
+        self.Hide()
+        self.Close()
+        wx.Exit()
+
+    def on_ok(self, event, id_tg_bot_parent=None):
+        """Обработчик нажатия кнопки ОК"""
+        # Получаем пароль из поля ввода
+        id_chat = self.input_id_chat_bot.GetValue()
+        # Записываем значение в БД
+        if id_chat.isdigit():
+            function.update_data_json("id_tg_bot_parent", id_chat)
+            # Выводим сообщение об успешной операции
+            function.show_message_with_auto_close("ID записан в БД", "Успешно")
+            self.Destroy()
+        else:
+            dialog = wx.MessageDialog(self,
+                                      _(f"Ошибка ID может содержать только цифры\n"
+                                        f"Пример: 'Ваш chat_id: 1234567890'"
+                                        ),
+                                      _("ОШИБКА"),
+                                      wx.ICON_ERROR
+                                      )
+            dialog.ShowModal()
+            # Очищаем ввод если это не цифры
+            self.input_id_chat_bot.SetLabel("")
 
 # Основная секция для запуска программы
 if __name__ == '__main__':

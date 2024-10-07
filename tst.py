@@ -1,6 +1,7 @@
 import requests
 
 from app_tg_bot import TOKEN
+from function import read_data_json
 
 
 def send_message_to_telegram_bot(token, chat_id, message):
@@ -32,8 +33,11 @@ def send_message_to_telegram_bot(token, chat_id, message):
 
 def main():
     bot_token = TOKEN  # Замените на токен вашего бота
-    chat_id = 'YOUR_CHAT_ID'  # Замените на идентификатор чата
+    chat_id = read_data_json("id_tg_bot_parent")  # Замените на идентификатор чата
     message = 'Привет, это тестовое сообщение из второго приложения!'
+    print("bot_token: ", bot_token)
+    print("chat_id: ", chat_id)
+    print("message: ", message)
 
     send_message_to_telegram_bot(bot_token, chat_id, message)
 
@@ -46,6 +50,7 @@ def get_id_chat(token):
 # Пример использования функции
 if __name__ == "__main__":
     get_id_chat(TOKEN)
+    main()
 
 
 

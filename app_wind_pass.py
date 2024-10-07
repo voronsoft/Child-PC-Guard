@@ -46,23 +46,6 @@ class WndPass(wx.Dialog):
         # Основной вертикальный слайзер
         sizer_main = wx.BoxSizer(wx.VERTICAL)
 
-        # Верхний текст
-        # self.m_static_text2 = wx.StaticText(self,
-        #                                     wx.ID_ANY,
-        #                                     _("Если фон главного окна КРАСНОГО цвета, "
-        #                                       "значит программа запущена без прав АДМИНИСТРАТОРА.\n"
-        #                                       "Необходимо перезапустить программу от имени АДМИНИСТРАТОРА"
-        #                                       ),
-        #                                     wx.DefaultPosition,
-        #                                     wx.DefaultSize,
-        #                                     0
-        #                                     )
-        # # Устанавливаем шрифт с размером 10
-        # self.m_static_text2.SetFont(wx.Font(10, wx.FONTFAMILY_SWISS, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False))
-        # self.m_static_text2.SetForegroundColour(wx.Colour(217, 47, 38))  # Задаем цвет шрифту
-        # self.m_static_text2.Wrap(-1)
-        # sizer_main.Add(self.m_static_text2, 0, wx.ALL | wx.ALIGN_CENTER_HORIZONTAL, 10)
-
         # Поле ввода пароля и кнопка OK
         sizer_input = wx.BoxSizer(wx.HORIZONTAL)
         self.m_static_text1 = wx.StaticText(self, wx.ID_ANY, _("Пароль: "), wx.DefaultPosition, wx.DefaultSize, 0)

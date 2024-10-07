@@ -16,7 +16,6 @@ from app_wind_documentation import DocWindow
 from app_wind_splash_screen import main_splash
 from config_app import FOLDER_IMG, path_timer_exe, path_monitor_exe, path_unblock_usr_exe, PATH_LOG_FILE
 
-
 _ = gettext.gettext
 
 # Имя мьютекса (должно быть уникальным)
@@ -150,14 +149,16 @@ class Window(wx.Frame):
                                                    )
         self.tool_bar.AddStretchableSpace()  # Вставляем гибкое пространство
         self.btn_tool_bot = self.tool_bar.AddTool(wx.ID_ANY,
-                                                   _(r"Оповещение"),
-                                                   wx.Bitmap(os.path.join(FOLDER_IMG, "telegram.ico"), wx.BITMAP_TYPE_ANY),
-                                                   wx.NullBitmap,
-                                                   wx.ITEM_NORMAL,
-                                                   _(r"Оповещение"),
-                                                   _(r"Открывает окно для настройки оповещения через Telegram"),
-                                                   None
-                                                   )
+                                                  _(r"Оповещение"),
+                                                  wx.Bitmap(os.path.join(FOLDER_IMG, "telegram.ico"),
+                                                            wx.BITMAP_TYPE_ANY
+                                                            ),
+                                                  wx.NullBitmap,
+                                                  wx.ITEM_NORMAL,
+                                                  _(r"Оповещение"),
+                                                  _(r"Открывает окно для настройки оповещения через Telegram"),
+                                                  None
+                                                  )
         self.tool_bar.AddStretchableSpace()  # Вставляем гибкое пространство
 
         self.btn_tool_unblock_interface = self.tool_bar.AddTool(wx.ID_ANY,
@@ -363,7 +364,8 @@ class Window(wx.Frame):
         self.Bind(wx.EVT_TOOL, self.on_unblock_interface, self.btn_tool_unblock_interface)
         # END ---------------------------------------------
 
-    # Обработчики событий
+    # Обработчики событий --------------------------------
+    # TODO при закрытии окна через крестик кнопки активируются в главном окне... это багуля ))
     def on_close(self, event):
         """Обработчик закрытия программы"""
         # Ожидаем ответа от пользователя
@@ -407,7 +409,7 @@ class Window(wx.Frame):
             dlg.Destroy()  # Закрываем только диалоговое окно и продолжаем работу
 
         # Не даем закрыть окно, если нажали "Отмена"
-        event.Veto()
+        # event.Veto()
 
     def on_input_changed(self, event):
         """
@@ -723,13 +725,11 @@ class Window(wx.Frame):
 
     def on_run_info(self, event):
         """Запуск окна справки"""
-        # TODO Возможно нужно открывать в отдельном потоке от основной программы....не уверен
         doc_app = DocWindow(self)
         doc_app.Show()
 
     def on_run_bot(self, event):
-        """Запуск окна справки"""
-        # TODO сделать окно настройки для оповещения через Telegram
+        """Запуск окна настройки для оповещения для telegram"""
         doc_app = BotWindow(self)
         doc_app.Show()
 
@@ -746,10 +746,10 @@ class Window(wx.Frame):
         dlg = WndPass(self)
         dlg.ShowModal()
 
+        # Если пароль не совпал
         if not dlg.password_check:
             self.Close()
-            print(1111123231144, dlg.password_check)
-            self.enable_fields()
+            self.enable_fields_tool_bar()
             print("1 Должен активироваться интерфейс")
         # Если пароль совпал и есть остаточное время в БД
         elif dlg.password_check and function.read_data_json("remaining_time"):
@@ -757,6 +757,7 @@ class Window(wx.Frame):
             self.input_username.Enable(False)
             self.btn_disable_blocking.Enable(True)
             print("2 Должен активироваться интерфейс")
+        # Если пароль совпал
         elif dlg.password_check:
             self.enable_fields()
             print("3 Должен активироваться интерфейс")
@@ -773,63 +774,6 @@ class Window(wx.Frame):
             function.show_message_with_auto_close(f"Ошибка при записи в файл лога:\n{str(e)}", "ОШИБКА")
 
     # =============================================================================================================
-
-
-# def main():
-#     # Запускаем приложение как администратор
-#     function.run_as_admin()
-#
-#     # ------- Проверка кода ошибки -------
-#     # Создание мьютекса
-#     mutex = ctypes.windll.kernel32.CreateMutexW(None, False, MUTEX_NAME)
-#     error_code = ctypes.windll.kernel32.GetLastError()
-#
-#     if error_code == 183:
-#         # show_message_with_auto_close(f"Приложение Child PC Guard уже запущено.", "ПРЕДУПРЕЖДЕНИЕ")
-#         return
-#     elif error_code == 5:  # ERROR_ACCESS_DENIED
-#         if mutex != 0:  # Проверяем, что дескриптор валиден перед закрытием
-#             ctypes.windll.kernel32.CloseHandle(mutex)
-#         function.show_message_with_auto_close("Доступ к мьютексу запрещен.", "ОШИБКА")
-#
-#         return
-#     elif error_code != 0:
-#         if mutex != 0:  # Проверяем, что дескриптор валиден перед закрытием
-#             ctypes.windll.kernel32.CloseHandle(mutex)
-#         function.show_message_with_auto_close(f"Неизвестная ошибка:\n{error_code}", "ОШИБКА")
-#
-#         return
-#     # -------------- END ---------------
-#
-#     # Создаем папки и файлы с данными для работы приложения в местах допуска системы windows 10/11
-#     function.function_to_create_path_data_files()
-#
-#     username_blocking = function.read_data_json("username_blocking")  # Имя пользователя для блокировки из файла
-#     remaining_time = function.read_data_json("remaining_time")  # Время задаваемой блокировки из файла
-#     password_from_registry = function.get_password_from_registry() # Считываем пароль
-#     # TODO Создаем и отображаем окно ввода пароля для приложения
-#     # Проверка есть ли у приложения пароль
-#     if not password_from_registry:
-#         app_wnd_input_first_pass.main()
-#         # Выводим заставку
-#         main_splash()
-#
-#     # Инициализируем главное окно в случае продолжения отсчета программой времени из файла данных
-#     app = wx.App(False)
-#
-#     main_frame = Window(None) # Выводим главное окно
-#     main_frame.disable_fields()  # Деактивируем все поля главного приложения
-#     main_frame.enable_fields_tool_bar()  #  Активируем кнопки блок\актив интерфейса
-#     main_frame.Show() # Отображаем окно
-#     #
-#
-#
-#     app.MainLoop()
-#
-#     # Закрываем дескриптор мьютекса, когда приложение завершает работу
-#     if mutex != 0:  # Проверяем, что дескриптор валиден перед закрытием
-#         ctypes.windll.kernel32.CloseHandle(mutex)
-
 
 
 def main():
@@ -853,11 +797,9 @@ def main():
         function.show_message_with_auto_close(f"Неизвестная ошибка:\n{error_code}", "ОШИБКА")
         return
 
-    # Создаем папки и файлы с данными для работы приложения
+    # Создаем папки и файлы с данными для работы приложения если они не существуют
     function.function_to_create_path_data_files()
 
-    username_blocking = function.read_data_json("username_blocking")
-    remaining_time = function.read_data_json("remaining_time")
     password_from_registry = function.get_password_from_registry()
 
     if not password_from_registry:

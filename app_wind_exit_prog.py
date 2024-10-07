@@ -25,7 +25,6 @@ class WndCloseApp(wx.Dialog):
                            size=wx.Size(400, 150),
                            style=wx.DEFAULT_DIALOG_STYLE & ~(wx.CLOSE_BOX) | wx.STAY_ON_TOP
                            )
-        # TODO ВАЖНО - изменить пароль для программы !!! (app_wind_pass.py)
         self.password_from_registry= get_password_from_registry()  # Пароль, который нужно ввести
         self.password_check = False  # Флаг проверки правильности пароля
 
@@ -98,11 +97,12 @@ class WndCloseApp(wx.Dialog):
         self.Centre(wx.BOTH)
 
         # Привязка событий
-        # Кнопка ОК
         self.btn_ok.Bind(wx.EVT_BUTTON, self.on_ok)  # Событие при нажатии кнопки ОК
         self.btn_ok.SetDefault()  # Установка кнопки OK как кнопки по умолчанию для Enter
         self.input_pass_txt.Bind(wx.EVT_TEXT_ENTER, self.on_ok)
         self.btn_cancell.Bind(wx.EVT_BUTTON, self.on_cancel)  # Событие при нажатии кнопки cancel
+        self.Bind(wx.EVT_CLOSE, self.on_close)  # Событие, закрытия окна
+
         # Установка фокуса на поле ввода пароля
         self.input_pass_txt.SetFocus()  # Устанавливаем фокус на поле ввода
 
@@ -120,8 +120,12 @@ class WndCloseApp(wx.Dialog):
         """Обработчик нажатия кнопки Отмена"""
         self.EndModal(wx.ID_CANCEL)  # Закрыть диалог с результатом Cancel
 
+    def on_close(self, event):
+        """Обработчик закрытия программы"""
+        self.Destroy()
+
     def on_key_press_Esc(self, event):
-        """Обработка нажатия клавиш"""
+        """Обработка нажатия клавиши ESC"""
         keycode = event.GetKeyCode()
 
         # Если нажата клавиша ESC, вызываем обработчик закрытия окна
