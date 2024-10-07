@@ -516,7 +516,7 @@ class Window(wx.Frame):
             # Сохраняем оставшееся время в файл при каждом тике таймера
             function.update_data_json("remaining_time", self.remaining_time - self.elapsed_time)
             # Обновление значения текста в таймере главного окна (01:10:23)
-            self.timer_time.SetLabel(self.seconds_to_hms(self.remaining_time - self.elapsed_time))
+            self.timer_time.SetLabel(function.seconds_to_hms(self.remaining_time - self.elapsed_time))
 
         else:
             self.timer.Stop()  # Останавливаем таймер, когда время истекло
@@ -631,21 +631,6 @@ class Window(wx.Frame):
         """
         self.tool_bar.EnableTool(self.btn_tool_unblock_interface.GetId(), True)
         self.tool_bar.ToggleTool(self.btn_tool_block_interface.GetId(), True)
-
-    def seconds_to_hms(self, seconds):
-        """
-        Преобразует количество секунд в строку формата часы:минуты:секунды.
-
-        :param seconds: Количество секунд (целое число).
-        :return: Строка формата "часы:минуты:секунды".
-        """
-        # Вычисляем количество часов, минут и секунд
-        hours = seconds // 3600
-        minutes = (seconds % 3600) // 60
-        secs = seconds % 60
-
-        # Форматируем результат с ведущими нулями
-        return f"{hours:02}:{minutes:02}:{secs:02}"
 
     # Обработчики тулбара --------------------------------
     def on_run_log(self, event):

@@ -3,6 +3,7 @@ import sys
 import time
 import json
 import hmac
+import psutil
 import winreg
 import ctypes
 import hashlib
@@ -15,10 +16,10 @@ FOLDER_DATA_PRGM_DATA = os.path.join(os.environ.get('PROGRAMDATA'), "Child PC Gu
 PATH_DATA_FILE_PRGM_DATA = os.path.join(FOLDER_DATA_PRGM_DATA, "data.json")
 PATH_LOG_FILE_PRGM_DATA = os.path.join(FOLDER_DATA_PRGM_DATA, "log_chpcgu.txt")
 PATH_INSTALL_INFO_FILE_PRGM_DATA = os.path.join(FOLDER_DATA_PRGM_DATA, "install_info.txt")
-print("111-FOLDER_DATA_PRGM_DATA", FOLDER_DATA_PRGM_DATA)
-print("111-PATH_DATA_FILE_PRGM_DATA", PATH_DATA_FILE_PRGM_DATA)
-print("111-PATH_LOG_FILE_PRGM_DATA", PATH_LOG_FILE_PRGM_DATA)
-print("111-PATH_INSTALL_INFO_FILE_PRGM_DATA", PATH_INSTALL_INFO_FILE_PRGM_DATA)
+# print("111-FOLDER_DATA_PRGM_DATA", FOLDER_DATA_PRGM_DATA)
+# print("111-PATH_DATA_FILE_PRGM_DATA", PATH_DATA_FILE_PRGM_DATA)
+# print("111-PATH_LOG_FILE_PRGM_DATA", PATH_LOG_FILE_PRGM_DATA)
+# print("111-PATH_INSTALL_INFO_FILE_PRGM_DATA", PATH_INSTALL_INFO_FILE_PRGM_DATA)
 
 
 # ----------------------------------- Логирование ----------------------------
@@ -128,19 +129,23 @@ def update_data_json(key, value, file_path=PATH_DATA_FILE):
             json.dump(data, file, indent=4, ensure_ascii=False)
 
         print(f"Данные успешно обновлены: {key} = {value}")
-
+        return True
     except FileNotFoundError:
         log_error(f"Файл {file_path} не найден.")
         print(f"Файл {file_path} не найден.")
+        return False
     except json.JSONDecodeError:
         log_error("Ошибка чтения JSON-файла.")
         print("Ошибка чтения JSON-файла.")
+        return False
     except KeyError:
         log_error(f"Ключ '{key}' не найден в JSON-файле.")
         print(f"Ключ '{key}' не найден в JSON-файле.")
+        return False
     except Exception as e:
         log_error(f"Ошибка при обновлении данных: {e}")
         print(f"Ошибка при обновлении данных: {e}")
+        return False
 
 
 def get_users():
@@ -302,7 +307,7 @@ def username_session():
     return username_session
 
 
-def show_message_with_auto_close(message, title="Сообщение", delay=3):
+def show_message_with_auto_close(message="Тестовое сообщение", title="Сообщение", delay=3):
     """
     Показывает сообщение в окне и закрывает его через заданное количество секунд.
 
@@ -450,6 +455,42 @@ def check_mode_run_app():
         log_error(f"Запуск приложения в режиме ПОЛЬЗОВАТЕДЬ")
     return "user"
 
+def check_if_program_running(program_name):
+    """Проверка сатуса работы программы в Windows"""
+    # Получаем список всех запущенных процессов
+    for process in psutil.process_iter(['pid', 'name']):
+        try:
+            # Сравниваем имя процесса с искомым
+            if process.info['name'].lower() == program_name.lower():
+                return True
+        except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
+            pass
+    return False
+
+
+def seconds_to_hms(seconds):
+    """
+    Преобразует количество секунд в строку формата часы:минуты:секунды.
+
+    :param seconds: Количество секунд (целое число).
+    :return: Строка формата "часы:минуты:секунды".
+    """
+    # Вычисляем количество часов, минут и секунд
+    hours = seconds // 3600
+    minutes = (seconds % 3600) // 60
+    secs = seconds % 60
+
+    # Форматируем результат с ведущими нулями
+    return f"{hours:02}:{minutes:02}:{secs:02}"
+
+def show_warning_message(msg_txt: str):
+    """
+    Вывод окна с предупреждением на рабочий стол
+
+    :param msg_txt:
+    :return: True/False
+    """
+    show_message_with_auto_close()
 
 # --------------------------Работа с паролем для приложения-------------------
 def hash_password(password: str) -> str:
@@ -469,8 +510,6 @@ def check_password(input_password: str, stored_hashed_password: str) -> bool:
     hashed_input = hash_password(input_password)
     return hashed_input == stored_hashed_password
 
-
-# -------------------------------------- END ---------------------------------
 
 # -------------------------------- Работа с реестром -------------------------
 def set_password_in_registry(password: str):
@@ -529,13 +568,11 @@ def delete_password_from_registry():
         log_error(f"Ошибка при удалении записи пароля: {e}")
 
 
-# -------------------------------------- END ---------------------------------
-
 # ----------------------------------- Работа с BOT ---------------------------
-def send_telegram_message(bot_token=read_data_json("bot_token_telegram"),
-                          chat_id=read_data_json("chat_id"),
-                          message="Default test text message."
-                          ):
+def send_bot_telegram_message(bot_token=read_data_json("bot_token_telegram"),
+                              chat_id=read_data_json("chat_id"),
+                              message="Default test text message."
+                              ):
     """
     Отправляет сообщение в Telegram через указанный бот.
 

@@ -62,23 +62,23 @@ def read_file(file_path):
 def resource_path_inst_app():
     """ Возвращает путь к папке установки программы относительно исполняемого файла или скрипта """
     try:
-        print(1)
+        # print(1)
         if getattr(sys, 'frozen', False):  # Если приложение запущено как (.exe).
-            print(2)
+            # print(2)
             # Считываем данные по пути из файла системы - (X):\DataProgram\install_info.txt
             app_inst_base_path = read_file(os.path.join(FOLDER_DATA, "install_info.txt"))
 
-            print("2-1  ", FOLDER_DATA)
-            print("2-2  ", os.path.join(FOLDER_DATA, "install_info.txt"))
-            print("2-3  ", app_inst_base_path)
+            # print("2-1  ", FOLDER_DATA)
+            # print("2-2  ", os.path.join(FOLDER_DATA, "install_info.txt"))
+            # print("2-3  ", app_inst_base_path)
         else:  # Если приложение запущено как обычный скрипт (.py).
             # Считываем данные по пути из директории проекта
-            print(3)
+            # print(3)
             app_inst_base_path = read_file(os.path.join(FOLDER_DATA, "install_info.txt"))
 
-            print("3-1 ", FOLDER_DATA)
-            print("3-2 ", os.path.join(FOLDER_DATA, "install_info.txt"))
-            print("3-3 ", app_inst_base_path)
+            # print("3-1 ", FOLDER_DATA)
+            # print("3-2 ", os.path.join(FOLDER_DATA, "install_info.txt"))
+            # print("3-3 ", app_inst_base_path)
 
         # Возвращаем полный путь к папке img
         return os.path.join(app_inst_base_path)
@@ -115,21 +115,21 @@ path_bot_tg_exe = os.path.join(FOLDER_INSTALL_APP, "run_bot_telegram.exe.")  # �
 
 if __name__ == "__main__":
     ...
-print("PROJECT_ROOT: ", PROJECT_ROOT)
-print("DISK_LETTER: ", DISK_LETTER)
-print("FOLDER_DATA: ", FOLDER_DATA)
-print("FOLDER_IMG: ", FOLDER_IMG)
-print("FOLDER_INSTALL_APP: ", FOLDER_INSTALL_APP)
-print("SCREENSAVER1: ", SCREENSAVER1)
-print("SCREENSAVER2: ", SCREENSAVER2)
-print("PATH_DATA_FILE: ", PATH_DATA_FILE)
-print("PATH_LOG_FILE: ", PATH_LOG_FILE)
-print("PATH_INSTALL_INFO_FILE: ", PATH_INSTALL_INFO_FILE)
+    print("PROJECT_ROOT: ", PROJECT_ROOT)
+    print("DISK_LETTER: ", DISK_LETTER)
+    print("FOLDER_DATA: ", FOLDER_DATA)
+    print("FOLDER_IMG: ", FOLDER_IMG)
+    print("FOLDER_INSTALL_APP: ", FOLDER_INSTALL_APP)
+    print("SCREENSAVER1: ", SCREENSAVER1)
+    print("SCREENSAVER2: ", SCREENSAVER2)
+    print("PATH_DATA_FILE: ", PATH_DATA_FILE)
+    print("PATH_LOG_FILE: ", PATH_LOG_FILE)
+    print("PATH_INSTALL_INFO_FILE: ", PATH_INSTALL_INFO_FILE)
 
-print("===============================app exe===================================")
-print("path_timer_exe: ", path_timer_exe)
-print("path_monitor_exe", path_monitor_exe)
-print("path_unblock_usr_exe", path_unblock_usr_exe)
-print("path_main_app", path_main_app)
-print("path_bot_tg_exe", path_bot_tg_exe)
-print("===============================app exe===================================")
+    print("===============================app exe===================================")
+    print("path_timer_exe: ", path_timer_exe)
+    print("path_monitor_exe", path_monitor_exe)
+    print("path_unblock_usr_exe", path_unblock_usr_exe)
+    print("path_main_app", path_main_app)
+    print("path_bot_tg_exe", path_bot_tg_exe)
+    print("===============================app exe===================================")
