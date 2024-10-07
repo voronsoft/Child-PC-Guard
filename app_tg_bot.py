@@ -95,8 +95,8 @@ async def show_menu(update: Update):
              KeyboardButton("⚠️ Вывести предупреждение")],
             [KeyboardButton("💻 Выключить ПК"),
              KeyboardButton("🔓 Разблокировать ПК")],
-            [KeyboardButton("❌ Выключить приложение"),
-             KeyboardButton("▶️ Включить приложение")],
+            # [KeyboardButton("❌ Выключить приложение"),
+            #  KeyboardButton("▶️ Включить приложение")],
             [KeyboardButton("⏲️ Выбрать время для блокировки")]
     ]
     reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True, one_time_keyboard=False)

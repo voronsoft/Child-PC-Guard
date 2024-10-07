@@ -360,7 +360,7 @@ def function_to_create_path_data_files():
                 "username_blocking": "",
                 "remaining_time": 0,
                 "date": "0001-02-03",
-                "password": "",
+                "protected_user": "",
                 "id_tg_bot_parent": 0,
                 "bot_token_telegram": "7456533985:AAEGOk3VUU04Z4bk9B83kzy4MW5zem3hbYw",
                 "chat_id": ""
@@ -414,7 +414,7 @@ def function_to_create_path_data_files():
                 "username_blocking": "",
                 "remaining_time": 0,
                 "date": "0001-02-03",
-                "password": "",
+                "protected_user": "",
                 "id_tg_bot_parent": 0,
                 "bot_token_telegram": "7456533985:AAEGOk3VUU04Z4bk9B83kzy4MW5zem3hbYw",
                 "chat_id": ""
