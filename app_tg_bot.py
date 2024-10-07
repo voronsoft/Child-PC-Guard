@@ -1,3 +1,4 @@
+import ctypes
 import os
 import sys
 import function
@@ -13,37 +14,17 @@ TOKEN = function.read_data_json("bot_token_telegram")
 # Глобальная переменная для приложения
 application = None
 
-
 # Включаем логирование для отладки
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-PID_FILE = "bot.pid"
+# Имя мьютекса (должно быть уникальным)
+MUTEX_NAME = "Global\\BOT_Child_PC"
 
 # Правильный пароль
 CORRECT_PASSWORD = function.get_password_from_registry()
 # Словарь для хранения авторизованных пользователей
 authorized_users = set(str(function.read_data_json("id_tg_bot_parent")))
-
-
-def check_if_running():
-    """Проверка, запущен ли бот уже, и завершение, если да."""
-    if os.path.exists(PID_FILE):
-        with open(PID_FILE, "r") as f:
-            pid = int(f.read())
-            if os.path.exists(f"/proc/{pid}"):
-                print(f"Бот уже запущен с PID {pid}. Завершение.")
-                sys.exit(1)
-
-    # Записываем текущий PID в файл
-    with open(PID_FILE, "w") as f:
-        f.write(str(os.getpid()))
-
-
-def remove_pid_file():
-    """Удаление PID-файла при завершении."""
-    if os.path.exists(PID_FILE):
-        os.remove(PID_FILE)
 
 
 async def shutdown(application):
@@ -155,15 +136,33 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     elif text.lower() == "stop":  # Если получено сообщение "stop"
         await update.message.reply_text("🛑 Остановка бота...")
 
-        remove_pid_file()  # Удаляем PID файл
         await shutdown(application)  # Остановка бота
 
 
 async def main_bot_run():
-    global application  # Объявляем application глобальной переменной
+    # ------- Проверка кода ошибки -------
+    # Создание мьютекса
+    mutex = ctypes.windll.kernel32.CreateMutexW(None, False, MUTEX_NAME)
+    error_code = ctypes.windll.kernel32.GetLastError()
 
-    # Проверяем, если бот уже запущен
-    check_if_running()  # Проверяем перед запуском
+    if error_code == 183:
+        function.show_message_with_auto_close(f"Приложение BOT Child PC Timer уже запущено.", "ПРЕДУПРЕЖДЕНИЕ")
+        return
+    elif error_code == 5:  # ERROR_ACCESS_DENIED
+        if mutex != 0:  # Проверяем, что дескриптор валиден перед закрытием
+            ctypes.windll.kernel32.CloseHandle(mutex)
+        function.show_message_with_auto_close("Доступ к мьютексу запрещен.", "ОШИБКА")
+
+        return
+    elif error_code != 0:
+        if mutex != 0:  # Проверяем, что дескриптор валиден перед закрытием
+            ctypes.windll.kernel32.CloseHandle(mutex)
+        function.show_message_with_auto_close(f"Неизвестная ошибка:\n{error_code}", "ОШИБКА")
+
+        return
+    # -------------- END ---------------
+
+    global application  # Объявляем application глобальной переменной
 
     # Создаем приложение Telegram
     application = Application.builder().token(TOKEN).build()
@@ -190,9 +189,6 @@ async def main_bot_run():
 
     # Корректное завершение работы бота
     await shutdown(application)
-
-    # Удаляем PID-файл при завершении
-    remove_pid_file()  # Удаляем PID-файл при завершении
 
 
 # --------------------------------------------------------------------------------------------------
