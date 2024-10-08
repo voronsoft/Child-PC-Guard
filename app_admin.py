@@ -201,11 +201,20 @@ class Window(wx.Frame):
         sizer_top.Add(self.txt_input_username, 0, wx.ALL, 5)
 
         # Получаем список пользователей и создаем ComboBox
-        user_list = function.get_users()
+        users = function.get_users()
+        # Исключаем из списка пользователя который под защитой (указан в БД)
+        user_list = [user for user in users if user != function.read_data_json("protected_user")]
 
         if not user_list:
             user_list = [_("----")]
-        self.input_username = wx.ComboBox(self, wx.ID_ANY, choices=user_list, style=wx.CB_DROPDOWN | wx.CB_READONLY)
+        self.input_username = wx.ComboBox(self,
+                                          wx.ID_ANY,
+                                          wx.EmptyString,
+                                          wx.DefaultPosition,
+                                          wx.Size(150, -1),
+                                          choices=user_list,
+                                          style=wx.CB_DROPDOWN | wx.CB_READONLY
+                                          )
         # self.input_username.SetSelection(-1)
         sizer_top.Add(self.input_username, 0, wx.ALL, 5)
         sizer_main.Add(sizer_top, 0, wx.EXPAND, 5)
@@ -242,7 +251,7 @@ class Window(wx.Frame):
         # Устанавливаем начальное значение временем на 0
         self.input_time.SetSelection(0)
 
-        self.input_time.SetMinSize(wx.Size(130, -1))
+        self.input_time.SetMinSize(wx.Size(150, -1))
 
         sizer_top.Add(self.input_time, 0, wx.ALL, 5)
 
@@ -806,7 +815,6 @@ def main():
     # Закрываем дескриптор мьютекса
     if mutex != 0:
         ctypes.windll.kernel32.CloseHandle(mutex)
-
 
 
 if __name__ == "__main__":

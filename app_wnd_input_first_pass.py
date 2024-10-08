@@ -21,17 +21,17 @@ class WndInputFirstAppPass(wx.Dialog):
                            id=wx.ID_ANY,
                            title=_("Пароль программы"),
                            pos=wx.DefaultPosition,
-                           size=wx.Size(600, 350),
+                           size=wx.Size(600, 450),
                            style=wx.DEFAULT_DIALOG_STYLE
                            )
 
-        self.SetSizeHints(wx.Size(600, -1), wx.Size(600, -1))
+        # self.SetSizeHints(wx.Size(-1, -1), wx.Size(-1, -1))
         self.SetFont(wx.Font(14, wx.FONTFAMILY_SWISS, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, "Segoe UI"))
         self.SetBackgroundColour(wx.SystemSettings.GetColour(wx.SYS_COLOUR_BTNHIGHLIGHT))
 
         sizer_main = wx.BoxSizer(wx.VERTICAL)
 
-        sizer_main.SetMinSize(wx.Size(600, 400))
+        sizer_main.SetMinSize(wx.Size(-1, -1))
         sizer_top = wx.BoxSizer(wx.VERTICAL)
 
         self.m_bitmap1 = wx.StaticBitmap(self,
@@ -80,7 +80,7 @@ class WndInputFirstAppPass(wx.Dialog):
 
         sizer_top.Add(self.static_txt, 0, wx.ALIGN_CENTER | wx.ALL, 5)
 
-        self.input_txt_pass = wx.TextCtrl(self, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.Size( 200,-1 ), 0)
+        self.input_txt_pass = wx.TextCtrl(self, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.Size(200, -1), 0)
         self.input_txt_pass.SetFont(wx.Font(12,
                                             wx.FONTFAMILY_SWISS,
                                             wx.FONTSTYLE_NORMAL,
@@ -92,7 +92,37 @@ class WndInputFirstAppPass(wx.Dialog):
         self.input_txt_pass.SetForegroundColour(wx.Colour(220, 16, 16))
         self.input_txt_pass.SetBackgroundColour(wx.SystemSettings.GetColour(wx.SYS_COLOUR_INACTIVEBORDER))
 
-        sizer_top.Add(self.input_txt_pass, 0, wx.ALIGN_CENTER|wx.ALL, 5)
+        sizer_top.Add(self.input_txt_pass, 0, wx.ALIGN_CENTER | wx.ALL, 5)
+
+        # --------------------------------------------------------------------------------------------------
+        self.static_txt2 = wx.StaticText(self,
+                                         wx.ID_ANY,
+                                         _("\nВведите имя пользователя которого НЕЛЬЗЯ БЛОКИРОВАТЬ"),
+                                         wx.DefaultPosition,
+                                         wx.DefaultSize,
+                                         0
+                                         )
+        self.static_txt2.Wrap(-1)
+
+        self.static_txt2.SetForegroundColour(wx.Colour(225, 0, 0))
+
+        sizer_top.Add(self.static_txt2, 0, wx.ALIGN_CENTER | wx.ALL, 5)
+
+        user_list = function.get_users()
+        if not user_list:
+            user_list = [_("----")]
+
+        self.input_protect_user = wx.ComboBox(self,
+                                              wx.ID_ANY,
+                                              wx.EmptyString,
+                                              wx.DefaultPosition,
+                                              wx.Size( 200,-1 ),
+                                              choices=user_list,
+                                              style=wx.CB_DROPDOWN | wx.CB_READONLY,
+                                              )
+        self.input_protect_user.SetSelection(-1)
+        # sizer_top.Add(self.input_username, 0, wx.ALL, 5)
+        sizer_top.Add(self.input_protect_user, 0, wx.ALIGN_CENTER | wx.ALL, 5)
 
         sizer_main.Add(sizer_top, 1, wx.ALIGN_CENTER, 5)
 
@@ -134,9 +164,12 @@ class WndInputFirstAppPass(wx.Dialog):
             psw_code = function.hash_password(self.input_txt_pass.GetValue())
             # Записываем пароль в реестр
             function.set_password_in_registry(psw_code)
+            # Записываем Пользователя в БД (пользователь, который будет под защитой от блокировки)
+            usr = self.input_protect_user.GetValue()  # Получаем имя пользователя
+            function.update_data_json("protected_user", usr)
 
             dialog = wx.MessageDialog(self,
-                                      _(f"Пароль ЗАПИСАН в программу."),
+                                      _(f"Пароль ЗАПИСАН в программу.\nПользователь ЗАПИСАН в программу"),
                                       _("ОТЛИЧНО"),
                                       wx.ICON_AUTH_NEEDED
                                       )
@@ -154,7 +187,6 @@ class WndInputFirstAppPass(wx.Dialog):
                                       )
             dialog.ShowModal()
             dialog.Destroy()
-
 
 
 def main():
