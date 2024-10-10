@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 import sys
+import time
 
 import wx
 import app_locale_base as alb
@@ -47,11 +48,11 @@ class ErrorWindow(wx.Frame):
 
     def update_language(self, lang_code):
         """
-        Обновление языка и текста
+        Обновление языка и текста с перезагрузкой приложения
         """
-        # self.text.SetLabel(_("Блокировка интерфейса").upper())  # Обновляем текст
-        self.Layout()  # Перерисовываем окно
         function.update_data_json("language", lang_code)  # Сохраняем выбранный язык
+        wx.CallAfter(self.Destroy)  # Закрываем текущее окно
+        wx.CallAfter(main)
 
 
 def main():
