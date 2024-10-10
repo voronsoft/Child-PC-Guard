@@ -3,14 +3,17 @@
 import sys
 
 import wx
-import app_locale_base as alb
+import os
+import gettext
 import function
 
 
 class ErrorWindow(wx.Frame):
-    def __init__(self, parent):
-        super(ErrorWindow, self).__init__(parent, size=(400, 200))
-        self.SetTitle(_("ОШИБКА"))
+    def __init__(self, parent, title, lang_code='ru'):
+        super(ErrorWindow, self).__init__(parent, title=title, size=(400, 200))
+
+        # Устанавливаем язык
+        self.set_language(lang_code)
 
         # Панель и текст
         panel = wx.Panel(self)
@@ -45,21 +48,45 @@ class ErrorWindow(wx.Frame):
         self.Centre()  # Центрируем окно на экране
         self.Show()  # Показываем окно
 
+    def set_language(self, lang_code):
+        """
+        Устанавливает язык для локализации
+        """
+        # Путь к папке - locale
+        locale_dir = os.path.join(os.getcwd(), 'locale')
+        print("locale_dir ", locale_dir)
+
+        # Загружаем переводы для указанного языка
+        lang = gettext.translation('messages', localedir=locale_dir, languages=[lang_code])
+        lang.install()  # Устанавливаем переводы
+        global _  # Глобальная переменная для использования перевода
+        _ = lang.gettext  # Присваиваем gettext метод для использования
+
     def update_language(self, lang_code):
         """
         Обновление языка и текста
         """
-        # self.text.SetLabel(_("Блокировка интерфейса").upper())  # Обновляем текст
+        self.set_language(lang_code)  # Устанавливаем новый язык
+        self.text.SetLabel(_("Блокировка интерфейса").upper())  # Обновляем текст
         self.Layout()  # Перерисовываем окно
         function.update_data_json("language", lang_code)  # Сохраняем выбранный язык
 
 
 def main():
-    app = alb.BaseApp(redirect=False)
-    frame = ErrorWindow(None)
-    frame.Show()
+    app = wx.App(False)
+    # Получаем язык, если он существует, иначе по умолчанию 'ru'
+    lang_code = function.read_data_json("language")
+    # Создаем окно с выбранным языком
+    frame = ErrorWindow(None, "Локализация ошибки", lang_code)
     app.MainLoop()  # Запускаем главный цикл приложения
 
 
 if __name__ == '__main__':
     main()
+
+
+
+
+
+
+

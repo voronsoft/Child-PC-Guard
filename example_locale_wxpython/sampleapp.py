@@ -4,7 +4,7 @@
 """The sample I18N application"""
 
 import os
-
+import app_base as ab
 import wx
 import wx.lib.sized_controls as sc
 
@@ -103,9 +103,7 @@ class AppI18N(sc.SizedFrame):
         event.Skip()
 
 if __name__ == '__main__':
-    import app_base as ab
     app = ab.BaseApp(redirect=False)
-
     frame = AppI18N(None)
     frame.Show()
     app.MainLoop()

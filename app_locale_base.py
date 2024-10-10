@@ -7,21 +7,21 @@ from config_app import FOLDER_DATA
 
 # -------------- Константы настройки домен и языки----------------------
 # Языковой домен (название файла mo)
-LANGDOMAIN = "I18Nwxapp"
-# Список языков для поддержки в приложении ( для которых есть файлы перевода)
-SUPPORTED_LANGUAGE = {u"en": wx.LANGUAGE_ENGLISH,
-                      u"fr": wx.LANGUAGE_FRENCH,
-                      u"de": wx.LANGUAGE_GERMAN,
-                      u"ru": wx.LANGUAGE_RUSSIAN,
-                      }
+# LANGDOMAIN = "I18Nwxapp"
+# # Список языков для поддержки в приложении ( для которых есть файлы перевода)
+# SUPPORTED_LANGUAGE = {u"en": wx.LANGUAGE_ENGLISH,
+#                       u"fr": wx.LANGUAGE_FRENCH,
+#                       u"de": wx.LANGUAGE_GERMAN,
+#                       u"ru": wx.LANGUAGE_RUSSIAN,
+#                       }
 
 
-# LANGDOMAIN = "messages"
-# SUPPORTED_LANGUAGE = {
-#         u"en": wx.LANGUAGE_ENGLISH,
-#         u"uk": wx.LANGUAGE_UKRAINIAN,
-#         u"ru": wx.LANGUAGE_RUSSIAN,
-# }
+LANGDOMAIN = "messages"
+SUPPORTED_LANGUAGE = {
+        u"en": wx.LANGUAGE_ENGLISH,
+        u"uk": wx.LANGUAGE_UKRAINIAN,
+        u"ru": wx.LANGUAGE_RUSSIAN,
+}
 # --------------------------- END --------------------------------------
 
 # Устанавливаем пользовательский displayhook, чтобы предотвратить
