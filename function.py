@@ -72,7 +72,7 @@ def run_as_admin():
         except Exception as e:
             log_error(f"Не удалось запустить программу с правами администратора:\n{e}")
             show_message_with_auto_close(
-                    f"Не удалось запустить программу с правами администратора:\n\n{e}",
+                    f"Не удалось запустить программу с правами администратора:\n{e}",
                     "Ошибка"
             )
 
@@ -294,8 +294,8 @@ def unblock_user(username):
         subprocess.run(command, shell=True, check=True)
         return True
     except Exception as e:
-        log_error(f"Ошибка при разблокировке пользователя - {username}:\n\n{e}")
-        show_message_with_auto_close(f"Ошибка при разблокировке пользователя - {username}:\n\n{e}",
+        log_error(f"Ошибка при разблокировке пользователя - {username}:\n{e}")
+        show_message_with_auto_close(f"Ошибка при разблокировке пользователя - {username}:\n{e}",
                                      "Ошибка"
                                      )
         return False

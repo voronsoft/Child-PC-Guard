@@ -1,11 +1,9 @@
 import os
-
 import wx
 import wx.xrc
 import gettext
-
 from config_app import FOLDER_IMG
-from function import get_password_from_registry, check_password
+from function import get_password_from_registry, check_password, show_message_with_auto_close
 
 _ = gettext.gettext
 
@@ -114,7 +112,7 @@ class WndCloseApp(wx.Dialog):
             self.password_check = True
             self.EndModal(wx.ID_OK)  # Закрыть диалог с результатом OK
         else:
-            wx.MessageBox(_("Неверный пароль. Попробуйте снова."), _("Ошибка"), wx.OK | wx.ICON_ERROR)
+            show_message_with_auto_close(_("Неверный пароль. Попробуйте снова."), _("Ошибка"))
 
     def on_cancel(self, event):
         """Обработчик нажатия кнопки Отмена"""

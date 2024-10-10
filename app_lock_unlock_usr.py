@@ -85,19 +85,17 @@ class Pass(wx.Dialog):
 
     # Обработчик событий
     def on_ok(self, event):
-        """Определяет поведение окна исходя из веденного пароля (принять или вывести сообщение если нет)"""
+        """Определяет поведение окна исходя из введенного пароля (принять или вывести сообщение если нет)"""
         # Получаем значение из поля ввода пароля и сравниваем со значением из БД
         if function.check_password(self.m_text_ctrl1.GetValue(), self.password_from_registry):
             self.password_check = True
             self.Destroy()  # Закрытие окна и завершение процесса питон
         elif not function.get_password_from_registry():
-            wx.MessageBox(_("Не задан пароль для главного приложения.\n"
-                            "Откройте главное приложение и задайте пароль для главной программы.\n"
-                            "Потом вернитесь и введите пароль опять, что-бы получить доступ"),
-                          _("Ошибка"), wx.OK | wx.ICON_STOP)
+            wx.MessageBox(
+                    _("Не задан пароль для главного приложения.\nОткройте главное приложение и задайте пароль для главной программы.\nПотом вернитесь и введите пароль опять, что-бы получить доступ"),
+                    _("Ошибка"), wx.OK | wx.ICON_STOP
+            )
         else:
-            print("Введенный пароль: ", self.m_text_ctrl1.GetValue())
-            print("Пароль из БД: ", self.password_from_registry)
             wx.MessageBox(_("Неверный пароль. Попробуйте снова."), _("Ошибка"), wx.OK | wx.ICON_ERROR)
 
     def on_close(self, event):
@@ -156,7 +154,7 @@ class UnblockUser(wx.Dialog):
 
         self.static_txt_app_mode = wx.StaticText(self,
                                                  wx.ID_ANY,
-                                                 _("АДМИНИСТРАТОР" if APP_MODE else "НЕТ ПРАВ администратора"),
+                                                 (_("АДМИНИСТРАТОР") if APP_MODE else _("НЕТ ПРАВ администратора")),
                                                  wx.Point(-1, -1),
                                                  wx.DefaultSize,
                                                  0
@@ -194,7 +192,7 @@ class UnblockUser(wx.Dialog):
 
         self.static_txt = wx.StaticText(self,
                                         wx.ID_ANY,
-                                        _(f"{self.USERNAME if self.USERNAME else 'Нет заблокированных'}"),
+                                        f"{self.USERNAME if self.USERNAME else _('Нет заблокированных')}",
                                         wx.DefaultPosition,
                                         wx.DefaultSize,
                                         0
@@ -245,8 +243,6 @@ class UnblockUser(wx.Dialog):
 
         self.Centre(wx.BOTH)  # Центровка окна
 
-
-
         # Привязка событий
         self.Bind(wx.EVT_CLOSE, self.on_close)  # Событие при закрытии окна
         self.btn_update_mode.Bind(wx.EVT_BUTTON, self.search_user_block)  # Событие при нажатии на кнопку обновить
@@ -270,36 +266,35 @@ class UnblockUser(wx.Dialog):
         # Очищаем время блокировки в файле
         function.update_data_json("remaining_time", 0)
         # Сбрасываем поле с именем пользователя
-        self.static_txt.SetLabel(f"Нет заблокированных")
+        self.static_txt.SetLabel(_("Нет заблокированных"))
         # Отключаем кнопку
         self.btn_unlock.Enable(False)
         # Сообщение записываем в log
         self.log_error(f"Пользователь {self.USERNAME} разблокирован !")
 
         if answer:
-            show_message_with_auto_close(f"Пользователь {self.USERNAME} разблокирован !",
-                                         "Успешно"
-                                         )
+            show_message_with_auto_close(f"{self.USERNAME}\n{_("Пользователь разблокирован!")}", _("Успешно"))
         else:
             # Сообщение записываем в log
             self.log_error(f"Ошибка при разблокировке пользователя: {self.USERNAME}")
-            show_message_with_auto_close(f"(a_l_u_u)\nОшибка при разблокировке пользователя: {self.USERNAME}\n",
-                                         "Ошибка"
-                                         )
+            show_message_with_auto_close(
+                    f"(a_l_u_u)\n{_("Ошибка при разблокировке пользователя:")} {self.USERNAME}\n", _("Ошибка")
+            )
 
     @staticmethod
     def log_error(message):
         """Метод для логирования ошибок в файл."""
         try:
             with open(PATH_LOG_FILE, 'a', encoding='utf-8') as log_file:
-                log_file.write(f"CPG_UNLOCK_USER({time.strftime('%Y-%m-%d %H:%M:%S')}) -"
-                               f" {message}\n==================\n"
-                               )
+                log_file.write(
+                        f"CPG_UNLOCK_USER({time.strftime('%Y-%m-%d %H:%M:%S')}) -{message}\n==================\n"
+                )
         except Exception as e:
             print(f"Ошибка при записи лога в файл лога: {str(e)}")
-            show_message_with_auto_close(f"CPG_UNLOCK_USER({time.strftime('%Y-%m-%d %H:%M:%S')}) - {message}\n==================\n",
-                                         "Ошибка"
-                                         )
+            show_message_with_auto_close(
+                    f"CPG_UNLOCK_USER({time.strftime('%Y-%m-%d %H:%M:%S')}) - {message}\n==================\n",
+                    _("Ошибка")
+            )
 
 
 def main():
@@ -312,19 +307,22 @@ def main():
     error_code = ctypes.windll.kernel32.GetLastError()
 
     if error_code == 183:
-        show_message_with_auto_close(f"Приложение Unlock User CPGuard уже запущено.", "ПРЕДУПРЕЖДЕНИЕ")
+        show_message_with_auto_close(
+                _("Приложение Unlock User CPGuard уже запущено."),
+                _("ПРЕДУПРЕЖДЕНИЕ")
+        )
 
         return
     elif error_code == 5:  # ERROR_ACCESS_DENIED
         if mutex != 0:  # Проверяем, что дескриптор валиден перед закрытием
             ctypes.windll.kernel32.CloseHandle(mutex)
-        show_message_with_auto_close("Доступ к мьютексу запрещен.", "ОШИБКА")
+        show_message_with_auto_close(_("Доступ к мьютексу запрещен."), _("ОШИБКА"))
 
         return
     elif error_code != 0:
         if mutex != 0:  # Проверяем, что дескриптор валиден перед закрытием
             ctypes.windll.kernel32.CloseHandle(mutex)
-        show_message_with_auto_close(f"Неизвестная ошибка:\n{error_code}", "ОШИБКА")
+        show_message_with_auto_close(f"{_('Неизвестная ошибка')}:\n{error_code}", "ОШИБКА")
 
         return
     # -------------- END ---------------

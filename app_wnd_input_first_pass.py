@@ -178,13 +178,9 @@ class WndInputFirstAppPass(wx.Dialog):
             self.Destroy()
         elif len(psw) >= 5 and password_from_registry:
             # Выводим сообщение об ошибке, что пароль уже есть в бД
-            wx.MessageBox(f"Пароль уже есть в БД", "Ошибка", wx.OK | wx.ICON_ERROR)
+            wx.MessageBox(_("Пароль уже есть в БД"), _("Ошибка"), wx.OK | wx.ICON_ERROR)
         elif len(psw) <= 5:
-            dialog = wx.MessageDialog(self,
-                                      _(f"Пароль не может быть меньше 5ти знаков"),
-                                      _("Предупреждение"),
-                                      wx.ICON_WARNING
-                                      )
+            dialog = wx.MessageDialog(self, _("Пароль не может быть меньше пять знаков"), _("Предупреждение"), wx.ICON_WARNING)
             dialog.ShowModal()
             dialog.Destroy()
 

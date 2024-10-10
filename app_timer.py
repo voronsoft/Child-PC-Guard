@@ -1,7 +1,8 @@
+import os
+
 import wx
 import wx.xrc
 import gettext
-import os
 import threading
 import time
 import ctypes
@@ -86,14 +87,14 @@ class TimerApp(wx.Frame):
                 self.time_label.SetLabel(self.seconds_to_hms(remaining_time))
                 self.Layout()
             elif remaining_time == 0:
-                self.time_label.SetLabel(f"Выключен")
+                self.time_label.SetLabel(_(f"Выключен"))
         else:
             self.time_label.SetLabel("ERROR")
             self.timer.Stop()
             wx.CallAfter(wx.MessageBox,
-                         f"Ошибка считывания времени.\nТаймер будет закрыт.\n"
-                         f"Повторный запуск таймера может исправить проблему",
-                         "Ошибка",
+                         _("Ошибка считывания времени.\nТаймер будет закрыт.\nПовторный запуск таймера может исправить проблему"
+                           ),
+                         _("ОШИБКА"),
                          wx.OK | wx.ICON_ERROR
                          )
             # Проверка существования файлов с данными
@@ -136,7 +137,7 @@ class TimerApp(wx.Frame):
                                )
         except Exception as e:
             print(f"(1)Ошибка при записи лога в файл: {str(e)}")
-            show_message_with_auto_close(f"Ошибка при записи в файл лога:\n{str(e)}", "ОШИБКА")
+            show_message_with_auto_close(f"{_("Ошибка при записи в файл лога:")}\n{str(e)}", _("ОШИБКА"))
 
         # =============================================================================================================
 
@@ -148,18 +149,18 @@ def main():
     error_code = ctypes.windll.kernel32.GetLastError()
 
     if error_code == 183:
-        show_message_with_auto_close(f"Приложение Child PC Timer уже запущено.", "ПРЕДУПРЕЖДЕНИЕ")
+        show_message_with_auto_close(_(f"Приложение Child PC Timer уже запущено."), _("ПРЕДУПРЕЖДЕНИЕ"))
         return
     elif error_code == 5:  # ERROR_ACCESS_DENIED
         if mutex != 0:  # Проверяем, что дескриптор валиден перед закрытием
             ctypes.windll.kernel32.CloseHandle(mutex)
-        show_message_with_auto_close("Доступ к мьютексу запрещен.", "ОШИБКА")
+        show_message_with_auto_close(_("Доступ к мьютексу запрещен."), _("ОШИБКА"))
 
         return
     elif error_code != 0:
         if mutex != 0:  # Проверяем, что дескриптор валиден перед закрытием
             ctypes.windll.kernel32.CloseHandle(mutex)
-        show_message_with_auto_close(f"Неизвестная ошибка:\n{error_code}", "ОШИБКА")
+        show_message_with_auto_close(f"{_("Неизвестная ошибка:")}\n{error_code}", _("ОШИБКА"))
 
         return
     # -------------- END ---------------

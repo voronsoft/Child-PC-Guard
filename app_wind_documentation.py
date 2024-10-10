@@ -48,22 +48,7 @@ class DocWindow(wx.Dialog):
         sizer_main.SetMinSize(wx.Size(700, 500))
         self.rich_txt = wx.richtext.RichTextCtrl(self,
                                                  wx.ID_ANY,
-                                                 _("ТЕКСТ ЗАПОЛНИТЕЛЬ - документация в разработке\n\n"
-                                                   "What can you do with this thing?  Well, you can change text colour, like this red bit. And this blue bit. "
-                                                   "Naturally you can make things bold or italic or underlined. Different font sizes on the same line is allowed, too. "
-                                                   "Next we'll show an indented paragraph.\nIndented paragraph.\n"
-                                                   "Next, we'll show a first-line indent, achieved using BeginLeftIndent(100, -40).\n"
-                                                   "It was in January, the most down-trodden month of an Edinburgh winter.\n"
-                                                   "Numbered bullets are possible, again using subindents:\nThis is my first item. "
-                                                   "Note that wxRichTextCtrl doesn't automatically do numbering, but this will be added later.\n"
-                                                   "This is my second item.\nThe following paragraph is right-indented:\n"
-                                                   "It was in January, the most down-trodden month of an Edinburgh winter. "
-                                                   "An attractive woman came into the cafe, which is nothing remarkable.\n"
-                                                   "This line contains tabs:\tFirst tab\tSecond tab\tThird tab\n\n\n\n\n\n\n"
-                                                   "Other notable features of wxRichTextCtrl include:\nCompatibility with wxTextCtrl API\n"
-                                                   "Note: this content was generated programmatically and copied from the sample. "
-                                                   "The images were loaded from inline XPMs. Enjoy wxRichTextCtrl!"
-                                                   ),
+                                                 _("ТЕКСТ ЗАПОЛНИТЕЛЬ - документация в разработке\n"),
                                                  wx.DefaultPosition,
                                                  wx.Size(700, 450),
                                                  0 | wx.VSCROLL | wx.HSCROLL | wx.NO_BORDER | wx.WANTS_CHARS  | wx.TE_READONLY

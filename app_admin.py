@@ -57,7 +57,7 @@ class Window(wx.Frame):
         self.mode_run_app = function.check_mode_run_app()
         if self.mode_run_app != "admin":
             self.SetBackgroundColour(wx.Colour(255, 160, 160))  # Красный фон
-            self.SetTitle("Child PC Guard - ПОЛЬЗОВАТЕЛЬ")  # Заголовок
+            self.SetTitle(_("Child PC Guard - ПОЛЬЗОВАТЕЛЬ"))  # Заголовок
 
         # ============================ END =============================
         # Создаем иконку в системном трее
@@ -79,50 +79,48 @@ class Window(wx.Frame):
 
         self.tool_bar.AddStretchableSpace()  # Вставляем гибкое пространство
         self.btn_tool_log = self.tool_bar.AddTool(wx.ID_ANY,
-                                                  _(r"Логи"),
+                                                  _("Логи"),
                                                   wx.Bitmap(os.path.join(FOLDER_IMG, "logs.ico"), wx.BITMAP_TYPE_ANY),
                                                   wx.NullBitmap,
                                                   wx.ITEM_NORMAL,
-                                                  _(r"Логи"),
-                                                  _(r"Просмотр логов программы"),
+                                                  _("Логи"),
+                                                  _("Просмотр логов программы"),
                                                   None
                                                   )
         # self.btn_tool_log.Enable(False)  # Отключение кнопки в тулбаре
         self.tool_bar.AddStretchableSpace()  # Вставляем гибкое пространство
         self.btn_tool_timer = self.tool_bar.AddTool(wx.ID_ANY,
-                                                    _(r"Таймер"),
+                                                    _("Таймер"),
                                                     wx.Bitmap(os.path.join(FOLDER_IMG, "time.ico"), wx.BITMAP_TYPE_ANY),
                                                     wx.NullBitmap,
                                                     wx.ITEM_NORMAL,
-                                                    _(r"Таймер "),
-                                                    _(r"Открыть окно таймера"),
+                                                    _("Таймер "),
+                                                    _("Открыть окно таймера"),
                                                     None
                                                     )
         # self.btn_tool2.Enable(False)  # Отключение кнопки в тулбаре
         self.tool_bar.AddStretchableSpace()  # Вставляем гибкое пространство
         self.btn_tool_monitor = self.tool_bar.AddTool(wx.ID_ANY,
-                                                      _(r"Мониторинг"),
+                                                      _("Мониторинг"),
                                                       wx.Bitmap(os.path.join(FOLDER_IMG, "monitor.ico"),
                                                                 wx.BITMAP_TYPE_ANY
                                                                 ),
                                                       wx.NullBitmap,
                                                       wx.ITEM_NORMAL,
-                                                      _(r"Мониторинг"),
-                                                      _(r"Включить-отключить мониторинг"),
+                                                      _("Мониторинг"),
+                                                      _("Включить-отключить мониторинг"),
                                                       None
                                                       )
         self.tool_bar.AddStretchableSpace()  # Вставляем гибкое пространство
         self.btn_tool_clear_data = self.tool_bar.AddTool(wx.ID_ANY,
-                                                         _(r"Очистить"),
+                                                         _("Очистить"),
                                                          wx.Bitmap(os.path.join(FOLDER_IMG, "clear.ico"),
                                                                    wx.BITMAP_TYPE_ANY
                                                                    ),
                                                          wx.NullBitmap,
                                                          wx.ITEM_NORMAL,
-                                                         _(r"Очистить все"),
-                                                         _(r"Удаляет все данные задания для блокировки. "
-                                                           r"БЛОКИРОВКУ НЕ ОТКЛЮЧАЕТ"
-                                                           ),
+                                                         _("Очистить все"),
+                                                         _("Удаляет все данные задания для блокировки. БЛОКИРОВКУ НЕ ОТКЛЮЧАЕТ"),
                                                          None
                                                          )
         self.tool_bar.AddStretchableSpace()  # Вставляем гибкое пространство
@@ -133,50 +131,50 @@ class Window(wx.Frame):
                                                                         ),
                                                               wx.NullBitmap,
                                                               wx.ITEM_NORMAL,
-                                                              _(r"Разблокировать пользователя"),
-                                                              _(r"Открывает окно разблокировки пользователя"),
+                                                              _("Разблокировать пользователя"),
+                                                              _("Открывает окно разблокировки пользователя"),
                                                               None
                                                               )
         self.tool_bar.AddStretchableSpace()  # Вставляем гибкое пространство
         self.btn_tool_info = self.tool_bar.AddTool(wx.ID_ANY,
-                                                   _(r"Справка"),
+                                                   _("Справка"),
                                                    wx.Bitmap(os.path.join(FOLDER_IMG, "doc.ico"), wx.BITMAP_TYPE_ANY),
                                                    wx.NullBitmap,
                                                    wx.ITEM_NORMAL,
-                                                   _(r"Справка"),
-                                                   _(r"Открывает окно по использованию программы"),
+                                                   _("Справка"),
+                                                   _("Открывает окно по использованию программы"),
                                                    None
                                                    )
         self.tool_bar.AddStretchableSpace()  # Вставляем гибкое пространство
         self.btn_tool_bot = self.tool_bar.AddTool(wx.ID_ANY,
-                                                  _(r"Оповещение"),
+                                                  _("Оповещение"),
                                                   wx.Bitmap(os.path.join(FOLDER_IMG, "telegram.ico"),
                                                             wx.BITMAP_TYPE_ANY
                                                             ),
                                                   wx.NullBitmap,
                                                   wx.ITEM_NORMAL,
-                                                  _(r"Оповещение"),
-                                                  _(r"Открывает окно для настройки оповещения через Telegram"),
+                                                  _("Оповещение"),
+                                                  _("Открывает окно для настройки оповещения через Telegram"),
                                                   None
                                                   )
         self.tool_bar.AddStretchableSpace()  # Вставляем гибкое пространство
 
         self.btn_tool_unblock_interface = self.tool_bar.AddTool(wx.ID_ANY,
-                                                                _(r"Разблокировать интерфейс"),
+                                                                _("Разблокировать интерфейс"),
                                                                 wx.Bitmap(os.path.join(FOLDER_IMG, "open.ico")),
                                                                 wx.NullBitmap,
                                                                 wx.ITEM_RADIO,
-                                                                _(r"Разблокировать интерфейс"),
-                                                                _(r"Разблокировать интерфейс"),
+                                                                _("Разблокировать интерфейс"),
+                                                                _("Разблокировать интерфейс"),
                                                                 None
                                                                 )
         self.btn_tool_block_interface = self.tool_bar.AddTool(wx.ID_ANY,
-                                                              _(r"Заблокировать интерфейс"),
+                                                              _("Заблокировать интерфейс"),
                                                               wx.Bitmap(os.path.join(FOLDER_IMG, "close.ico")),
                                                               wx.NullBitmap,
                                                               wx.ITEM_RADIO,
-                                                              _(r"Заблокировать интерфейс"),
-                                                              _(r"Блокировка интерфейса"),
+                                                              _("Заблокировать интерфейс"),
+                                                              _("Блокировка интерфейса"),
                                                               None
                                                               )
 
@@ -230,7 +228,7 @@ class Window(wx.Frame):
 
         self.txt_timer = wx.StaticText(self,
                                        wx.ID_ANY,
-                                       _("Укажите время для блокировки:              "),
+                                       _("Укажите время для блокировки: "),
                                        wx.DefaultPosition,
                                        wx.DefaultSize,
                                        0
@@ -251,7 +249,7 @@ class Window(wx.Frame):
         # Устанавливаем начальное значение временем на 0
         self.input_time.SetSelection(0)
 
-        self.input_time.SetMinSize(wx.Size(150, -1))
+        self.input_time.SetMinSize(wx.Size(202, -1))
 
         sizer_top.Add(self.input_time, 0, wx.ALL, 5)
 
@@ -374,7 +372,6 @@ class Window(wx.Frame):
         # END ---------------------------------------------
 
     # Обработчики событий --------------------------------
-    # TODO при закрытии окна через крестик кнопки активируются в главном окне... это багуля ))
     def on_close(self, event):
         """Обработчик закрытия программы"""
         # Ожидаем ответа от пользователя
@@ -451,12 +448,7 @@ class Window(wx.Frame):
 
             # Выводим сообщение что-бы выбранный пользователь зашел в систему (сессию)
             dialog = wx.MessageDialog(self,
-                                      _(f"Выбранный пользователь: {self.username_blocking} не вошел в свой аккаунт "
-                                        f"Windows.\nРЕШЕНИЕ:\n"
-                                        f"1 - Нужно зайти в его аккаунт.\n"
-                                        f"2 - Запустить программу от имени АДМИНИСТРАТОРА\n"
-                                        f"3 - Провести процедуру настройки блокировки снова."
-                                        ),
+                                      f"{_("Выбранный пользователь:")} {self.username_blocking} {_("не вошел в свой аккаунт Windows.\nРЕШЕНИЕ:\n1 - Нужно зайти в его аккаунт.\n2 - Запустить программу от имени АДМИНИСТРАТОРА\n3 - Провести процедуру настройки блокировки снова.")}",
                                       _("Предупреждение"),
                                       wx.ICON_WARNING
                                       )
@@ -501,11 +493,7 @@ class Window(wx.Frame):
 
         if username == function.username_session():
             dialog = wx.MessageDialog(self,
-                                      _("Внимание убедитесь что вы выбрали не АДМИНИСТРАТОРА !!!\n"
-                                        "Только АДМИНИСТРАТОР может снять блокировку !!!.\n"
-                                        "В противном случае блокировку уже не снять.\n"
-                                        "РЕШЕНИЕ - ПЕРЕУСТАНОВКА WINDOWS !!!"
-                                        ),
+                                      _("Внимание убедитесь что вы выбрали не АДМИНИСТРАТОРА !!!\nТолько АДМИНИСТРАТОР может снять блокировку !!!.\nВ противном случае блокировку уже не снять.\nРЕШЕНИЕ - ПЕРЕУСТАНОВКА WINDOWS !!!"),
                                       _("Предупреждение"),
                                       wx.ICON_WARNING
                                       )
@@ -590,7 +578,7 @@ class Window(wx.Frame):
 
             # Сообщение
             dialog = wx.MessageDialog(self,
-                                      _(f"(1)Пользователь - {username} - разблокирован"),
+                                      f"{_("(1)Пользователь")} - {username} - {_("разблокирован")}",
                                       _("Предупреждение"),
                                       wx.ICON_WARNING
                                       )
@@ -647,7 +635,7 @@ class Window(wx.Frame):
         try:
             os.startfile(PATH_LOG_FILE)  # Открываем файл в ассоциированном приложении (обычно Блокнот)
         except Exception as e:
-            wx.MessageBox(f"Не удалось открыть файл: {str(e)}", "Ошибка", wx.OK | wx.ICON_ERROR)
+            function.show_message_with_auto_close(f"{_("Не удалось открыть файл:")} {str(e)}", {_("Ошибка")})
 
     def on_run_timer(self, event):
         """Запуск окна таймера"""
@@ -656,21 +644,21 @@ class Window(wx.Frame):
             subprocess.Popen([path_timer_exe])
         except Exception as e:
             # Выводим сообщение об ошибке, если не удалось запустить приложение
-            wx.MessageBox(f"{path_timer_exe}: {str(e)}", "Ошибка", wx.OK | wx.ICON_ERROR)
+            function.show_message_with_auto_close(f"{path_timer_exe}:\n{str(e)}", {_("Ошибка")})
             # Записываем лог
-            self.log_error(f"{path_timer_exe} {str(e)}")
+            self.log_error(f"{path_timer_exe}\n{str(e)}")
 
     def on_run_monitor(self, event):
         """Запуск программы мониторинга """
         try:
             # Запускаем .exe файл через subprocess
             subprocess.Popen([path_monitor_exe])
-            wx.MessageBox(f"Мониторинг запущен", "Запуск", wx.OK | wx.ICON_INFORMATION)
+            function.show_message_with_auto_close(_("Мониторинг запущен"), _("Запуск"))
         except Exception as e:
             # Выводим сообщение об ошибке, если не удалось запустить приложение
-            wx.MessageBox(f"{path_monitor_exe} {str(e)}", "Ошибка", wx.OK | wx.ICON_ERROR)
+            function.show_message_with_auto_close(f"{path_monitor_exe}\n{str(e)}", _("Ошибка"))
             # Записываем лог
-            self.log_error(f"{path_monitor_exe} {str(e)}")
+            self.log_error(f"{path_monitor_exe}\n{str(e)}")
 
     def on_run_unblock(self, event):
         """Запуск программы для разблокировки пользователя"""
@@ -679,9 +667,9 @@ class Window(wx.Frame):
             subprocess.Popen([path_unblock_usr_exe])
         except Exception as e:
             # Выводим сообщение об ошибке, если не удалось запустить приложение
-            wx.MessageBox(f"{path_unblock_usr_exe} {str(e)}", "Ошибка", wx.OK | wx.ICON_ERROR)
+            function.show_message_with_auto_close(f"{path_unblock_usr_exe}\n{str(e)}", _("Ошибка"))
             # Записываем лог
-            self.log_error(f"{path_unblock_usr_exe} {str(e)}")
+            self.log_error(f"{path_unblock_usr_exe}\n{str(e)}")
 
     def on_run_clear_data(self, event):
         """
@@ -715,7 +703,7 @@ class Window(wx.Frame):
         self.btn_ok.Disable()
 
         # Вывод сообщения об успешной очистке
-        wx.MessageBox(f"Настройки программы сброшены !", "СБРОС ДАННЫХ", wx.OK | wx.ICON_INFORMATION)
+        function.show_message_with_auto_close(_("Настройки программы сброшены!"), _("СБРОС ДАННЫХ"))
 
     def on_run_info(self, event):
         """Запуск окна справки"""
@@ -765,7 +753,7 @@ class Window(wx.Frame):
                                )
         except Exception as e:
             print(f"(1)Ошибка при записи лога в файл: {str(e)}")
-            function.show_message_with_auto_close(f"Ошибка при записи в файл лога:\n{str(e)}", "ОШИБКА")
+            function.show_message_with_auto_close(f"{_("Ошибка при записи в файл лога:\n")}{str(e)}", _("ОШИБКА"))
 
     # =============================================================================================================
 
@@ -783,12 +771,12 @@ def main():
     elif error_code == 5:  # ERROR_ACCESS_DENIED
         if mutex != 0:
             ctypes.windll.kernel32.CloseHandle(mutex)
-        function.show_message_with_auto_close("Доступ к мьютексу запрещен.", "ОШИБКА")
+        function.show_message_with_auto_close(_("Доступ к мьютексу запрещен."), _("ОШИБКА"))
         return
     elif error_code != 0:
         if mutex != 0:
             ctypes.windll.kernel32.CloseHandle(mutex)
-        function.show_message_with_auto_close(f"Неизвестная ошибка:\n{error_code}", "ОШИБКА")
+        function.show_message_with_auto_close(f"{_("Неизвестная ошибка:\n")}{error_code}", _("ОШИБКА"))
         return
 
     print("1 Создаются папка и файлы перед запуском")
