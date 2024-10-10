@@ -16,6 +16,8 @@ FOLDER_DATA_PRGM_DATA = os.path.join(os.environ.get('PROGRAMDATA'), "Child PC Gu
 PATH_DATA_FILE_PRGM_DATA = os.path.join(FOLDER_DATA_PRGM_DATA, "data.json")
 PATH_LOG_FILE_PRGM_DATA = os.path.join(FOLDER_DATA_PRGM_DATA, "log_chpcgu.txt")
 PATH_INSTALL_INFO_FILE_PRGM_DATA = os.path.join(FOLDER_DATA_PRGM_DATA, "install_info.txt")
+
+
 # print("111-FOLDER_DATA_PRGM_DATA", FOLDER_DATA_PRGM_DATA)
 # print("111-PATH_DATA_FILE_PRGM_DATA", PATH_DATA_FILE_PRGM_DATA)
 # print("111-PATH_LOG_FILE_PRGM_DATA", PATH_LOG_FILE_PRGM_DATA)
@@ -417,7 +419,8 @@ def function_to_create_path_data_files():
                 "protected_user": "",
                 "id_tg_bot_parent": 0,
                 "bot_token_telegram": "7456533985:AAEGOk3VUU04Z4bk9B83kzy4MW5zem3hbYw",
-                "chat_id": ""
+                "chat_id": "",
+                "language": "ru"
         }
         with open(PATH_DATA_FILE_PRGM_DATA, 'w', encoding='utf-8') as file:
             json.dump(initial_data, file, indent=4)  # Записываем данные в формате JSON с отступами
@@ -455,6 +458,7 @@ def check_mode_run_app():
         log_error(f"Запуск приложения в режиме ПОЛЬЗОВАТЕДЬ")
     return "user"
 
+
 def check_if_program_running(program_name):
     """Проверка сатуса работы программы в Windows"""
     # Получаем список всех запущенных процессов
@@ -483,6 +487,7 @@ def seconds_to_hms(seconds):
     # Форматируем результат с ведущими нулями
     return f"{hours:02}:{minutes:02}:{secs:02}"
 
+
 def show_warning_message(msg_txt: str):
     """
     Вывод окна с предупреждением на рабочий стол
@@ -491,6 +496,7 @@ def show_warning_message(msg_txt: str):
     :return: True/False
     """
     show_message_with_auto_close()
+
 
 # --------------------------Работа с паролем для приложения-------------------
 def hash_password(password: str) -> str:
