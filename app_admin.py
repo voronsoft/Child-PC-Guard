@@ -9,6 +9,7 @@ import function
 import subprocess
 import app_wnd_input_first_pass
 from app_wind_bot import BotWindow
+from app_wind_lang import LanguageWnd
 from app_wind_pass import WndPass
 from app_wind_tray_icon import TrayIcon
 from app_wind_exit_prog import WndCloseApp
@@ -19,7 +20,7 @@ from config_app import FOLDER_IMG, path_timer_exe, path_monitor_exe, path_unbloc
 _ = gettext.gettext
 
 # Имя мьютекса (должно быть уникальным)
-MUTEX_NAME = "Global\\Child_PC_Guard"
+MUTEX_NAME_CPG = "Global\\Child_PC_Guard"
 
 
 ###########################################################################
@@ -77,6 +78,18 @@ class Window(wx.Frame):
                               )
         self.tool_bar.SetBackgroundColour(wx.SystemSettings.GetColour(wx.SYS_COLOUR_BTNHIGHLIGHT))
 
+        self.tool_bar.AddStretchableSpace()  # Вставляем гибкое пространство
+        self.btn_tool_lang = self.tool_bar.AddTool(wx.ID_ANY,
+                                                   _("Lang"),
+                                                   wx.Bitmap(os.path.join(FOLDER_IMG, "language.ico"),
+                                                             wx.BITMAP_TYPE_ANY
+                                                             ),
+                                                   wx.NullBitmap,
+                                                   wx.ITEM_NORMAL,
+                                                   _("Lang"),
+                                                   _("Выбор языка интерфейса"),
+                                                   None
+                                                   )
         self.tool_bar.AddStretchableSpace()  # Вставляем гибкое пространство
         self.btn_tool_log = self.tool_bar.AddTool(wx.ID_ANY,
                                                   _("Логи"),
@@ -351,6 +364,8 @@ class Window(wx.Frame):
         self.btn_ok.Bind(wx.EVT_BUTTON, self.start_blocking)  # Событие, при нажатии OK (запуск задания)
         self.btn_disable_blocking.Bind(wx.EVT_BUTTON, self.disable_blocking)  # Событие - Отключить блокировку
         # События при нажатии кнопок в тулбаре ------------
+        # Выбор языка
+        self.Bind(wx.EVT_TOOL, self.on_lang, self.btn_tool_lang)
         # Просмотр логов
         self.Bind(wx.EVT_TOOL, self.on_run_log, self.btn_tool_log)
         # Запуск окошка таймера
@@ -385,7 +400,7 @@ class Window(wx.Frame):
             # app_tg_bot.stop_bot()
             # -----------------------------------------------
 
-            print("self.remaining_time:", self.remaining_time)
+            # print("self.remaining_time:", self.remaining_time)
             # Если время больше ноля и имя пользователя не пустое
             if self.remaining_time > 0 and len(self.username_blocking) >= 1:
                 # Запись времени в файл
@@ -408,14 +423,18 @@ class Window(wx.Frame):
             self.tray_icon.Destroy()
 
             self.Destroy()  # Закрывает основное окно, завершая приложение
+
+            # Проверяем мьютекс, созданный в другом месте приложения
+            mutex = ctypes.windll.kernel32.OpenMutexW(0x00100000, False, MUTEX_NAME_CPG)  # SYNCHRONIZE
+            # Закрываем дескриптор мьютекса
+            ctypes.windll.kernel32.CloseHandle(mutex)
+            print("1826567 ", "Мьютекс закрыт при завершении приложения.")
+
             # Завершаем процесс (закрытие программы)
             sys.exit()
         # Если пользователь нажал "Отмена", просто закрываем диалог
         elif result == wx.ID_CANCEL:
             dlg.Destroy()  # Закрываем только диалоговое окно и продолжаем работу
-
-        # Не даем закрыть окно, если нажали "Отмена"
-        # event.Veto()
 
     def on_input_changed(self, event):
         """
@@ -630,6 +649,45 @@ class Window(wx.Frame):
         self.tool_bar.ToggleTool(self.btn_tool_block_interface.GetId(), True)
 
     # Обработчики тулбара --------------------------------
+    def on_lang(self, event):
+        """Запуск окна выбора языков"""
+        lang_app = LanguageWnd(self)
+        lang_app.ShowModal()
+
+        # Подготовка приложения что бы перезагрузить приложения что бы язык поменялся.
+        # Удаляем иконку из трея
+        self.tray_icon.RemoveIcon()
+        self.tray_icon.Destroy()
+
+        # Закрываем окно главного приложения
+        self.Destroy()
+        # wx.CallAfter(self.Destroy)
+
+        # Проверяем существование мьютекса что бы закрыть его перед новым запуском
+        mutex = ctypes.windll.kernel32.OpenMutexW(0x00100000, False, MUTEX_NAME_CPG)  # SYNCHRONIZE
+        error_code = ctypes.windll.kernel32.GetLastError()
+        print("1mutex ", mutex)
+        print("1error_code ", error_code)
+
+        # Закрываем дескриптор мьютекса (если мьютекс существует и код ошибки 0)
+        if error_code == 0 and mutex:
+            ctypes.windll.kernel32.CloseHandle(mutex)
+            print("2mutex ", mutex)
+            print("Дескриптор закрыт!")
+        else:
+            print("Мьютекс не найден, возможно, он уже был закрыт или не был создан.")
+
+        # Перезапускаем приложение
+        wx.CallAfter(main_app)
+        # wx.CallLater(500, main_app)  # Перезапуск с задержкой 2 секунды
+
+    def restart_app(self):
+        """Перезапуск приложения"""
+        print(111111)
+        print()
+        main_app()  # Перезапуск текущего приложения
+
+
     def on_run_log(self, event):
         """Запуск просмотра логов программы"""
         try:
@@ -758,34 +816,60 @@ class Window(wx.Frame):
     # =============================================================================================================
 
 
-def main():
+def main_app():
     # Запускаем приложение как администратор
     function.run_as_admin()
 
-    # ------- Проверка кода ошибки -------
-    mutex = ctypes.windll.kernel32.CreateMutexW(None, False, MUTEX_NAME)
-    error_code = ctypes.windll.kernel32.GetLastError()
+    # Проверяем мьютекс, созданный в другом месте приложения
+    mutex = ctypes.windll.kernel32.OpenMutexW(0x00100000, False, MUTEX_NAME_CPG)  # SYNCHRONIZE
+    error_codexx = ctypes.windll.kernel32.GetLastError()
+    print("00 error_code_mutex: ", mutex)
+    print("00 error_code: ", error_codexx)
 
-    if error_code == 183:
+
+    # ------- Проверка кода ошибки -------
+    mutex = ctypes.windll.kernel32.CreateMutexW(None, False, MUTEX_NAME_CPG)
+
+    error_code = ctypes.windll.kernel32.GetLastError()
+    # ------------ список основных кодов ошибок при работе с мьютексами-------------
+    # 0(ERROR_SUCCESS) - Операция выполнена успешно
+    # 183 (ERROR_ALREADY_EXISTS) - Мьютекс с таким именем уже существует.
+    # 2 (ERROR_FILE_NOT_FOUND) - Система не может найти указанный файл или объект
+    # 5 (ERROR_ACCESS_DENIED) - Доступ запрещён
+    # 6 (ERROR_INVALID_HANDLE) - Недопустимый дескриптор.
+    # 87 (ERROR_INVALID_PARAMETER) - Неверный параметр.
+    # 1455 (ERROR_COMMITMENT_LIMIT) - Превышен лимит ресурсов.
+    # 8 (ERROR_NOT_ENOUGH_MEMORY) - Недостаточно памяти для завершения операции.
+    # ----------------------------------- END --------------------------------------
+
+    if error_code == 183:  # Объект с таким именем уже существует.
+        print("1 ", error_code)
+        function.show_message_with_auto_close("Приложение уже запущено", "ОШИБКА")
         return
     elif error_code == 5:  # ERROR_ACCESS_DENIED
+        print("2 ", error_code)
         if mutex != 0:
+            print("3 ", error_code, "\n", mutex)
             ctypes.windll.kernel32.CloseHandle(mutex)
         function.show_message_with_auto_close(_("Доступ к мьютексу запрещен."), _("ОШИБКА"))
         return
-    elif error_code != 0:
+    elif error_code != 0:  #
         if mutex != 0:
             ctypes.windll.kernel32.CloseHandle(mutex)
+            print("4 ", error_code, "\n", mutex)
         function.show_message_with_auto_close(f"{_("Неизвестная ошибка:\n")}{error_code}", _("ОШИБКА"))
         return
 
-    print("1 Создаются папка и файлы перед запуском")
+    print("5 ", error_code)
+    print("-------------")
+
     # Создаем папки и файлы с данными для работы приложения если они не существуют
     function.function_to_create_path_data_files()
-    print("2 Конец создания нужных паок и файлов")
 
+    # Получаем пароль из реестра
     password_from_registry = function.get_password_from_registry()
 
+    # Если пароля нет в реестре, то запускаем приложение как в первый раз с вводом будущего пароля для приложения
     if not password_from_registry:
         app_wnd_input_first_pass.main()
         main_splash()
@@ -801,9 +885,9 @@ def main():
     app.MainLoop()
 
     # Закрываем дескриптор мьютекса
-    if mutex != 0:
-        ctypes.windll.kernel32.CloseHandle(mutex)
-
+    ctypes.windll.kernel32.CloseHandle(mutex)
+    print("6 ", "Мьютекс закрыт при завершении приложения.")
+    sys.exit(0)
 
 if __name__ == "__main__":
 

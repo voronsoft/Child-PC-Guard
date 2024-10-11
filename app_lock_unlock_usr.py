@@ -11,7 +11,7 @@ from config_app import FOLDER_IMG, PATH_LOG_FILE
 _ = gettext.gettext
 
 # Имя мьютекса (должно быть уникальным)
-MUTEX_NAME = "Global\\Unlock_User_CPGuard"
+MUTEX_NAME_UUCPG = "Global\\Unlock_User_CPGuard"
 # Определяем режим работы приложения
 APP_MODE = bool(ctypes.windll.shell32.IsUserAnAdmin())
 
@@ -303,7 +303,7 @@ def main():
 
     # ------- Проверка кода ошибки -------
     # Создание мьютекса
-    mutex = ctypes.windll.kernel32.CreateMutexW(None, False, MUTEX_NAME)
+    mutex = ctypes.windll.kernel32.CreateMutexW(None, False, MUTEX_NAME_UUCPG)
     error_code = ctypes.windll.kernel32.GetLastError()
 
     if error_code == 183:

@@ -12,7 +12,7 @@ from function import read_data_json, function_to_create_path_data_files, show_me
 _ = gettext.gettext
 
 # Имя мьютекса (должно быть уникальным)
-MUTEX_NAME = "Global\\Child_PC_Timer"
+MUTEX_NAME_CPGT = "Global\\Child_PC_Timer"
 
 
 ###########################################################################
@@ -145,7 +145,7 @@ class TimerApp(wx.Frame):
 def main():
     # ------- Проверка кода ошибки -------
     # Создание мьютекса
-    mutex = ctypes.windll.kernel32.CreateMutexW(None, False, MUTEX_NAME)
+    mutex = ctypes.windll.kernel32.CreateMutexW(None, False, MUTEX_NAME_CPGT)
     error_code = ctypes.windll.kernel32.GetLastError()
 
     if error_code == 183:

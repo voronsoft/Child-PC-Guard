@@ -130,7 +130,7 @@ def update_data_json(key, value, file_path=PATH_DATA_FILE):
         with open(file_path, 'w', encoding='utf-8') as file:
             json.dump(data, file, indent=4, ensure_ascii=False)
 
-        print(f"Данные успешно обновлены: {key} = {value}")
+        # print(f"Данные успешно обновлены: {key} = {value}")
         return True
     except FileNotFoundError:
         log_error(f"Файл {file_path} не найден.")
@@ -348,7 +348,11 @@ def function_to_create_path_data_files():
         log_error(f"Создана папка: {FOLDER_DATA}")
 
         # Применяем полные права ко всем пользователям на созданную папку
-        subprocess.run(['icacls', FOLDER_DATA, '/grant', 'Everyone:F', '/T', '/C'], shell=True)
+        subprocess.run(['icacls', FOLDER_DATA, '/grant', 'Everyone:F', '/T', '/C'],
+                       shell=True,
+                       stdout=subprocess.DEVNULL,
+                       stderr=subprocess.DEVNULL
+                       )
         # /grant - предоставить права
         # Everyone:F - разрешить полные права для всех пользователей
         # /T - рекурсивно для всех вложенных файлов и папок
@@ -388,8 +392,12 @@ def function_to_create_path_data_files():
 
     # Применяем полные права ко всем пользователям на файлы, если они уже существуют или только что были созданы.
     # Задаем доступ для всех на запись чтение изменение.
-    subprocess.run(['icacls', FOLDER_DATA, '/grant', 'Everyone:F', '/T', '/C'], shell=True)
-    print(f"Права доступа обновлены для папки и вложенных файлов: {FOLDER_DATA}")
+    subprocess.run(['icacls', FOLDER_DATA, '/grant', 'Everyone:F', '/T', '/C'],
+                   shell=True,
+                   stdout=subprocess.DEVNULL,
+                   stderr=subprocess.DEVNULL
+                   )
+    # print(f"Права доступа обновлены для папки и вложенных файлов: {FOLDER_DATA}")
     log_error(f"Права доступа обновлены для папки и вложенных файлов: {FOLDER_DATA}")
     #
     # -------------------------------------------------------------------------------------
@@ -402,12 +410,16 @@ def function_to_create_path_data_files():
         log_error(f"2Создана папка: {FOLDER_DATA_PRGM_DATA}")
 
         # Применяем полные права ко всем пользователям на созданную папку
-        subprocess.run(['icacls', FOLDER_DATA_PRGM_DATA, '/grant', 'Everyone:F', '/T', '/C'], shell=True)
+        subprocess.run(['icacls', FOLDER_DATA_PRGM_DATA, '/grant', 'Everyone:F', '/T', '/C'],
+                       shell=True,
+                       stdout=subprocess.DEVNULL,
+                       stderr=subprocess.DEVNULL
+                       )
         # /grant - предоставить права
         # Everyone:F - разрешить полные права для всех пользователей
         # /T - рекурсивно для всех вложенных файлов и папок
         # /C - продолжить выполнение даже при ошибках
-        print(f"2Права доступа установлены для папки: {FOLDER_DATA_PRGM_DATA}")
+        # print(f"2Права доступа установлены для папки: {FOLDER_DATA_PRGM_DATA}")
         log_error(f"2Права доступа установлены для папки: {FOLDER_DATA_PRGM_DATA}")
 
     # Проверяем, существует ли файл data.json. Если нет, то создаем его и записываем начальные данные.
@@ -443,8 +455,12 @@ def function_to_create_path_data_files():
 
     # Применяем полные права ко всем пользователям на файлы, если они уже существуют или только что были созданы.
     # Задаем доступ для всех на запись чтение изменение.
-    subprocess.run(['icacls', FOLDER_DATA_PRGM_DATA, '/grant', 'Everyone:F', '/T', '/C'], shell=True)
-    print(f"2Права доступа обновлены для папки и вложенных файлов: {FOLDER_DATA_PRGM_DATA}")
+    subprocess.run(['icacls', FOLDER_DATA_PRGM_DATA, '/grant', 'Everyone:F', '/T', '/C'],
+                   shell=True,
+                   stdout=subprocess.DEVNULL,
+                   stderr=subprocess.DEVNULL
+                   )
+    # print(f"2 Права доступа обновлены для папки и файлов: {FOLDER_DATA_PRGM_DATA}")
     log_error(f"2Права доступа обновлены для папки и вложенных файлов: {FOLDER_DATA_PRGM_DATA}")
 
 

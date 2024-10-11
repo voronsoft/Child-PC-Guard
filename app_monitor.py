@@ -15,7 +15,7 @@ from function import run_as_admin, show_message_with_auto_close
 from config_app import PATH_DATA_FILE, PATH_LOG_FILE, path_main_app
 
 # Имя мьютекса (должно быть уникальным)
-MUTEX_NAME = "Global\\CPG_MONITOR"
+MUTEX_NAME_CPGM = "Global\\CPG_MONITOR"
 # TODO Путь к .exe файлу, который нужно мониторить
 path_to_program = path_main_app
 
@@ -109,7 +109,7 @@ def main():
 
     # ------- Проверка кода ошибки -------
     # Создание мьютекса
-    mutex = ctypes.windll.kernel32.CreateMutexW(None, False, MUTEX_NAME)
+    mutex = ctypes.windll.kernel32.CreateMutexW(None, False, MUTEX_NAME_CPGM)
     error_code = ctypes.windll.kernel32.GetLastError()
 
     if error_code == 183:

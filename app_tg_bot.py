@@ -8,7 +8,7 @@ from telegram import ReplyKeyboardMarkup, KeyboardButton, InlineKeyboardButton, 
 from telegram.ext import Application, CommandHandler, ContextTypes, MessageHandler, filters, CallbackQueryHandler
 
 # Имя мьютекса (должно быть уникальным)
-MUTEX_NAME = "Global\\BOT_Child_PC"
+MUTEX_NAME_BCPG = "Global\\BOT_Child_PC"
 
 # Глобальная переменная токена
 TOKEN = function.read_data_json("bot_token_telegram")
@@ -207,7 +207,7 @@ async def main_bot_run():
     """Главная функция запуска приложения бота"""
     # ------- Проверка кода ошибки -------
     # Создание мьютекса
-    mutex = ctypes.windll.kernel32.CreateMutexW(None, False, MUTEX_NAME)
+    mutex = ctypes.windll.kernel32.CreateMutexW(None, False, MUTEX_NAME_BCPG)
     error_code = ctypes.windll.kernel32.GetLastError()
 
     if error_code == 183:
