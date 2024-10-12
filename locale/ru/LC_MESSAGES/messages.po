@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-10-10 02:51+0300\n"
-"PO-Revision-Date: 2024-10-10 04:47+0300\n"
+"PO-Revision-Date: 2024-10-12 06:21+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: ru\n"
@@ -18,23 +18,15 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Poedit 3.5\n"
 
-#: app_wnd_input_first_pass.py:100
-msgid ""
-"\n"
-"Введите имя пользователя которого НЕЛЬЗЯ БЛОКИРОВАТЬ"
-msgstr ""
-"\n"
-"Введите имя пользователя которого НЕЛЬЗЯ БЛОКИРОВАТЬ"
-
-#: app_admin.py:207 app_wnd_input_first_pass.py:113
+#: app_admin.py:220 app_wnd_input_first_pass.py:123
 msgid "----"
 msgstr "----"
 
-#: app_admin.py:243
+#: app_admin.py:256
 msgid "0"
 msgstr "0"
 
-#: app_admin.py:280
+#: app_admin.py:293
 msgid "00:00:00"
 msgstr "00:00:00"
 
@@ -44,19 +36,20 @@ msgid ""
 "5- После этого программа будет присылать вам оповещение.\n"
 "6- Что бы получить доступ к меню бота, введите пароль от этой программы."
 msgstr ""
-"4- Введите номер в поле что ниже и нажмите ОК.\n"
-"5- После этого программа будет присылать вам оповещение.\n"
-"6- Что бы получить доступ к меню бота, введите пароль от этой программы."
 
-#: app_admin.py:34
+#: app_admin.py:35
 msgid "Child PC Guard - АДМИНИСТРАТОР"
 msgstr "Child PC Guard - АДМИНИСТРАТОР"
 
-#: app_admin.py:60
+#: app_admin.py:61
 msgid "Child PC Guard - ПОЛЬЗОВАТЕЛЬ"
 msgstr "Child PC Guard - ПОЛЬЗОВАТЕЛЬ"
 
-#: app_admin.py:305 app_lock_unlock_usr.py:67 app_wind_exit_prog.py:80
+#: app_admin.py:83 app_admin.py:89
+msgid "Lang"
+msgstr "Lang"
+
+#: app_admin.py:318 app_lock_unlock_usr.py:67 app_wind_exit_prog.py:80
 msgid "OK"
 msgstr "OK"
 
@@ -68,7 +61,7 @@ msgstr "UnLock"
 msgid "АДМИНИСТРАТОР"
 msgstr "АДМИНИСТРАТОР"
 
-#: app_admin.py:177
+#: app_admin.py:190
 msgid "Блокировка интерфейса"
 msgstr "Блокировка интерфейса"
 
@@ -104,21 +97,16 @@ msgid ""
 "Введите номер в поле для ввода и нажмите - ОК\n"
 "После этого программа сможет понять кому отправлять сообщения"
 msgstr ""
-"Ваш chat_id: хххххххххх\n"
-"Этот номер вам нужно ввести в программе - Child PC Guard\n"
-"Нажав на кнопку в меню - 'Подключить оповещения через - Telegram'\n"
-"Введите номер в поле для ввода и нажмите - ОК\n"
-"После этого программа сможет понять кому отправлять сообщения"
 
-#: app_wnd_input_first_pass.py:72
+#: app_wnd_input_first_pass.py:73
 msgid "Введите пароль для приложения"
 msgstr "Введите пароль для приложения"
 
-#: app_admin.py:111
+#: app_admin.py:124
 msgid "Включить-отключить мониторинг"
 msgstr "Включить-отключить мониторинг"
 
-#: app_admin.py:496
+#: app_admin.py:515
 msgid ""
 "Внимание убедитесь что вы выбрали не АДМИНИСТРАТОРА !!!\n"
 "Только АДМИНИСТРАТОР может снять блокировку !!!.\n"
@@ -130,9 +118,17 @@ msgstr ""
 "В противном случае блокировку уже не снять.\n"
 "РЕШЕНИЕ - ПЕРЕУСТАНОВКА WINDOWS !!!"
 
-#: app_admin.py:552
+#: app_admin.py:571
 msgid "Вы не указали пользователя для отключения блокировки."
 msgstr "Вы не указали пользователя для отключения блокировки."
+
+#: app_wnd_input_first_pass.py:111
+msgid "Выберите пользователя которого НЕЛЬЗЯ БЛОКИРОВАТЬ"
+msgstr "Выберите пользователя которого НЕЛЬЗЯ БЛОКИРОВАТЬ"
+
+#: app_admin.py:90
+msgid "Выбор языка интерфейса"
+msgstr "Выбор языка интерфейса"
 
 #: app_timer.py:54 app_timer.py:90
 msgid "Выключен"
@@ -142,11 +138,11 @@ msgstr "Выключен"
 msgid "Документация"
 msgstr "Документация"
 
-#: app_admin.py:774 app_lock_unlock_usr.py:319 app_timer.py:157
+#: app_admin.py:854 app_lock_unlock_usr.py:319 app_timer.py:157
 msgid "Доступ к мьютексу запрещен."
 msgstr "Доступ к мьютексу запрещен."
 
-#: app_wnd_input_first_pass.py:48
+#: app_wnd_input_first_pass.py:39
 msgid ""
 "Если фон главного окна КРАСНОГО цвета,\n"
 "значит программа запущена без прав АДМИНИСТРАТОРА.\n"
@@ -156,7 +152,7 @@ msgstr ""
 "значит программа запущена без прав АДМИНИСТРАТОРА.\n"
 "Необходимо перезапустить программу от имени АДМИНИСТРАТОРА"
 
-#: app_admin.py:172 app_admin.py:176
+#: app_admin.py:185 app_admin.py:189
 msgid "Заблокировать интерфейс"
 msgstr "Заблокировать интерфейс"
 
@@ -164,19 +160,19 @@ msgstr "Заблокировать интерфейс"
 msgid "Закрыв программу таймер программы будет отключен."
 msgstr "Закрыв программу таймер программы будет отключен."
 
-#: app_admin.py:656
+#: app_admin.py:714
 msgid "Запуск"
 msgstr "Запуск"
 
-#: app_admin.py:82 app_admin.py:86
+#: app_admin.py:95 app_admin.py:99
 msgid "Логи"
 msgstr "Логи"
 
-#: app_admin.py:104 app_admin.py:110
+#: app_admin.py:117 app_admin.py:123
 msgid "Мониторинг"
 msgstr "Мониторинг"
 
-#: app_admin.py:656
+#: app_admin.py:714
 msgid "Мониторинг запущен"
 msgstr "Мониторинг запущен"
 
@@ -188,7 +184,11 @@ msgstr "НЕТ ПРАВ администратора"
 msgid "Настройка оповещения через Telegram"
 msgstr "Настройка оповещения через Telegram"
 
-#: app_admin.py:706
+#: app_wnd_input_first_pass.py:22
+msgid "Настройка программы"
+msgstr "Настройка программы"
+
+#: app_admin.py:764
 msgid "Настройки программы сброшены!"
 msgstr "Настройки программы сброшены!"
 
@@ -210,17 +210,17 @@ msgstr "Неверный пароль. Попробуйте снова."
 msgid "Нет заблокированных"
 msgstr "Нет заблокированных"
 
-#: app_wnd_input_first_pass.py:173
+#: app_wnd_input_first_pass.py:239
 msgid "ОТЛИЧНО"
 msgstr "ОТЛИЧНО"
 
-#: app_admin.py:756 app_admin.py:774 app_admin.py:779
+#: app_admin.py:814 app_admin.py:854 app_admin.py:860
 #: app_lock_unlock_usr.py:319 app_timer.py:97 app_timer.py:140 app_timer.py:157
 #: app_timer.py:163 app_wind_bot.py:206
 msgid "ОШИБКА"
 msgstr "ОШИБКА"
 
-#: app_admin.py:150 app_admin.py:156
+#: app_admin.py:163 app_admin.py:169
 msgid "Оповещение"
 msgstr "Оповещение"
 
@@ -228,27 +228,27 @@ msgstr "Оповещение"
 msgid "Осталось времени"
 msgstr "Осталось времени"
 
-#: app_admin.py:269
+#: app_admin.py:282
 msgid "Осталось времени до блокировки:"
 msgstr "Осталось времени до блокировки:"
 
-#: app_admin.py:295
+#: app_admin.py:308
 msgid "Отключить блокировку"
 msgstr "Отключить блокировку"
 
-#: app_admin.py:157
+#: app_admin.py:170
 msgid "Открывает окно для настройки оповещения через Telegram"
 msgstr "Открывает окно для настройки оповещения через Telegram"
 
-#: app_admin.py:145
+#: app_admin.py:158
 msgid "Открывает окно по использованию программы"
 msgstr "Открывает окно по использованию программы"
 
-#: app_admin.py:135
+#: app_admin.py:148
 msgid "Открывает окно разблокировки пользователя"
 msgstr "Открывает окно разблокировки пользователя"
 
-#: app_admin.py:98
+#: app_admin.py:111
 msgid "Открыть окно таймера"
 msgstr "Открыть окно таймера"
 
@@ -256,18 +256,18 @@ msgstr "Открыть окно таймера"
 msgid "Отмена"
 msgstr "Отмена"
 
-#: app_admin.py:116
+#: app_admin.py:129
 msgid "Очистить"
 msgstr "Очистить"
 
-#: app_admin.py:122
+#: app_admin.py:135
 msgid "Очистить все"
 msgstr "Очистить все"
 
-#: app_admin.py:638 app_admin.py:647 app_admin.py:659 app_admin.py:670
+#: app_admin.py:696 app_admin.py:705 app_admin.py:717 app_admin.py:728
 #: app_lock_unlock_usr.py:96 app_lock_unlock_usr.py:99
 #: app_lock_unlock_usr.py:281 app_lock_unlock_usr.py:296 app_wind_bot.py:195
-#: app_wind_exit_prog.py:115 app_wnd_input_first_pass.py:181
+#: app_wind_exit_prog.py:115 app_wnd_input_first_pass.py:247
 msgid "Ошибка"
 msgstr "Ошибка"
 
@@ -289,7 +289,7 @@ msgstr ""
 msgid "ПРЕДУПРЕЖДЕНИЕ"
 msgstr "ПРЕДУПРЕЖДЕНИЕ"
 
-#: app_wnd_input_first_pass.py:172
+#: app_wnd_input_first_pass.py:238
 msgid ""
 "Пароль ЗАПИСАН в программу.\n"
 "Пользователь ЗАПИСАН в программу"
@@ -297,15 +297,11 @@ msgstr ""
 "Пароль ЗАПИСАН в программу.\n"
 "Пользователь ЗАПИСАН в программу"
 
-#: app_wnd_input_first_pass.py:183
+#: app_wnd_input_first_pass.py:249
 msgid "Пароль не может быть меньше пять знаков"
 msgstr "Пароль не может быть меньше пять знаков"
 
-#: app_wnd_input_first_pass.py:22
-msgid "Пароль программы"
-msgstr "Пароль программы"
-
-#: app_wnd_input_first_pass.py:181
+#: app_wnd_input_first_pass.py:247
 msgid "Пароль уже есть в БД"
 msgstr "Пароль уже есть в БД"
 
@@ -313,8 +309,8 @@ msgstr "Пароль уже есть в БД"
 msgid "Пароль: "
 msgstr "Пароль: "
 
-#: app_admin.py:452 app_admin.py:497 app_admin.py:553 app_admin.py:582
-#: app_wnd_input_first_pass.py:183
+#: app_admin.py:471 app_admin.py:516 app_admin.py:572 app_admin.py:601
+#: app_wnd_input_first_pass.py:249
 msgid "Предупреждение"
 msgstr "Предупреждение"
 
@@ -326,27 +322,27 @@ msgstr "Приложение Child PC Timer уже запущено."
 msgid "Приложение Unlock User CPGuard уже запущено."
 msgstr "Приложение Unlock User CPGuard уже запущено."
 
-#: app_admin.py:87
+#: app_admin.py:100
 msgid "Просмотр логов программы"
 msgstr "Просмотр логов программы"
 
-#: app_admin.py:128
+#: app_admin.py:141
 msgid "Разблокировать"
 msgstr "Разблокировать"
 
-#: app_admin.py:163 app_admin.py:167 app_admin.py:168
+#: app_admin.py:176 app_admin.py:180 app_admin.py:181
 msgid "Разблокировать интерфейс"
 msgstr "Разблокировать интерфейс"
 
-#: app_admin.py:134 app_lock_unlock_usr.py:113
+#: app_admin.py:147 app_lock_unlock_usr.py:113
 msgid "Разблокировать пользователя"
 msgstr "Разблокировать пользователя"
 
-#: app_admin.py:706
+#: app_admin.py:764
 msgid "СБРОС ДАННЫХ"
 msgstr "СБРОС ДАННЫХ"
 
-#: app_admin.py:140 app_admin.py:144
+#: app_admin.py:153 app_admin.py:157
 msgid "Справка"
 msgstr "Справка"
 
@@ -354,23 +350,23 @@ msgstr "Справка"
 msgid "ТЕКСТ ЗАПОЛНИТЕЛЬ - документация в разработке\n"
 msgstr "ТЕКСТ ЗАПОЛНИТЕЛЬ - документация в разработке\n"
 
-#: app_admin.py:93
+#: app_admin.py:106
 msgid "Таймер"
 msgstr "Таймер"
 
-#: app_admin.py:97
+#: app_admin.py:110
 msgid "Таймер "
 msgstr "Таймер "
 
-#: app_admin.py:123
+#: app_admin.py:136
 msgid "Удаляет все данные задания для блокировки. БЛОКИРОВКУ НЕ ОТКЛЮЧАЕТ"
 msgstr "Удаляет все данные задания для блокировки. БЛОКИРОВКУ НЕ ОТКЛЮЧАЕТ"
 
-#: app_admin.py:231
+#: app_admin.py:244
 msgid "Укажите время для блокировки: "
 msgstr "Укажите время для блокировки: "
 
-#: app_admin.py:193
+#: app_admin.py:206
 msgid "Укажите пользователя для блокировки: "
 msgstr "Укажите пользователя для блокировки: "
 
@@ -378,6 +374,10 @@ msgstr "Укажите пользователя для блокировки: "
 msgid "Успешно"
 msgstr "Успешно"
 
-#: app_admin.py:256
+#: app_wnd_input_first_pass.py:153
+msgid "Язык приложения: "
+msgstr "Язык приложения: "
+
+#: app_admin.py:269
 msgid "час (0 отключено)"
 msgstr "час (0 отключено)"

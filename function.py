@@ -534,6 +534,7 @@ def check_password(input_password: str, stored_hashed_password: str) -> bool:
 
 
 # -------------------------------- Работа с реестром -------------------------
+# Путь в реестре - Компьютер\HKEY_LOCAL_MACHINE\SOFTWARE\CPG Password
 def set_password_in_registry(password: str):
     """Записывает пароль в реестр."""
     # Путь в реестре - Компьютер-HKEY_LOCAL_MACHINE-SOFTWARE-CPG Password
