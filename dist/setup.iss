@@ -16,7 +16,7 @@ OutputBaseFilename=Child PC Guard Installer
 Compression=lzma2
 SolidCompression=yes
 ; Отключить страницу выбора каталога для установки приложения
-;DisableDirPage=yes
+DisableDirPage=yes
 ; Отключить страницу выбора группы программ
 DisableProgramGroupPage=yes
 ; Имя для деинсталлятора (Будет отображаться в апплете панели управления "Удаление или изменение программы". )
