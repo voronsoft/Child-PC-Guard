@@ -240,7 +240,7 @@ class WndInputFirstAppPass(wx.Dialog):
                 function.update_data_json("protected_user", usr)
 
                 dialog = wx.MessageDialog(self,
-                                          _(f"Пароль ЗАПИСАН в программу.\nПользователь ЗАПИСАН в программу"),
+                                          f"{_("Пароль ЗАПИСАН в программу.\nПользователь ЗАПИСАН в программу\nЯзык программы - ")}{function.read_data_json("language")}",
                                           _("ОТЛИЧНО"),
                                           wx.ICON_AUTH_NEEDED
                                           )

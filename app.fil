@@ -5,4 +5,8 @@ app_wind_bot.py
 app_wind_documentation.py
 app_wind_exit_prog.py
 app_wnd_input_first_pass.py
+app_wind_lang.py
+app_wind_pass.py
+app_wind_tray_icon.py
+app_tg_bot.py
 function.py

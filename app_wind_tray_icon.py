@@ -1,9 +1,12 @@
 import os
-
 import wx
 import wx.adv
-
+import function
 import config_app
+import config_localization
+
+# Подключаем локализацию
+_ = config_localization.setup_locale(function.read_data_json("language"))
 
 
 ###########################################################################
@@ -30,7 +33,7 @@ class TrayIcon(wx.adv.TaskBarIcon):
         """Создание контекстного меню"""
         menu = wx.Menu()
         # restore_item = menu.Append(wx.ID_ANY, "Восстановить окно")
-        exit_item = menu.Append(wx.ID_EXIT, "Выход")
+        exit_item = menu.Append(wx.ID_EXIT, _("Выход"))
 
         # self.Bind(wx.EVT_MENU, self.on_restore, restore_item)
         self.Bind(wx.EVT_MENU, self.on_exit, exit_item)

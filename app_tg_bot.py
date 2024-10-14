@@ -4,8 +4,14 @@ import ctypes
 import asyncio
 import logging
 import function
+import config_localization
 from telegram import ReplyKeyboardMarkup, KeyboardButton, InlineKeyboardButton, InlineKeyboardMarkup, Update
 from telegram.ext import Application, CommandHandler, ContextTypes, MessageHandler, filters, CallbackQueryHandler
+
+# TODO Бот не локализован, необходимо подготовить в тексте для перевода функцию_()
+
+# Подключаем локализацию
+_ = config_localization.setup_locale(function.read_data_json("language"))
 
 # Имя мьютекса (должно быть уникальным)
 MUTEX_NAME_BCPG = "Global\\BOT_Child_PC"
@@ -25,11 +31,10 @@ CORRECT_PASSWORD = function.get_password_from_registry()
 # Словарь для хранения авторизованных пользователей
 authorized_users = set()
 
+
 # Корректное завершение работы бота.
 async def shutdown(application):
     """Корректное завершение работы бота."""
-    print("Остановка бота...")
-
     # Сначала останавливаем поллинг
     if application.updater is not None:
         application.updater.stop()  # Останавливаем поллинг
@@ -46,16 +51,16 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Запуск бота"""
     chat_id = update.message.chat.id
 
-    await update.message.reply_text(f"Ваш chat_id: {chat_id}\n"
-                                    f"Этот номер вам нужно ввести в программе - Child PC Guard\n"
-                                    f"Нажав на кнопку в меню - 'Подключить оповещения через - Telegram'\n"
-                                    f"Введите номер в поле для ввода и нажмите - ОК\n"
-                                    f"После этого программа сможет понять кому отправлять сообщения"
+    await update.message.reply_text(f"{_("Ваш chat_id: ")}{chat_id}\n{_("Этот номер вам нужно ввести в программе - Child PC Guard\n" \
+                                                                        "Нажав на кнопку в меню - 'Подключить оповещения через - Telegram'\n" \
+                                                                        "Введите номер в поле для ввода и нажмите - ОК\n" \
+                                                                        "После этого программа сможет понять кому отправлять сообщения" \
+                                                                        )}"
                                     )
 
     # Проверяем, авторизован ли пользователь
     if chat_id not in authorized_users:
-        await update.message.reply_text("Введите пароль для доступа\n(тот который вы вводили в программе):")
+        await update.message.reply_text(_("Введите пароль для доступа\n(тот который вы вводили в программе):"))
     else:
         await show_menu(update)
 
@@ -79,40 +84,35 @@ async def check_password(update: Update, context: ContextTypes.DEFAULT_TYPE):
         answer = function.update_data_json("id_tg_bot_parent", chat_id)
         if answer:
             authorized_users.add(chat_id)
-            print("444authorized_users- ",authorized_users)
 
-        await update.message.reply_text("Доступ разрешен.")
+        await update.message.reply_text(_("Доступ разрешен."))
         await show_menu(update)
     else:
-        await update.message.reply_text("Неверный пароль. Попробуйте снова.")
+        await update.message.reply_text(_("Неверный пароль. Попробуйте снова."))
 
 
 # Отображение меню кнопок
 async def show_menu(update: Update):
     """Отображение меню кнопок"""
     keyboard = [
-            [KeyboardButton("💻 Получить статус CPG"),
-             KeyboardButton("⚠️ Вывести предупреждение")],
-            [KeyboardButton("💻 Выключить ПК"),
-             KeyboardButton("🔓 Разблокировать ПК")],
-            # [KeyboardButton("❌ Выключить приложение"),
-            #  KeyboardButton("▶️ Включить приложение")],
-            [KeyboardButton("⏲️ Выбрать время для блокировки")]
+            [KeyboardButton(_("Получить статус CPG")), KeyboardButton(_("Вывести предупреждение"))],
+            [KeyboardButton(_("Выключить ПК")), KeyboardButton(_("Разблокировать ПК"))],
+            [KeyboardButton(_("Выбрать время для блокировки"))]
     ]
     reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True, one_time_keyboard=False)
-    await update.message.reply_text('Меню:', reply_markup=reply_markup)
+    await update.message.reply_text(_("Меню:"), reply_markup=reply_markup)
 
 
 # Выбор времени для блокировки
 async def choose_time(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Выбор времени для блокировки"""
     keyboard = [
-            [InlineKeyboardButton("1 час", callback_data='1'), InlineKeyboardButton("2 часа", callback_data='2')],
-            [InlineKeyboardButton("3 часа", callback_data='3'), InlineKeyboardButton("4 часа", callback_data='4')],
-            [InlineKeyboardButton("5 часов", callback_data='5')]
+            [InlineKeyboardButton(_("1 час"), callback_data='1'), InlineKeyboardButton(_("2 часа"), callback_data='2')],
+            [InlineKeyboardButton(_("3 часа"), callback_data='3'), InlineKeyboardButton(_("4 часа"), callback_data='4')],
+            [InlineKeyboardButton(_("5 часов"), callback_data='5')]
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
-    await update.message.reply_text('Выберите время для блокировки:', reply_markup=reply_markup)
+    await update.message.reply_text(_("Выберите время для блокировки:"), reply_markup=reply_markup)
 
 
 async def handle_time_selection(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -121,12 +121,11 @@ async def handle_time_selection(update: Update, context: ContextTypes.DEFAULT_TY
     await query.answer()
     time_selected = query.data
     time_to_sec = int(query.data) * 3600
-    print("sgegfdgsdfg :", time_selected, len(time_selected))
-    print("time_to_sec:", time_to_sec)
-    await query.message.reply_text(f"Вы выбрали: {time_selected.replace('_', ' ')} часа(ов) до блокировки.\n"
-                                   f"Таймер начал отсчет времени!\n"
-                                   f"Как только время выйдет, вы получите уведомление."
-                                   )
+
+    message_text = (_("Вы выбрали: {time_selected} часа(ов) до блокировки.\nТаймер начал отсчет времени!\n"
+                      "Как только время выйдет, вы получите уведомление."
+                      ).format(time_selected=time_selected.replace('_', ' ')))
+    await query.message.reply_text(message_text)
 
 
 # Обработка сообщения с предупреждением
@@ -137,9 +136,7 @@ async def handle_warning_message(update: Update, context: ContextTypes.DEFAULT_T
 
     # Вывод устрашающего предупреждения на экран
     function.show_message_with_auto_close(message=text, delay=30)
-    await update.message.reply_text("⚠️ Устрашающее сообщение выведено на главном экране.")
-
-
+    await update.message.reply_text(_("Устрашающее сообщение выведено на главном экране."))
 
 
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -157,14 +154,13 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     status_bot = function.read_data_json("id_tg_bot_parent")
 
-
     # Проверяем, авторизован ли пользователь
     if chat_id not in authorized_users:
-        await update.message.reply_text("Вы не авторизованы. Введите пароль.")
+        await update.message.reply_text(_("Вы не авторизованы. Введите пароль."))
         return
 
-    if text == "⚠️ Вывести предупреждение":
-        await update.message.reply_text("Пожалуйста, введите текст для сообщения.")
+    if text == _("Вывести предупреждение"):
+        await update.message.reply_text(_("Пожалуйста, введите текст для сообщения."))
         # Сохраняем состояние, чтобы обрабатывать следующий ввод
         context.user_data['waiting_for_warning'] = True
     else:
@@ -175,31 +171,38 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
             context.user_data['waiting_for_warning'] = False
             return
 
-    if text == "💻 Получить статус CPG":
-        await update.message.reply_text(f"СТАТУС ПРОГРАММЫ:\n"
-                                        f"- CPG: {"Работает" if status_prg else "Выключено"}\n"
-                                        f"- Пользователь: {username_block if len(username_block) else "Не найдено"}\n"
-                                        f"- Таймер: {time if time else "Не включено"}\n"
-                                        f"- Оповещение Telegram: {status_bot if status_bot else "Отключено"}\n"
-                                        )
-    elif text == "🔓 Разблокировать ПК":
-        await update.message.reply_text(f"🔓 Пользователь {username_block} разблокирован.")
-    elif text == "💻 Выключить ПК":
-        os.system("shutdown /s /t 30")  # Выключение ПК с таймером в 30 секунд
-        await update.message.reply_text("💻 ПК будет выключен через 30 секунд.")
+    if text == _("Получить статус CPG"):
+        # await update.message.reply_text(f"{_("СТАТУС ПРОГРАММЫ:\n- CPG:")} {_("Работает") if status_prg else _("Выключено")}\n{_("- Пользователь:")} {username_block if len(username_block) else _("Не найдено")}\n{_("- Таймер:")} {time if time else _("Не включено")}\n{_("- Оповещение Telegram:")} {status_bot if status_bot else _("Отключено")}\n")
+        status_cpg = _("Работает") if status_prg else _("Выключено")
+        user_status = username_block if len(username_block) else _("Не найдено")
+        timer_status = time if time else _("Не включено")
+        bot_status = status_bot if status_bot else _("Отключено")
 
-    elif text == "❌ Выключить приложение":
         await update.message.reply_text(
-                "❌ Приложение выключено.\nВсе настройки стерты.\nТаймер остановлен.\n БЛОКИРОВКА НЕ СНЯТА"
+                _("СТАТУС ПРОГРАММЫ:\n- CPG: {status_cpg}\n- Пользователь: {user_status}\n- Таймер: {timer_status}\n"
+                  "- Оповещение Telegram: {bot_status}"
+                  ).format(
+                        status_cpg=status_cpg,
+                        user_status=user_status,
+                        timer_status=timer_status,
+                        bot_status=bot_status
+                )
         )
-    elif text == "▶️ Включить приложение":
-        await update.message.reply_text("▶️ Приложение включено.")
-    elif text == "⏲️ Выбрать время для блокировки":
+
+    elif text == _("Разблокировать ПК"):
+        await update.message.reply_text(_("Пользователь {username} разблокирован.").format(username=username_block))
+    elif text == _("Выключить ПК"):
+        os.system("shutdown /s /t 30")  # Выключение ПК с таймером в 30 секунд
+        await update.message.reply_text(_("ПК будет выключен через 30 секунд."))
+
+    elif text == _("Выключить приложение"):
+        await update.message.reply_text(_("Приложение выключено.\nВсе настройки стерты.\nТаймер остановлен.\n БЛОКИРОВКА НЕ СНЯТА"))
+
+    elif text == _("Включить приложение"):
+        await update.message.reply_text(_("Приложение включено."))
+
+    elif text == _("Выбрать время для блокировки"):
         await choose_time(update, context)
-    # elif text.lower() == "stop":  # Если получено сообщение "stop"
-    #     await update.message.reply_text("🛑 Остановка бота...")
-    #
-    #     await shutdown(application)  # Остановка бота
 
 
 # Главная функция запуска приложения бота
@@ -211,18 +214,22 @@ async def main_bot_run():
     error_code = ctypes.windll.kernel32.GetLastError()
 
     if error_code == 183:
-        function.show_message_with_auto_close(f"Приложение BOT Child PC Timer уже запущено.", "ПРЕДУПРЕЖДЕНИЕ")
+        function.show_message_with_auto_close(_("Приложение BOT Child PC Timer уже запущено."), _("ПРЕДУПРЕЖДЕНИЕ"))
         return
     elif error_code == 5:  # ERROR_ACCESS_DENIED
         if mutex != 0:  # Проверяем, что дескриптор валиден перед закрытием
             ctypes.windll.kernel32.CloseHandle(mutex)
-        function.show_message_with_auto_close("Доступ к мьютексу запрещен.", "ОШИБКА")
+
+        function.show_message_with_auto_close(_("Доступ к мьютексу запрещен."), _("ОШИБКА"))
 
         return
     elif error_code != 0:
         if mutex != 0:  # Проверяем, что дескриптор валиден перед закрытием
             ctypes.windll.kernel32.CloseHandle(mutex)
-        function.show_message_with_auto_close(f"Неизвестная ошибка:\n{error_code}", "ОШИБКА")
+
+        error_message = _("Неизвестная ошибка:\n{error_code}").format(error_code=error_code)
+        title = _("ОШИБКА")
+        function.show_message_with_auto_close(error_message, title)
 
         return
     # -------------- END ---------------
@@ -250,10 +257,7 @@ async def main_bot_run():
     try:
         await asyncio.Event().wait()  # Это основной цикл, который ждет завершения
     except (KeyboardInterrupt, SystemExit):
-        print("Остановка бота...")
-
-    # Корректное завершение работы бота
-    await shutdown(application)
+        await shutdown(application)  # Корректное завершение работы бота
 
 
 # --------------------------------------------------------------------------------------------------

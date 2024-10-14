@@ -19,6 +19,7 @@ from config_app import FOLDER_IMG, path_timer_exe, path_monitor_exe, path_unbloc
 
 # Подключаем локализацию
 _ = config_localization.setup_locale(function.read_data_json("language"))
+print("Запуск программы язык в БД: ", function.read_data_json("language"))
 
 # Имя мьютекса (должно быть уникальным)
 MUTEX_NAME_CPG = "Global\\Child_PC_Guard"
@@ -804,25 +805,18 @@ def main_app():
     # ----------------------------------- END --------------------------------------
 
     if error_code == 183:  # Объект с таким именем уже существует.
-        print("1 ", error_code)
         function.show_message_with_auto_close("Приложение уже запущено", "ОШИБКА")
         return
     elif error_code == 5:  # ERROR_ACCESS_DENIED
-        print("2 ", error_code)
         if mutex != 0:
-            print("3 ", error_code, "\n", mutex)
             ctypes.windll.kernel32.CloseHandle(mutex)
         function.show_message_with_auto_close(_("Доступ к мьютексу запрещен."), _("ОШИБКА"))
         return
     elif error_code != 0:  #
         if mutex != 0:
             ctypes.windll.kernel32.CloseHandle(mutex)
-            print("4 ", error_code, "\n", mutex)
         function.show_message_with_auto_close(f"{_("Неизвестная ошибка:\n")}{error_code}", _("ОШИБКА"))
         return
-
-    print("5 ", error_code)
-    print("-------------")
 
     # Создаем папки и файлы с данными для работы приложения если они не существуют
     function.function_to_create_path_data_files()
@@ -847,7 +841,6 @@ def main_app():
 
     # Закрываем дескриптор мьютекса
     ctypes.windll.kernel32.CloseHandle(mutex)
-    print("6 ", "Мьютекс закрыт при завершении приложения.")
     sys.exit(0)
 
 if __name__ == "__main__":

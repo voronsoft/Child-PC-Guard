@@ -25,6 +25,15 @@ UninstallDisplayName=CPG uninstall
 UninstallDisplayIcon={app}\img\uninstall.ico
 PrivilegesRequired=admin
 
+; Включение диалога выбора языка
+ShowLanguageDialog=yes
+;LanguageDetectionMethod=none
+
+[Languages]
+Name: "en"; MessagesFile: "compiler:Default.isl"
+Name: "russian"; MessagesFile: "compiler:Languages\Russian.isl"
+Name: "ukrainian"; MessagesFile: "compiler:Languages\Ukrainian.isl"
+
 [Dirs]
 ; Создание папки с доступом на изменение для всех пользователей
 Name: "{commonappdata}\Child PC Guard Data"; Permissions: "everyone-full everyone-readexec"
@@ -71,6 +80,9 @@ Type: files; Name: "{commonappdata}\Child PC Guard Data\*"
 ; Удаление самой папки
 Type: dirifempty; Name: "{commonappdata}\Child PC Guard Data"
 
+[Registry]
+; Удаление записи пароля из реестра (при запуске деинсталлятора программы) - "HKLM\SOFTWARE\CPG Password"
+Root: HKLM; Subkey: "SOFTWARE\CPG Password"; Flags: deletekey dontcreatekey
 
 ; Код выполняет запись в файл (install_info.txt) пути установки программы для последующего считывания приложением
 [Code]

@@ -136,7 +136,7 @@ def makePO(applicationDirectoryPath,  applicationDomain=None, verbose=0) :
         applicationName = applicationDomain
     currentDir = os.getcwd()
     os.chdir(applicationDirectoryPath)                    
-    if not os.path.exists('../app.fil'):
+    if not os.path.exists('app.fil'):
         raise IOError(2,'No module file: app.fil')
 
     # Steps:                                  
