@@ -10,7 +10,7 @@ import hashlib
 import requests
 import threading
 import subprocess
-from config_app import FOLDER_DATA, PATH_DATA_FILE, PATH_LOG_FILE, PATH_INSTALL_INFO_FILE, SECRET_KEY
+from config_app import FOLDER_DATA, PATH_DATA_FILE, PATH_LOG_FILE, PATH_INSTALL_INFO_FILE, SECRET_KEY, DISK_LETTER
 
 FOLDER_DATA_PRGM_DATA = os.path.join(os.environ.get('PROGRAMDATA'), "Child PC Guard Data")
 PATH_DATA_FILE_PRGM_DATA = os.path.join(FOLDER_DATA_PRGM_DATA, "data.json")
@@ -130,7 +130,6 @@ def update_data_json(key, value, file_path=PATH_DATA_FILE):
         with open(file_path, 'w', encoding='utf-8') as file:
             json.dump(data, file, indent=4, ensure_ascii=False)
 
-        # print(f"Данные успешно обновлены: {key} = {value}")
         return True
     except FileNotFoundError:
         log_error(f"Файл {file_path} не найден.")
@@ -169,7 +168,7 @@ def get_users():
         for i in range(entriesread.value):
             username = ctypes.cast(user_list[i], ctypes.c_wchar_p).value
             # Проверяем наличие домашнего каталога, чтобы исключить системные учетные записи
-            if os.path.exists(f"C:\\Users\\{username}"):
+            if os.path.exists(os.path.join(DISK_LETTER, "Users", username)):
                 users.append(username)
         netapi32.NetApiBufferFree(bufptr)
     return users

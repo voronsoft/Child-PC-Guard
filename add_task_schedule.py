@@ -27,13 +27,13 @@ else:
 # Указываем путь к XML файлу (относительный путь к файлу XML)
 xml_path = os.path.join(base_path, "task_data.xml")
 
-print("=============================================================")
-print("PROJECT_ROOT: ", PROJECT_ROOT)
-print("DISK_LETTER  - ", DISK_LETTER)
-print("FOLDER_DATA  - ", FOLDER_DATA)
-print("PATH_LOG_FILE  - ", PATH_LOG_FILE)
-print("путь к XML файлу  - : ", xml_path)
-print("=============================================================")
+# print("=============================================================")
+# print("PROJECT_ROOT: ", PROJECT_ROOT)
+# print("DISK_LETTER  - ", DISK_LETTER)
+# print("FOLDER_DATA  - ", FOLDER_DATA)
+# print("PATH_LOG_FILE  - ", PATH_LOG_FILE)
+# print("путь к XML файлу  - : ", xml_path)
+# print("=============================================================")
 
 
 # ---------------------

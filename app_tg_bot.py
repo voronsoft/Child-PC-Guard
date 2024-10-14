@@ -8,7 +8,7 @@ import config_localization
 from telegram import ReplyKeyboardMarkup, KeyboardButton, InlineKeyboardButton, InlineKeyboardMarkup, Update
 from telegram.ext import Application, CommandHandler, ContextTypes, MessageHandler, filters, CallbackQueryHandler
 
-# TODO Бот не локализован, необходимо подготовить в тексте для перевода функцию_()
+#
 
 # Подключаем локализацию
 _ = config_localization.setup_locale(function.read_data_json("language"))

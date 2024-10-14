@@ -452,7 +452,7 @@ class Window(wx.Frame):
         self.username_blocking = function.read_data_json("username_blocking")
 
         # Время блокировки получаем из поля выбора и записываем в файл данных переведя в секунды
-        time_choice = int(self.input_time.GetValue()) * 60  # TODO Перевести значение в часы после разработки (*3600)
+        time_choice = int(self.input_time.GetValue()) * 3600  # TODO Перевести значение в часы после разработки (*3600)
         # Записывает выбранное время для блокировки в файл данных.
         function.update_data_json("remaining_time", time_choice)
         # Обновляем атрибут в классе
@@ -501,7 +501,7 @@ class Window(wx.Frame):
         """
         username = self.input_username.GetValue()  # Получаем имя пользователя для блокировки
         hours = int(self.input_time.GetValue())  # Получаем время для таймера из поля выбора времени
-        self.remaining_time = int(hours * 60)  # TODO Перевести значение в часы после разработки (*3600)
+        self.remaining_time = int(hours * 3600)  # TODO Перевести значение в часы после разработки (*3600)
 
         # Настройка таймера
         self.elapsed_time = 0  # Инициализируем прошедшее время

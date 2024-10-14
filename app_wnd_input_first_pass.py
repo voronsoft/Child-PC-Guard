@@ -1,7 +1,6 @@
 import os
 import wx
 import wx.xrc
-import gettext
 import function
 import config_localization
 from config_app import FOLDER_IMG
