@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-10-10 02:51+0300\n"
-"PO-Revision-Date: 2024-10-12 06:23+0300\n"
+"PO-Revision-Date: 2024-10-14 06:38+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: en\n"
@@ -142,6 +142,9 @@ msgstr "Select the user you CANNOT BLOCK"
 #: app_admin.py:90
 msgid "Выбор языка интерфейса"
 msgstr "Selection of interface language"
+
+msgid "Выбор языка"
+msgstr "Select language"
 
 #: app_timer.py:54 app_timer.py:90
 msgid "Выключен"
@@ -394,3 +397,9 @@ msgstr "Application language: "
 #: app_admin.py:269
 msgid "час (0 отключено)"
 msgstr "hour (0 disabled)"
+
+msgid "Перезапустите приложение что бы настройки языка вступили в силу."
+msgstr "Restart the application for the language settings to take effect."
+
+msgid "Вы не выбрали пользователя которого нельзя блокировать"
+msgstr "You have not selected a user that cannot be blocked."

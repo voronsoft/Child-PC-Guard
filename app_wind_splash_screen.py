@@ -1,11 +1,12 @@
 import os
 import wx
 import random
-import gettext
-
+import function
+import config_localization
 from config_app import SCREENSAVER1, SCREENSAVER2
 
-_ = gettext.gettext
+# Подключаем локализацию
+_ = config_localization.setup_locale(function.read_data_json("language"))
 
 
 class SplashScreen(wx.Frame):

@@ -10,13 +10,13 @@ import os
 
 import wx
 import wx.xrc
+import function
 import wx.richtext
-
-import gettext
-
+import config_localization
 from config_app import FOLDER_IMG
 
-_ = gettext.gettext
+# Подключаем локализацию
+_ = config_localization.setup_locale(function.read_data_json("language"))
 
 
 ###########################################################################

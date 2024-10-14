@@ -121,6 +121,9 @@ msgstr ""
 msgid "Выбор языка интерфейса"
 msgstr ""
 
+msgid "Выбор языка"
+msgstr ""
+
 #: app_timer.py:54 app_timer.py:90
 msgid "Выключен"
 msgstr ""
@@ -360,4 +363,10 @@ msgstr ""
 
 #: app_admin.py:269
 msgid "час (0 отключено)"
+msgstr ""
+
+msgid "Перезапустите приложение что бы настройки языка вступили в силу."
+msgstr ""
+
+msgid "Вы не выбрали пользователя которого нельзя блокировать"
 msgstr ""

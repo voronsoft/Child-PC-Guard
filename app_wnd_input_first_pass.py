@@ -3,9 +3,11 @@ import wx
 import wx.xrc
 import gettext
 import function
+import config_localization
 from config_app import FOLDER_IMG
 
-_ = gettext.gettext
+# Подключаем локализацию
+_ = config_localization.setup_locale(function.read_data_json("language"))
 
 
 ###########################################################################
@@ -222,26 +224,37 @@ class WndInputFirstAppPass(wx.Dialog):
         """Обработчик нажатия кнопки ОК"""
         # Получаем пароль из поля ввода
         psw = self.input_txt_pass.GetValue()
+        # Получаем пользователя которого не блокировать
+        usr = self.input_protect_user.GetValue()  # Получаем имя пользователя
         # Считываем пароль из БД (реестра)
         password_from_registry = function.get_password_from_registry()
         # Если поле ввода не менее 5ти знаков и пароль БД не пустой.
         if len(psw) >= 5 and password_from_registry is False:
-            # Хешируем пароль для записи в БД
-            psw_code = function.hash_password(self.input_txt_pass.GetValue())
-            # Записываем пароль в реестр
-            function.set_password_in_registry(psw_code)
-            # Записываем Пользователя в БД (пользователь, который будет под защитой от блокировки)
-            usr = self.input_protect_user.GetValue()  # Получаем имя пользователя
-            function.update_data_json("protected_user", usr)
+            if usr:
+                # Хешируем пароль для записи в БД
+                psw_code = function.hash_password(self.input_txt_pass.GetValue())
 
-            dialog = wx.MessageDialog(self,
-                                      _(f"Пароль ЗАПИСАН в программу.\nПользователь ЗАПИСАН в программу"),
-                                      _("ОТЛИЧНО"),
-                                      wx.ICON_AUTH_NEEDED
-                                      )
-            dialog.ShowModal()
-            dialog.Destroy()
-            self.Destroy()
+                # Записываем пароль в реестр
+                function.set_password_in_registry(psw_code)
+                # Записываем Пользователя в БД (пользователь, который будет под защитой от блокировки)
+                function.update_data_json("protected_user", usr)
+
+                dialog = wx.MessageDialog(self,
+                                          _(f"Пароль ЗАПИСАН в программу.\nПользователь ЗАПИСАН в программу"),
+                                          _("ОТЛИЧНО"),
+                                          wx.ICON_AUTH_NEEDED
+                                          )
+                dialog.ShowModal()
+                dialog.Destroy()
+                self.Destroy()
+            else:
+                dialog = wx.MessageDialog(self,
+                                          _("Вы не выбрали пользователя которого нельзя блокировать"),
+                                          _("ОШИБКА"),
+                                          wx.ICON_AUTH_NEEDED
+                                          )
+                dialog.ShowModal()
+                dialog.Destroy()
         elif len(psw) >= 5 and password_from_registry:
             # Выводим сообщение об ошибке, что пароль уже есть в бД
             wx.MessageBox(_("Пароль уже есть в БД"), _("Ошибка"), wx.OK | wx.ICON_ERROR)

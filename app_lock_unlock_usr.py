@@ -3,12 +3,13 @@ import wx
 import time
 import wx.xrc
 import ctypes
-import gettext
 import function
+import config_localization
 from function import unblock_user, show_message_with_auto_close, read_data_json
 from config_app import FOLDER_IMG, PATH_LOG_FILE
 
-_ = gettext.gettext
+# Подключаем локализацию
+_ = config_localization.setup_locale(read_data_json("language"))
 
 # Имя мьютекса (должно быть уникальным)
 MUTEX_NAME_UUCPG = "Global\\Unlock_User_CPGuard"

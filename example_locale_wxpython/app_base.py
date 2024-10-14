@@ -9,18 +9,18 @@ from config_app import FOLDER_DATA
 # Языковой домен (название файла mo)
 LANGDOMAIN = "I18Nwxapp"
 # Список языков для поддержки в приложении ( для которых есть файлы перевода)
-SUPPORTED_LANGUAGE = {u"en": wx.LANGUAGE_ENGLISH,
-                      u"fr": wx.LANGUAGE_FRENCH,
-                      u"de": wx.LANGUAGE_GERMAN,
-                      u"ru": wx.LANGUAGE_RUSSIAN,
+SUPPORTED_LANGUAGE = {"en": wx.LANGUAGE_ENGLISH,
+                      "fr": wx.LANGUAGE_FRENCH,
+                      "de": wx.LANGUAGE_GERMAN,
+                      "r": wx.LANGUAGE_RUSSIAN,
                       }
 
 
 # LANGDOMAIN = "messages"
 # SUPPORTED_LANGUAGE = {
-#         u"en": wx.LANGUAGE_ENGLISH,
-#         u"uk": wx.LANGUAGE_UKRAINIAN,
-#         u"ru": wx.LANGUAGE_RUSSIAN,
+#         "en": wx.LANGUAGE_ENGLISH,
+#         "uk": wx.LANGUAGE_UKRAINIAN,
+#         "r": wx.LANGUAGE_RUSSIAN,
 # }
 # --------------------------- END --------------------------------------
 
@@ -75,7 +75,7 @@ class BaseApp(wx.App, InspectionMixin):
         Если просто назначить новую локаль старой переменной,
         предыдущий объект не будет корректно уничтожен.
 
-        :param string `lang`: код языка (например, "ru", "en", "uk")
+        :param string `lang`: код языка (например, "r", "en", "uk")
         """
         # Если запрашиваемый язык поддерживается, выбираем его,
         # иначе по умолчанию используем русский язык.

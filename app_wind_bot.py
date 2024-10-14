@@ -2,12 +2,13 @@ import os
 import wx
 import time
 import wx.xrc
-import gettext
 import function
 import subprocess
+import config_localization
 from config_app import FOLDER_IMG, PATH_LOG_FILE, path_bot_tg_exe
 
-_ = gettext.gettext
+# Подключаем локализацию
+_ = config_localization.setup_locale(function.read_data_json("language"))
 
 
 ###########################################################################
@@ -96,9 +97,9 @@ class BotWindow(wx.Dialog):
 
         self.staticText3 = wx.StaticText(self,
                                          wx.ID_ANY,
-                                         _(u"4- Введите номер в поле что ниже и нажмите ОК.\n"
-                                           u"5- После этого программа будет присылать вам оповещение.\n"
-                                           u"6- Что бы получить доступ к меню бота, введите пароль от этой программы."
+                                         _("4- Введите номер в поле что ниже и нажмите ОК.\n"
+                                           "5- После этого программа будет присылать вам оповещение.\n"
+                                           "6- Что бы получить доступ к меню бота, введите пароль от этой программы."
                                            ),
                                          wx.DefaultPosition,
                                          wx.DefaultSize,

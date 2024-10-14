@@ -4,20 +4,21 @@ import sys
 import time
 import wx.xrc
 import ctypes
-import gettext
 import function
 import subprocess
+import config_localization
 import app_wnd_input_first_pass
+from app_wind_pass import WndPass
 from app_wind_bot import BotWindow
 from app_wind_lang import LanguageWnd
-from app_wind_pass import WndPass
 from app_wind_tray_icon import TrayIcon
 from app_wind_exit_prog import WndCloseApp
 from app_wind_documentation import DocWindow
 from app_wind_splash_screen import main_splash
 from config_app import FOLDER_IMG, path_timer_exe, path_monitor_exe, path_unblock_usr_exe, PATH_LOG_FILE
 
-_ = gettext.gettext
+# Подключаем локализацию
+_ = config_localization.setup_locale(function.read_data_json("language"))
 
 # Имя мьютекса (должно быть уникальным)
 MUTEX_NAME_CPG = "Global\\Child_PC_Guard"
@@ -654,39 +655,6 @@ class Window(wx.Frame):
         lang_app = LanguageWnd(self)
         lang_app.ShowModal()
 
-        # Подготовка приложения что бы перезагрузить приложения что бы язык поменялся.
-        # Удаляем иконку из трея
-        self.tray_icon.RemoveIcon()
-        self.tray_icon.Destroy()
-
-        # Закрываем окно главного приложения
-        self.Destroy()
-        # wx.CallAfter(self.Destroy)
-
-        # Проверяем существование мьютекса что бы закрыть его перед новым запуском
-        mutex = ctypes.windll.kernel32.OpenMutexW(0x00100000, False, MUTEX_NAME_CPG)  # SYNCHRONIZE
-        error_code = ctypes.windll.kernel32.GetLastError()
-        print("1mutex ", mutex)
-        print("1error_code ", error_code)
-
-        # Закрываем дескриптор мьютекса (если мьютекс существует и код ошибки 0)
-        if error_code == 0 and mutex:
-            ctypes.windll.kernel32.CloseHandle(mutex)
-            print("2mutex ", mutex)
-            print("Дескриптор закрыт!")
-        else:
-            print("Мьютекс не найден, возможно, он уже был закрыт или не был создан.")
-
-        # Перезапускаем приложение
-        wx.CallAfter(main_app)
-        # wx.CallLater(500, main_app)  # Перезапуск с задержкой 2 секунды
-
-    def restart_app(self):
-        """Перезапуск приложения"""
-        print(111111)
-        print()
-        main_app()  # Перезапуск текущего приложения
-
 
     def on_run_log(self, event):
         """Запуск просмотра логов программы"""
@@ -819,13 +787,6 @@ class Window(wx.Frame):
 def main_app():
     # Запускаем приложение как администратор
     function.run_as_admin()
-
-    # Проверяем мьютекс, созданный в другом месте приложения
-    mutex = ctypes.windll.kernel32.OpenMutexW(0x00100000, False, MUTEX_NAME_CPG)  # SYNCHRONIZE
-    error_codexx = ctypes.windll.kernel32.GetLastError()
-    print("00 error_code_mutex: ", mutex)
-    print("00 error_code: ", error_codexx)
-
 
     # ------- Проверка кода ошибки -------
     mutex = ctypes.windll.kernel32.CreateMutexW(None, False, MUTEX_NAME_CPG)

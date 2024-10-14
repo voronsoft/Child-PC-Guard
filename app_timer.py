@@ -1,15 +1,15 @@
 import os
-
 import wx
-import wx.xrc
-import gettext
-import threading
 import time
 import ctypes
+import wx.xrc
+import threading
 import config_app
+import config_localization
 from function import read_data_json, function_to_create_path_data_files, show_message_with_auto_close
 
-_ = gettext.gettext
+# Подключаем локализацию
+_ = config_localization.setup_locale(read_data_json("language"))
 
 # Имя мьютекса (должно быть уникальным)
 MUTEX_NAME_CPGT = "Global\\Child_PC_Timer"

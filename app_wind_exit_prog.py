@@ -1,11 +1,12 @@
 import os
 import wx
 import wx.xrc
-import gettext
+import config_localization
 from config_app import FOLDER_IMG
-from function import get_password_from_registry, check_password, show_message_with_auto_close
+from function import get_password_from_registry, check_password, show_message_with_auto_close, read_data_json
 
-_ = gettext.gettext
+# Подключаем локализацию
+_ = config_localization.setup_locale(read_data_json("language"))
 
 
 ###########################################################################
