@@ -19,9 +19,6 @@ MUTEX_NAME_BCPG = "Global\\BOT_Child_PC"
 # Глобальная переменная токена
 TOKEN = function.read_data_json("bot_token_telegram")
 
-# Глобальная переменная для приложения
-application = None
-
 # Включаем логирование для отладки
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -233,8 +230,6 @@ async def main_bot_run():
 
         return
     # -------------- END ---------------
-
-    global application  # Объявляем application глобальной переменной
 
     # Создаем приложение Telegram
     application = Application.builder().token(TOKEN).build()
