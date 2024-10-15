@@ -1,6 +1,4 @@
 import os
-import sys
-
 import wx
 import wx.xrc
 import function
@@ -157,7 +155,8 @@ class WndInputFirstAppPass(wx.Dialog):
         self.stat_txt.SetForegroundColour(wx.Colour(255, 0, 0))
         sizer_txt_lang.Add(self.stat_txt, 0, 0, 5)
 
-        self.lang_choice = wx.StaticText(self, wx.ID_ANY, "RU", wx.DefaultPosition, wx.DefaultSize, 0)
+        lng = function.read_data_json("language").upper()
+        self.lang_choice = wx.StaticText(self, wx.ID_ANY, lng, wx.DefaultPosition, wx.DefaultSize, 0)
         self.lang_choice.Wrap(-1)
         self.lang_choice.SetFont(wx.Font(14,
                                          wx.FONTFAMILY_SWISS,
@@ -241,8 +240,7 @@ class WndInputFirstAppPass(wx.Dialog):
 
                 dialog = wx.MessageDialog(self,
                                           _("Пароль ЗАПИСАН в программу.\nПользователь ЗАПИСАН в программу\n"
-                                            "Язык программы - {lng}".format(lng=function.read_data_json("language"))
-                                            ),
+                                            "Язык программы - {lng}").format(lng=function.read_data_json("language")),
                                           _("ОТЛИЧНО"),
                                           wx.ICON_AUTH_NEEDED
                                           )
