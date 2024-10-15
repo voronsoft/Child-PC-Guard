@@ -149,8 +149,7 @@ def main():
     error_code = ctypes.windll.kernel32.GetLastError()
 
     if error_code == 183:
-        show_message_with_auto_close(_(f"Приложение Child PC Timer уже запущено."), _("ПРЕДУПРЕЖДЕНИЕ"))
-        return
+        os._exit(0)
     elif error_code == 5:  # ERROR_ACCESS_DENIED
         if mutex != 0:  # Проверяем, что дескриптор валиден перед закрытием
             ctypes.windll.kernel32.CloseHandle(mutex)

@@ -804,8 +804,7 @@ def main_app():
     # ----------------------------------- END --------------------------------------
 
     if error_code == 183:  # Объект с таким именем уже существует.
-        function.show_message_with_auto_close("Приложение уже запущено", "ОШИБКА")
-        return
+        os._exit(0)
     elif error_code == 5:  # ERROR_ACCESS_DENIED
         if mutex != 0:
             ctypes.windll.kernel32.CloseHandle(mutex)

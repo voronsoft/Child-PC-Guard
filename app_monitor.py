@@ -12,22 +12,31 @@ import subprocess
 from datetime import datetime
 from apscheduler.schedulers.blocking import BlockingScheduler
 from function import run_as_admin, show_message_with_auto_close
-from config_app import PATH_DATA_FILE, PATH_LOG_FILE, path_main_app
+from config_app import PATH_DATA_FILE, PATH_LOG_FILE, path_main_app, path_bot_tg_exe
 
 # Имя мьютекса (должно быть уникальным)
 MUTEX_NAME_CPGM = "Global\\CPG_MONITOR"
 # TODO Путь к .exe файлу, который нужно мониторить
 path_to_program = path_main_app
+path_to_program_bot = path_bot_tg_exe
 
 
 # Функция для проверки, запущена ли программа
 def check_and_restart_program():
     program_running = False
+    bot_program_running = False
+
+    # Проверяем, запущены ли приложения
     for proc in psutil.process_iter(['pid', 'name']):
-        if proc.info['name'] == 'Child PC Guard.exe':  # Убедитесь, что имя программы правильное
+        if proc.info['name'] == 'Child PC Guard.exe':  # Главное приложение
             program_running = True
             break
 
+        if proc.info['name'] == 'run_bot_telegram.exe':  # Главное приложение
+            program_running = True
+            break
+
+    # Главная программа
     if not program_running:
         print("Программа не запущена. Перезапуск...")
         # Сообщение записываем в log
@@ -35,14 +44,35 @@ def check_and_restart_program():
 
         try:
             # Запускаем .exe файл через subprocess
-            # subprocess.Popen([path_to_program])
             os.startfile(path_to_program)
         except Exception as e:
             print("1 Планировщик остановлен.")
             # Отключаем планировщик
             log_error_monitor(f"1 Планировщик остановлен.:\n{e}")
             # Вывод ошибки на рабочий стол если приложение не найдено по указанному пути.
-            show_message_with_auto_close(f"1 CPG Monitor({time.strftime('%Y-%m-%d %H:%M:%S')})\n{e}", "Ошибка")
+            show_message_with_auto_close(f"(1CPG) CPG Monitor({time.strftime('%Y-%m-%d %H:%M:%S')})\n{e}", "Ошибка")
+            # Закрываем планировщик
+            scheduler.shutdown(wait=False)
+
+    # Задаем паузу 5ть секунд
+    time.sleep(5)
+    # -------- END ----------
+
+    # Бот программа
+    if not bot_program_running:
+        print("БОТ программа не запущена. Перезапуск...")
+        # Сообщение записываем в log
+        log_error_monitor(f"БОТ программа не запущена. Перезапуск...")
+
+        try:
+            # Запускаем .exe файл через subprocess
+            os.startfile(path_to_program_bot)
+        except Exception as e:
+            print("1-1 Планировщик остановлен.")
+            # Отключаем планировщик
+            log_error_monitor(f"1-1 Планировщик остановлен.:\n{e}")
+            # Вывод ошибки на рабочий стол если приложение не найдено по указанному пути.
+            show_message_with_auto_close(f"(2BOT) CPG Monitor({time.strftime('%Y-%m-%d %H:%M:%S')})\n{e}", "Ошибка")
             # Закрываем планировщик
             scheduler.shutdown(wait=False)
 
@@ -113,8 +143,7 @@ def main():
     error_code = ctypes.windll.kernel32.GetLastError()
 
     if error_code == 183:
-        # show_message_with_auto_close(f"Приложение Windows CPG MONITOR уже запущено.", "ПРЕДУПРЕЖДЕНИЕ")
-        return
+        os._exit(0)
     elif error_code == 5:  # ERROR_ACCESS_DENIED
         if mutex != 0:  # Проверяем, что дескриптор валиден перед закрытием
             ctypes.windll.kernel32.CloseHandle(mutex)
@@ -132,7 +161,7 @@ def main():
     scheduler = BlockingScheduler()
 
     # TODO Настройка времени для заданий в мониторинге (релиз\разработка)
-    # Задача 1: Следить за процессом и перезапускать, если не запущен (каждые 60 секунд)
+    # Задача 1: Следить за процессом и перезапускать, если не запущен (каждые 300 секунд)
     scheduler.add_job(check_and_restart_program, 'interval', seconds=300)  # TODO Включить в момент релиза
     # scheduler.add_job(check_and_restart_program, 'interval', seconds=10)  # Отключить после разработки
 
@@ -154,7 +183,11 @@ def main():
         scheduler.shutdown()
         print("5 Планировщик остановлен.")
 
-    # Основная секция для запуска программы
+    finally:
+        # Освобождение мьютекса при завершении программы
+        if mutex != 0:  # Проверяем, что дескриптор валиден перед закрытием
+            ctypes.windll.kernel32.CloseHandle(mutex)
+        print("Мьютекс освобожден.")
 
 
 if __name__ == '__main__':

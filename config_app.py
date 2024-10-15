@@ -109,7 +109,7 @@ path_main_app = os.path.join(FOLDER_INSTALL_APP, "Child PC Guard.exe")  # Пут
 path_timer_exe = os.path.join(FOLDER_INSTALL_APP, "Child PC Timer.exe")  # Путь к приложению Таймер
 path_monitor_exe = os.path.join(FOLDER_INSTALL_APP, "Windows CPG Monitor.exe")  # Путь к приложению Монитор
 path_unblock_usr_exe = os.path.join(FOLDER_INSTALL_APP, "Child PC Unlock User.exe")  # Путь к приложению Разблокировки
-path_bot_tg_exe = os.path.join(FOLDER_INSTALL_APP, "run_bot_telegram.exe.")  # Путь к приложению Бота
+path_bot_tg_exe = os.path.join(FOLDER_INSTALL_APP, "run_bot_telegram.exe")  # Путь к приложению Бота
 # ========================================== END ==========================================
 
 

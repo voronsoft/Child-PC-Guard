@@ -19,6 +19,9 @@ MUTEX_NAME_BCPG = "Global\\BOT_Child_PC"
 # Глобальная переменная токена
 TOKEN = function.read_data_json("bot_token_telegram")
 
+# Объявляем переменную глобально
+mutex = None
+
 # Включаем логирование для отладки
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -30,8 +33,12 @@ authorized_users = set()
 
 
 # Корректное завершение работы бота.
-async def shutdown(application):
+async def shutdown(application, mutex):
     """Корректное завершение работы бота."""
+    # Закрытие мьютекса при завершении приложения
+    if mutex is not None and mutex != 0:
+        ctypes.windll.kernel32.CloseHandle(mutex)
+
     # Сначала останавливаем поллинг
     if application.updater is not None:
         application.updater.stop()  # Останавливаем поллинг
@@ -40,7 +47,6 @@ async def shutdown(application):
     await application.stop()  # Функция, которая корректно завершает работу
     # Завершить текущий процесс
     os._exit(0)  # 0 обозначает успешное завершение
-    sys.exit(0)
 
 
 # Запуск бота
@@ -211,14 +217,12 @@ async def main_bot_run():
     error_code = ctypes.windll.kernel32.GetLastError()
 
     if error_code == 183:
-        function.show_message_with_auto_close(_("Приложение BOT Child PC Timer уже запущено."), _("ПРЕДУПРЕЖДЕНИЕ"))
-        return
+        os._exit(0)
     elif error_code == 5:  # ERROR_ACCESS_DENIED
         if mutex != 0:  # Проверяем, что дескриптор валиден перед закрытием
             ctypes.windll.kernel32.CloseHandle(mutex)
 
         function.show_message_with_auto_close(_("Доступ к мьютексу запрещен."), _("ОШИБКА"))
-
         return
     elif error_code != 0:
         if mutex != 0:  # Проверяем, что дескриптор валиден перед закрытием
@@ -227,7 +231,6 @@ async def main_bot_run():
         error_message = _("Неизвестная ошибка:\n{error_code}").format(error_code=error_code)
         title = _("ОШИБКА")
         function.show_message_with_auto_close(error_message, title)
-
         return
     # -------------- END ---------------
 
@@ -252,7 +255,11 @@ async def main_bot_run():
     try:
         await asyncio.Event().wait()  # Это основной цикл, который ждет завершения
     except (KeyboardInterrupt, SystemExit):
-        await shutdown(application)  # Корректное завершение работы бота
+        # Закрытие мьютекса при завершении
+        if mutex != 0:
+            ctypes.windll.kernel32.CloseHandle(mutex)
+
+        await shutdown(application, mutex)  # Корректное завершение работы бота
 
 
 # --------------------------------------------------------------------------------------------------
