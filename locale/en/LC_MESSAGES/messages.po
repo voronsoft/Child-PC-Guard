@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-10-14 22:51+0300\n"
-"PO-Revision-Date: 2024-10-15 00:44+0300\n"
+"PO-Revision-Date: 2024-10-15 04:14+0300\n"
 "Last-Translator: EMAIL@ADDRESS\n"
 "Language-Team: English\n"
 "Language: en_US\n"
@@ -275,7 +275,7 @@ msgid ""
 msgstr ""
 "Error reading time.\n"
 "Timer will be closed.\n"
-"Restarting the timer may fix the problem."
+"Restarting the timer may fix the problem"
 
 #: app_timer.py:152
 msgid "Приложение Child PC Timer уже запущено."
@@ -386,7 +386,7 @@ msgstr "GREAT"
 
 #: app_wnd_input_first_pass.py:252
 msgid "Вы не выбрали пользователя которого нельзя блокировать"
-msgstr "You have not selected a user that cannot be blocked."
+msgstr "You have not selected a user that cannot be blocked"
 
 #: app_wnd_input_first_pass.py:260
 msgid "Пароль уже есть в БД"
@@ -394,7 +394,7 @@ msgstr "The password is already in the database"
 
 #: app_wnd_input_first_pass.py:262
 msgid "Пароль не может быть меньше пять знаков"
-msgstr "The password cannot be less than five characters."
+msgstr "The password cannot be less than five characters"
 
 #: app_wind_lang.py:29
 msgid "Выбор языка"
@@ -423,6 +423,22 @@ msgstr "ENTRANCE"
 #: app_wind_tray_icon.py:36
 msgid "Выход"
 msgstr "Exit"
+
+#: app_tg_bot.py:54
+#, python-brace-format
+msgid ""
+"Ваш chat_id: {chat_id}\n"
+"Этот номер вам нужно ввести в программе - Child PC Guard\n"
+"Нажав на кнопку в меню - 'Подключить оповещения через - Telegram'\n"
+"Введите номер в поле для ввода и нажмите - ОК\n"
+"После этого программа сможет понять кому отправлять сообщения"
+msgstr ""
+"Your chat_id: {chat_id}\n"
+"You need to enter this number in the program - Child PC Guard\n"
+"By clicking on the button in the menu - 'Connect notifications via - "
+"Telegram'\n"
+"Enter the number in the input field and click - OK\n"
+"After that, the program will be able to understand who to send messages to"
 
 #: app_tg_bot.py:63
 msgid ""

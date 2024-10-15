@@ -201,8 +201,8 @@ class BotWindow(wx.Dialog):
             self.Destroy()
         else:
             dialog = wx.MessageDialog(self,
-                                      _(f"Ошибка ID может содержать только цифры\n"
-                                        f"Пример: 'Ваш chat_id: 1234567890'"
+                                      _("Ошибка ID может содержать только цифры\n"
+                                        "Пример: 'Ваш chat_id: 1234567890'"
                                         ),
                                       _("ОШИБКА"),
                                       wx.ICON_ERROR

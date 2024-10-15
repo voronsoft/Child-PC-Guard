@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-10-14 22:51+0300\n"
-"PO-Revision-Date: 2024-10-15 01:11+0300\n"
+"PO-Revision-Date: 2024-10-15 04:16+0300\n"
 "Last-Translator: EMAIL@ADDRESS\n"
 "Language-Team: Ukrainian\n"
 "Language: uk\n"
@@ -117,7 +117,7 @@ msgstr "Блокування інтерфейсу"
 
 #: app_admin.py:208
 msgid "Укажите пользователя для блокировки: "
-msgstr "Вкажіть користувача для блокування:"
+msgstr "Вкажіть користувача для блокування: "
 
 #: app_admin.py:222 app_wnd_input_first_pass.py:125
 msgid "----"
@@ -423,6 +423,21 @@ msgstr "ВХІД"
 #: app_wind_tray_icon.py:36
 msgid "Выход"
 msgstr "Вихід"
+
+#: app_tg_bot.py:54
+#, python-brace-format
+msgid ""
+"Ваш chat_id: {chat_id}\n"
+"Этот номер вам нужно ввести в программе - Child PC Guard\n"
+"Нажав на кнопку в меню - 'Подключить оповещения через - Telegram'\n"
+"Введите номер в поле для ввода и нажмите - ОК\n"
+"После этого программа сможет понять кому отправлять сообщения"
+msgstr ""
+"Ваш chat_id: {chat_id}\n"
+"Цей номер потрібно ввести в програмі - Child PC Guard\n"
+"Натиснувши кнопку в меню - 'Підключити оповіщення через - Telegram'\n"
+"Введіть номер у полі для введення та натисніть - ОК\n"
+"Після цього програма зможе зрозуміти кому надсилати повідомлення"
 
 #: app_tg_bot.py:63
 msgid ""

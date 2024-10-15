@@ -51,11 +51,11 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Запуск бота"""
     chat_id = update.message.chat.id
 
-    await update.message.reply_text(f"{_("Ваш chat_id: ")}{chat_id}\n{_("Этот номер вам нужно ввести в программе - Child PC Guard\n" \
-                                                                        "Нажав на кнопку в меню - 'Подключить оповещения через - Telegram'\n" \
-                                                                        "Введите номер в поле для ввода и нажмите - ОК\n" \
-                                                                        "После этого программа сможет понять кому отправлять сообщения" \
-                                                                        )}"
+    await update.message.reply_text(_("Ваш chat_id: {chat_id}\nЭтот номер вам нужно ввести в программе - Child PC Guard\n"
+                                      "Нажав на кнопку в меню - 'Подключить оповещения через - Telegram'\n"
+                                      "Введите номер в поле для ввода и нажмите - ОК\n"
+                                      "После этого программа сможет понять кому отправлять сообщения"
+                                      ).format(chat_id=chat_id)
                                     )
 
     # Проверяем, авторизован ли пользователь
