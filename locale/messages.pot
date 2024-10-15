@@ -1,14 +1,14 @@
-# Child PC Guard Translation Template
-# Copyright (C) 2024 CPG
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-# voronsoft <gbo4.net@gmail.com>, 2024.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-10-14 22:51+0300\n"
+"POT-Creation-Date: 2024-10-15 17:51+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -117,7 +117,7 @@ msgstr ""
 msgid "Укажите пользователя для блокировки: "
 msgstr ""
 
-#: app_admin.py:222 app_wnd_input_first_pass.py:124
+#: app_admin.py:222 app_wnd_input_first_pass.py:125
 msgid "----"
 msgstr ""
 
@@ -151,7 +151,7 @@ msgid "OK"
 msgstr ""
 
 #: app_admin.py:473 app_admin.py:518 app_admin.py:574 app_admin.py:603
-#: app_wnd_input_first_pass.py:261 app_wind_lang.py:78
+#: app_wnd_input_first_pass.py:264 app_wind_lang.py:78
 msgid "Предупреждение"
 msgstr ""
 
@@ -167,40 +167,57 @@ msgstr ""
 msgid "Вы не указали пользователя для отключения блокировки."
 msgstr ""
 
-#: app_admin.py:665 app_admin.py:674 app_admin.py:686 app_admin.py:697
+#: app_admin.py:664 app_admin.py:673 app_admin.py:685 app_admin.py:696
 #: app_lock_unlock_usr.py:97 app_lock_unlock_usr.py:100
 #: app_lock_unlock_usr.py:282 app_lock_unlock_usr.py:297 app_wind_bot.py:196
-#: app_wind_exit_prog.py:116 app_wnd_input_first_pass.py:259
+#: app_wind_exit_prog.py:116 app_wnd_input_first_pass.py:262
 #: app_wind_pass.py:97
 msgid "Ошибка"
 msgstr ""
 
-#: app_admin.py:683
+#: app_admin.py:682
 msgid "Мониторинг запущен"
 msgstr ""
 
-#: app_admin.py:683
+#: app_admin.py:682
 msgid "Запуск"
 msgstr ""
 
-#: app_admin.py:733
+#: app_admin.py:732
 msgid "Настройки программы сброшены!"
 msgstr ""
 
-#: app_admin.py:733
+#: app_admin.py:732
 msgid "СБРОС ДАННЫХ"
 msgstr ""
 
-#: app_admin.py:783 app_admin.py:813 app_admin.py:818
+#: app_admin.py:782 app_admin.py:812 app_admin.py:817 app_admin.py:838
 #: app_lock_unlock_usr.py:320 app_timer.py:97 app_timer.py:140 app_timer.py:157
-#: app_timer.py:163 app_wind_bot.py:207 app_wnd_input_first_pass.py:252
+#: app_timer.py:163 app_wind_bot.py:207 app_wnd_input_first_pass.py:255
 #: app_tg_bot.py:223 app_tg_bot.py:231
 msgid "ОШИБКА"
 msgstr ""
 
-#: app_admin.py:813 app_lock_unlock_usr.py:320 app_timer.py:157
+#: app_admin.py:812 app_lock_unlock_usr.py:320 app_timer.py:157
 #: app_tg_bot.py:223
 msgid "Доступ к мьютексу запрещен."
+msgstr ""
+
+#: app_admin.py:817 app_tg_bot.py:230
+#, python-brace-format
+msgid ""
+"Неизвестная ошибка:\n"
+"{error_code}"
+msgstr ""
+
+#: app_admin.py:832
+msgid ""
+"В системе всего один пользователь, приложение не будет работать!!\n"
+"Необходимо, что-бы в системе было два пользователя.\n"
+"1- Администратор\n"
+"2- Пользователь/Администратор\n"
+"Необходимо создать второго пользователя.\n"
+"После этого программа запустится."
 msgstr ""
 
 #: app_lock_unlock_usr.py:24
@@ -330,42 +347,50 @@ msgstr ""
 msgid "Отмена"
 msgstr ""
 
-#: app_wnd_input_first_pass.py:23
+#: app_wnd_input_first_pass.py:25
 msgid "Настройка программы"
 msgstr ""
 
-#: app_wnd_input_first_pass.py:40
+#: app_wnd_input_first_pass.py:42
 msgid ""
 "Если фон главного окна КРАСНОГО цвета,\n"
 "значит программа запущена без прав АДМИНИСТРАТОРА.\n"
 "Необходимо перезапустить программу от имени АДМИНИСТРАТОРА"
 msgstr ""
 
-#: app_wnd_input_first_pass.py:74
+#: app_wnd_input_first_pass.py:75
 msgid "Введите пароль для приложения"
 msgstr ""
 
-#: app_wnd_input_first_pass.py:112
+#: app_wnd_input_first_pass.py:113
 msgid "Выберите пользователя которого НЕЛЬЗЯ БЛОКИРОВАТЬ"
 msgstr ""
 
-#: app_wnd_input_first_pass.py:154
+#: app_wnd_input_first_pass.py:155
 msgid "Язык приложения: "
 msgstr ""
 
 #: app_wnd_input_first_pass.py:243
+#, python-brace-format
+msgid ""
+"Пароль ЗАПИСАН в программу.\n"
+"Пользователь ЗАПИСАН в программу\n"
+"Язык программы - {lng}"
+msgstr ""
+
+#: app_wnd_input_first_pass.py:246
 msgid "ОТЛИЧНО"
 msgstr ""
 
-#: app_wnd_input_first_pass.py:251
+#: app_wnd_input_first_pass.py:254
 msgid "Вы не выбрали пользователя которого нельзя блокировать"
 msgstr ""
 
-#: app_wnd_input_first_pass.py:259
+#: app_wnd_input_first_pass.py:262
 msgid "Пароль уже есть в БД"
 msgstr ""
 
-#: app_wnd_input_first_pass.py:261
+#: app_wnd_input_first_pass.py:264
 msgid "Пароль не может быть меньше пять знаков"
 msgstr ""
 
@@ -546,11 +571,4 @@ msgstr ""
 
 #: app_tg_bot.py:217
 msgid "Приложение BOT Child PC Timer уже запущено."
-msgstr ""
-
-#: app_tg_bot.py:230
-#, python-brace-format
-msgid ""
-"Неизвестная ошибка:\n"
-"{error_code}"
 msgstr ""

@@ -1,4 +1,6 @@
 import os
+import sys
+
 import wx
 import wx.xrc
 import function
@@ -58,7 +60,6 @@ class WndInputFirstAppPass(wx.Dialog):
         self.attention_txt.SetForegroundColour(wx.Colour(225, 0, 0))
         sizer_top.Add(self.attention_txt, 0, wx.EXPAND | wx.ALL, 5)
         # sizer_main.Add(sizer_lang, 0, wx.EXPAND | wx.ALL, 5)
-
 
         self.m_bitmap1 = wx.StaticBitmap(self,
                                          wx.ID_ANY,
@@ -127,7 +128,7 @@ class WndInputFirstAppPass(wx.Dialog):
                                               wx.ID_ANY,
                                               wx.EmptyString,
                                               wx.DefaultPosition,
-                                              wx.Size( 200,-1 ),
+                                              wx.Size(200, -1),
                                               choices=user_list,
                                               style=wx.CB_DROPDOWN | wx.CB_READONLY,
                                               )
@@ -239,7 +240,9 @@ class WndInputFirstAppPass(wx.Dialog):
                 function.update_data_json("protected_user", usr)
 
                 dialog = wx.MessageDialog(self,
-                                          f"{_("Пароль ЗАПИСАН в программу.\nПользователь ЗАПИСАН в программу\nЯзык программы - ")}{function.read_data_json("language")}",
+                                          _("Пароль ЗАПИСАН в программу.\nПользователь ЗАПИСАН в программу\n"
+                                            "Язык программы - {lng}".format(lng=function.read_data_json("language"))
+                                            ),
                                           _("ОТЛИЧНО"),
                                           wx.ICON_AUTH_NEEDED
                                           )
@@ -270,7 +273,6 @@ class WndInputFirstAppPass(wx.Dialog):
         function.update_data_json("language", lang_code)
         # Показываем в окне выбор языка
         self.lang_choice.SetLabel(lang_code.upper())
-
 
 
 def main():

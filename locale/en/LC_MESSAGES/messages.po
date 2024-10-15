@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-10-14 22:51+0300\n"
-"PO-Revision-Date: 2024-10-15 04:14+0300\n"
+"PO-Revision-Date: 2024-10-15 18:07+0300\n"
 "Last-Translator: EMAIL@ADDRESS\n"
 "Language-Team: English\n"
 "Language: en_US\n"
@@ -208,6 +208,22 @@ msgstr "ERROR"
 msgid "Доступ к мьютексу запрещен."
 msgstr "Access to mutex is denied."
 
+#: app_admin.py:832
+msgid ""
+"В системе всего один пользователь, приложение не будет работать!!\n"
+"Необходимо, что-бы в системе было два пользователя.\n"
+"1- Администратор\n"
+"2- Пользователь/Администратор\n"
+"Необходимо создать второго пользователя.\n"
+"После этого программа запустится."
+msgstr ""
+"There is only one user in the system, the application will not work!!\n"
+"There must be two users in the system.\n"
+"1- Administrator\n"
+"2- User/Administrator\n"
+"You must create a second user.\n"
+"After that, the program will start."
+
 #: app_lock_unlock_usr.py:24
 msgid "ВВЕДИТЕ ПАРОЛЬ"
 msgstr "ENTER PASSWORD"
@@ -379,6 +395,17 @@ msgstr "Select a user that CANNOT BE BLOCKED"
 #: app_wnd_input_first_pass.py:155
 msgid "Язык приложения: "
 msgstr "Application language: "
+
+#: app_wnd_input_first_pass.py:243
+#, python-brace-format
+msgid ""
+"Пароль ЗАПИСАН в программу.\n"
+"Пользователь ЗАПИСАН в программу\n"
+"Язык программы - {lng}"
+msgstr ""
+"Password is WRITTEN into the program.\n"
+"User is WRITTEN into the program\n"
+"Program language - {lng}"
 
 #: app_wnd_input_first_pass.py:244
 msgid "ОТЛИЧНО"

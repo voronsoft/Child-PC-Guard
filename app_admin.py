@@ -656,7 +656,6 @@ class Window(wx.Frame):
         lang_app = LanguageWnd(self)
         lang_app.ShowModal()
 
-
     def on_run_log(self, event):
         """Запуск просмотра логов программы"""
         try:
@@ -815,7 +814,7 @@ def main_app():
     elif error_code != 0:  #
         if mutex != 0:
             ctypes.windll.kernel32.CloseHandle(mutex)
-        function.show_message_with_auto_close(f"{_("Неизвестная ошибка:\n")}{error_code}", _("ОШИБКА"))
+        function.show_message_with_auto_close(_("Неизвестная ошибка:\n{error_code}").format(error_code=error_code), _("ОШИБКА"))
         return
 
     # Создаем папки и файлы с данными для работы приложения если они не существуют
@@ -823,6 +822,26 @@ def main_app():
 
     # Получаем пароль из реестра
     password_from_registry = function.get_password_from_registry()
+
+    # Получаем пользователей системы
+    user_list_os = function.get_users()
+    print(user_list_os, len(user_list_os))
+    if len(user_list_os) <= 1:
+        # Выводим окно предупреждения, что в системе должно быть как минимум 2 пользователя
+        # (1 админ 1 пользователь/админ)
+        function.show_message_with_auto_close(_("В системе всего один пользователь, приложение не будет работать!!\n"
+                                                "Необходимо, что-бы в системе было два пользователя.\n"
+                                                "1- Администратор\n2- Пользователь/Администратор\n"
+                                                "Необходимо создать второго пользователя.\n"
+                                                "После этого программа запустится."
+                                                ),
+                                              _("ОШИБКА"),
+                                              15
+                                              )
+
+        # Закрываем приложение для защиты
+        ctypes.windll.kernel32.CloseHandle(mutex)  # Закрываем дескриптор мьютекса
+        sys.exit(0)
 
     # Если пароля нет в реестре, то запускаем приложение как в первый раз с вводом будущего пароля для приложения
     if not password_from_registry:
@@ -842,6 +861,7 @@ def main_app():
     # Закрываем дескриптор мьютекса
     ctypes.windll.kernel32.CloseHandle(mutex)
     sys.exit(0)
+
 
 if __name__ == "__main__":
 
