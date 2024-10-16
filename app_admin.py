@@ -109,7 +109,7 @@ class Window(wx.Frame):
                                                     wx.Bitmap(os.path.join(FOLDER_IMG, "time.ico"), wx.BITMAP_TYPE_ANY),
                                                     wx.NullBitmap,
                                                     wx.ITEM_NORMAL,
-                                                    _("Таймер "),
+                                                    _("Таймер"),
                                                     _("Открыть окно таймера"),
                                                     None
                                                     )
@@ -399,7 +399,6 @@ class Window(wx.Frame):
         if result == wx.ID_OK:
             # ------------- Останавливаем БОТ ---------------
             # предусмотреть остановку бота после закрытия окна
-            # app_tg_bot.stop_bot()
             # -----------------------------------------------
 
             # print("self.remaining_time:", self.remaining_time)
@@ -430,7 +429,8 @@ class Window(wx.Frame):
             mutex = ctypes.windll.kernel32.OpenMutexW(0x00100000, False, MUTEX_NAME_CPG)  # SYNCHRONIZE
             # Закрываем дескриптор мьютекса
             ctypes.windll.kernel32.CloseHandle(mutex)
-            print("1826567 ", "Мьютекс закрыт при завершении приложения.")
+
+            function.send_bot_telegram_message(_("Программа CPG была выключена"))
 
             # Завершаем процесс (закрытие программы)
             sys.exit()
@@ -499,6 +499,8 @@ class Window(wx.Frame):
         """
         Обработчик запуска задания блокировки. Кнопка ОК
         """
+        function.send_bot_telegram_message(_("Запуск задания блокировки"))
+
         username = self.input_username.GetValue()  # Получаем имя пользователя для блокировки
         hours = int(self.input_time.GetValue())  # Получаем время для таймера из поля выбора времени
         self.remaining_time = int(hours * 3600)  # TODO Перевести значение в часы после разработки (*3600)
@@ -577,6 +579,7 @@ class Window(wx.Frame):
             dialog.ShowModal()
         else:
             self.timer.Stop()  # Останавливаем таймер
+            function.send_bot_telegram_message(_("Блокировка для пользователя отключена: {usermane}").format(usermane=username))
             self.gauge.SetValue(0)  # Стираем статус заполненности таймера
 
             # Стираем значение в поле имя пользователя.
@@ -680,6 +683,7 @@ class Window(wx.Frame):
             # Запускаем .exe файл через subprocess
             subprocess.Popen([path_monitor_exe])
             function.show_message_with_auto_close(_("Мониторинг запущен"), _("Запуск"))
+            function.send_bot_telegram_message(_("Программа мониторинга запущена в фоновом режиме"))
         except Exception as e:
             # Выводим сообщение об ошибке, если не удалось запустить приложение
             function.show_message_with_auto_close(f"{path_monitor_exe}\n{str(e)}", _("Ошибка"))
@@ -718,6 +722,7 @@ class Window(wx.Frame):
         function.update_data_json("remaining_time", 0)  # Записываем значение времени 0 в файл
         # Очищаем содержимое имени пользователя в файле
         function.update_data_json("username_blocking", "")  # Записываем пустую строку в файл
+        function.send_bot_telegram_message(_("Настройки программы сброшены через кнопку в интерфейсе"))
 
         # Активируем поле выбора имени пользователя для блокировки
         self.input_username.Enable()
@@ -759,15 +764,18 @@ class Window(wx.Frame):
             self.Close()
             self.enable_fields_tool_bar()
             print("1 Должен активироваться интерфейс")
+            function.send_bot_telegram_message(_("Кто то пытается разблокировать интерфейс программы\nПароль не совпал"))
         # Если пароль совпал и есть остаточное время в БД
         elif dlg.password_check and function.read_data_json("remaining_time"):
             self.enable_fields()
             self.input_username.Enable(False)
             self.btn_disable_blocking.Enable(True)
+            function.send_bot_telegram_message(_("Интерфейс программы разблокирован"))
             print("2 Должен активироваться интерфейс")
         # Если пароль совпал
         elif dlg.password_check:
             self.enable_fields()
+            function.send_bot_telegram_message(_("Интерфейс программы разблокирован"))
             print("3 Должен активироваться интерфейс")
 
     def log_error(self, message):

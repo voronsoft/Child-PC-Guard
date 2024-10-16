@@ -83,11 +83,6 @@ class LanguageWnd(wx.Dialog):
 
         self.Destroy()  # Закрываем текущее окно
         print("--окно языка закрыто--")
-        # wx.CallAfter(self.Destroy)  # Закрываем текущее окно
-
-    # def on_close(self, event):
-    #     """Закрывает окно"""
-    #     self.Destroy()
 
 
 def main():

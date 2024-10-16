@@ -2,17 +2,20 @@
 # Следит за запуском и перезапускает приложения если оно было закрыто.
 # Обновляет дату каждый день в файле данных приложения Child PC Guard.exe и добавляет пользователю 2 часа.
 
-import json
 import os
+import json
 import time
 import ctypes
 import psutil
 import traceback
-import subprocess
+import config_localization
 from datetime import datetime
 from apscheduler.schedulers.blocking import BlockingScheduler
-from function import run_as_admin, show_message_with_auto_close
 from config_app import PATH_DATA_FILE, PATH_LOG_FILE, path_main_app, path_bot_tg_exe
+from function import run_as_admin, show_message_with_auto_close, send_bot_telegram_message, read_data_json
+
+# Подключаем локализацию
+_ = config_localization.setup_locale(read_data_json("language"))
 
 # Имя мьютекса (должно быть уникальным)
 MUTEX_NAME_CPGM = "Global\\CPG_MONITOR"
@@ -36,7 +39,7 @@ def check_and_restart_program():
             program_running = True
             break
 
-    # Главная программа
+    # Главная программа  запуск
     if not program_running:
         print("Программа не запущена. Перезапуск...")
         # Сообщение записываем в log
@@ -47,10 +50,14 @@ def check_and_restart_program():
             os.startfile(path_to_program)
         except Exception as e:
             print("1 Планировщик остановлен.")
+            send_bot_telegram_message(_("1 Планировщик остановлен."))
             # Отключаем планировщик
             log_error_monitor(f"1 Планировщик остановлен.:\n{e}")
             # Вывод ошибки на рабочий стол если приложение не найдено по указанному пути.
-            show_message_with_auto_close(f"(1CPG) CPG Monitor({time.strftime('%Y-%m-%d %H:%M:%S')})\n{e}", "Ошибка")
+            # show_message_with_auto_close(f"(1CPG) CPG Monitor({time.strftime('%Y-%m-%d %H:%M:%S')})\n{e}",
+            #                              "Ошибка",
+            #                              30
+            #                              )
             # Закрываем планировщик
             scheduler.shutdown(wait=False)
 
@@ -58,7 +65,7 @@ def check_and_restart_program():
     time.sleep(5)
     # -------- END ----------
 
-    # Бот программа
+    # Бот программа запуск
     if not bot_program_running:
         print("БОТ программа не запущена. Перезапуск...")
         # Сообщение записываем в log
@@ -69,10 +76,15 @@ def check_and_restart_program():
             os.startfile(path_to_program_bot)
         except Exception as e:
             print("1-1 Планировщик остановлен.")
+            send_bot_telegram_message(_("1-1 Планировщик остановлен."))
+
             # Отключаем планировщик
             log_error_monitor(f"1-1 Планировщик остановлен.:\n{e}")
             # Вывод ошибки на рабочий стол если приложение не найдено по указанному пути.
-            show_message_with_auto_close(f"(2BOT) CPG Monitor({time.strftime('%Y-%m-%d %H:%M:%S')})\n{e}", "Ошибка")
+            # show_message_with_auto_close(f"(2BOT) CPG Monitor({time.strftime('%Y-%m-%d %H:%M:%S')})\n{e}",
+            #                              "Ошибка",
+            #                              30
+            #                              )
             # Закрываем планировщик
             scheduler.shutdown(wait=False)
 
@@ -104,6 +116,7 @@ def update_data():
 
     except FileNotFoundError:
         print("2 Файл data.json не найден. Планировщик остановлен.")
+        send_bot_telegram_message(_("2 Файл data.json не найден. Планировщик остановлен."))
         log_error_monitor("2 Файл data.json не найден. Планировщик остановлен.")
         scheduler.shutdown(wait=False)
     except json.JSONDecodeError:
@@ -112,6 +125,7 @@ def update_data():
         scheduler.shutdown(wait=False)
     except Exception as e:
         print("4 Планировщик остановлен.")
+        send_bot_telegram_message(_("4 Планировщик остановлен."))
         # Отключаем планировщик
         log_error_monitor(f"4 Планировщик остановлен.:\n{e}")
         scheduler.shutdown(wait=False)
@@ -162,7 +176,7 @@ def main():
 
     # TODO Настройка времени для заданий в мониторинге (релиз\разработка)
     # Задача 1: Следить за процессом и перезапускать, если не запущен (каждые 300 секунд)
-    scheduler.add_job(check_and_restart_program, 'interval', seconds=300)  # TODO Включить в момент релиза
+    scheduler.add_job(check_and_restart_program, 'interval', seconds=10)  # TODO Включить в момент релиза
     # scheduler.add_job(check_and_restart_program, 'interval', seconds=10)  # Отключить после разработки
 
     # Задача 2: Следить за датой и обновлять данные (каждый час)
@@ -179,9 +193,11 @@ def main():
             scheduler.shutdown(wait=False)
 
     except (KeyboardInterrupt, SystemExit):
+        print("5 Планировщик остановлен.")
+        send_bot_telegram_message(_("5 Планировщик остановлен."))
         # Отключаем планировщик
         scheduler.shutdown()
-        print("5 Планировщик остановлен.")
+
 
     finally:
         # Освобождение мьютекса при завершении программы

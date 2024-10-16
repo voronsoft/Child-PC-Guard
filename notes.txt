@@ -30,7 +30,7 @@ msginit --input=locale/messages.pot --output-file=locale/en/LC_MESSAGES/messages
 msginit --input=locale/messages.pot --output-file=locale/uk/LC_MESSAGES/messages.po --locale=uk_UA
 
 --------------------------------------------------------------------------------------
-"id_tg_bot_parent": 631191214,
+"chat_id": 631191214,
 --------------------------------------------------------------------------------------
 
 --------------------------------------------------------------------------------------

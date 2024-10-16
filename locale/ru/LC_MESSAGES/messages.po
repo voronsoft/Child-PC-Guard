@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Child PC Guard\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-10-14 22:51+0300\n"
-"PO-Revision-Date: 2024-10-15 18:10+0300\n"
+"PO-Revision-Date: 2024-10-16 17:53+0300\n"
 "Last-Translator: EMAIL@ADDRESS\n"
 "Language-Team: Russian\n"
 "Language: ru\n"
@@ -46,10 +46,6 @@ msgstr "Просмотр логов программы"
 #: app_admin.py:108
 msgid "Таймер"
 msgstr "Таймер"
-
-#: app_admin.py:112
-msgid "Таймер "
-msgstr "Таймер "
 
 #: app_admin.py:113
 msgid "Открыть окно таймера"
@@ -152,10 +148,18 @@ msgstr "Отключить блокировку"
 msgid "OK"
 msgstr "OK"
 
+#: app_admin.py:433
+msgid "Программа CPG была выключена"
+msgstr "Программа CPG была выключена"
+
 #: app_admin.py:473 app_admin.py:518 app_admin.py:574 app_admin.py:603
 #: app_wnd_input_first_pass.py:262 app_wind_lang.py:78
 msgid "Предупреждение"
 msgstr "Предупреждение"
+
+#: app_admin.py:502
+msgid "Запуск задания блокировки"
+msgstr "Запуск задания блокировки"
 
 #: app_admin.py:517
 msgid ""
@@ -169,9 +173,14 @@ msgstr ""
 "В противном случае блокировку уже не снять.\n"
 "РЕШЕНИЕ - ПЕРЕУСТАНОВКА WINDOWS !!!"
 
-#: app_admin.py:573
+#: app_admin.py:575c
 msgid "Вы не указали пользователя для отключения блокировки."
 msgstr "Вы не указали пользователя для отключения блокировки."
+
+#: app_admin.py:582
+#, python-brace-format
+msgid "Блокировка для пользователя отключена: {usermane}"
+msgstr "Блокировка для пользователя отключена: {usermane}"
 
 #: app_admin.py:665 app_admin.py:674 app_admin.py:686 app_admin.py:697
 #: app_lock_unlock_usr.py:97 app_lock_unlock_usr.py:100
@@ -189,6 +198,14 @@ msgstr "Мониторинг запущен"
 msgid "Запуск"
 msgstr "Запуск"
 
+#: app_admin.py:686
+msgid "Программа мониторинга запущена в фоновом режиме"
+msgstr "Программа мониторинга запущена в фоновом режиме"
+
+#: app_admin.py:725
+msgid "Настройки программы сброшены через кнопку в интерфейсе"
+msgstr "Настройки программы сброшены через кнопку в интерфейсе"
+
 #: app_admin.py:733
 msgid "Настройки программы сброшены!"
 msgstr "Настройки программы сброшены!"
@@ -196,6 +213,18 @@ msgstr "Настройки программы сброшены!"
 #: app_admin.py:733
 msgid "СБРОС ДАННЫХ"
 msgstr "СБРОС ДАННЫХ"
+
+#: app_admin.py:767 app_wind_pass.py:98
+msgid ""
+"Кто то пытается разблокировать интерфейс программы\n"
+"Пароль не совпал"
+msgstr ""
+"Кто то пытается разблокировать интерфейс программы\n"
+"Пароль не совпал"
+
+#: app_admin.py:773 app_admin.py:778
+msgid "Интерфейс программы разблокирован"
+msgstr "Интерфейс программы разблокирован"
 
 #: app_admin.py:783 app_admin.py:813 app_admin.py:818
 #: app_lock_unlock_usr.py:320 app_timer.py:97 app_timer.py:140 app_timer.py:157
@@ -208,6 +237,15 @@ msgstr "ОШИБКА"
 #: app_tg_bot.py:223
 msgid "Доступ к мьютексу запрещен."
 msgstr "Доступ к мьютексу запрещен."
+
+#: app_admin.py:824 app_tg_bot.py:231
+#, python-brace-format
+msgid ""
+"Неизвестная ошибка:\n"
+"{error_code}"
+msgstr ""
+"Неизвестная ошибка:\n"
+"{error_code}"
 
 #: app_admin.py:832
 msgid ""
@@ -268,14 +306,6 @@ msgstr "Нет заблокированных"
 msgid "Успешно"
 msgstr "Успешно"
 
-#: app_lock_unlock_usr.py:312
-msgid "Приложение Unlock User CPGuard уже запущено."
-msgstr "Приложение Unlock User CPGuard уже запущено."
-
-#: app_lock_unlock_usr.py:313 app_timer.py:152 app_tg_bot.py:217
-msgid "ПРЕДУПРЕЖДЕНИЕ"
-msgstr "ПРЕДУПРЕЖДЕНИЕ"
-
 #: app_timer.py:28
 msgid "Осталось времени"
 msgstr "Осталось времени"
@@ -293,10 +323,6 @@ msgstr ""
 "Ошибка считывания времени.\n"
 "Таймер будет закрыт.\n"
 "Повторный запуск таймера может исправить проблему"
-
-#: app_timer.py:152
-msgid "Приложение Child PC Timer уже запущено."
-msgstr "Приложение Child PC Timer уже запущено."
 
 #: app_wind_bot.py:25
 msgid "Настройка оповещения через Telegram"
@@ -345,6 +371,14 @@ msgstr ""
 #: app_wind_bot.py:127
 msgid "Ваш chat_id: (номер который вам выдаст бот)"
 msgstr "Ваш chat_id: (номер который вам выдаст бот)"
+
+#: app_wind_bot.py:190
+msgid ""
+"ID записан в БД\n"
+"Бот Telegram запущен и настроен для уведомлений о работе программы"
+msgstr ""
+"ID записан в БД\n"
+"Бот Telegram запущен и настроен для уведомлений о работе программы"
 
 #: app_wind_bot.py:204
 msgid "Ошибка ID может содержать только цифры\n"
@@ -597,7 +631,7 @@ msgstr "ПК будет выключен через 30 секунд."
 msgid "Выключить приложение"
 msgstr "Выключить приложение"
 
-#: app_tg_bot.py:199
+#: app_tg_bot.py:202
 msgid ""
 "Приложение выключено.\n"
 "Все настройки стерты.\n"
@@ -613,19 +647,6 @@ msgstr ""
 msgid "Включить приложение"
 msgstr "Включить приложение"
 
-#: app_tg_bot.py:202
+#: app_tg_bot.py:205
 msgid "Приложение включено."
-msgstr "Приложение включено."
-
-#: app_tg_bot.py:217
-msgid "Приложение BOT Child PC Timer уже запущено."
-msgstr "Приложение BOT Child PC Timer уже запущено."
-
-#: app_tg_bot.py:230
-#, python-brace-format
-msgid ""
-"Неизвестная ошибка:\n"
-"{error_code}"
 msgstr ""
-"Неизвестная ошибка:\n"
-"{error_code}"

@@ -3,7 +3,7 @@ import wx
 import wx.xrc
 import config_localization
 from config_app import FOLDER_IMG
-from function import get_password_from_registry, check_password, read_data_json
+from function import get_password_from_registry, check_password, read_data_json, send_bot_telegram_message
 
 # Подключаем локализацию
 _ = config_localization.setup_locale(read_data_json("language"))
@@ -95,6 +95,7 @@ class WndPass(wx.Dialog):
             self.Destroy()  # Закрытие окна и завершение процесса
         else:
             wx.MessageBox(_("Неверный пароль. Попробуйте снова."), _("Ошибка"), wx.OK | wx.ICON_ERROR)
+            send_bot_telegram_message(_("Кто то пытается разблокировать интерфейс программы\nПароль не совпал"))
 
     def on_close(self, event):
         """Обработчик закрытия программы"""

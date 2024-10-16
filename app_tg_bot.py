@@ -84,7 +84,7 @@ async def check_password(update: Update, context: ContextTypes.DEFAULT_TYPE):
     # Проверяем пароль
     if function.check_password(text, CORRECT_PASSWORD):
         # Записываем пользователя в список разрешенных пользователей
-        answer = function.update_data_json("id_tg_bot_parent", chat_id)
+        answer = function.update_data_json("chat_id", chat_id)
         if answer:
             authorized_users.add(chat_id)
 
@@ -155,7 +155,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     # Имя пользователя для кого назначена блокировка
     username_block = function.read_data_json("username_blocking")
 
-    status_bot = function.read_data_json("id_tg_bot_parent")
+    status_bot = function.read_data_json("chat_id")
 
     # Проверяем, авторизован ли пользователь
     if chat_id not in authorized_users:

@@ -3,7 +3,7 @@ from function import read_data_json
 
 TOKEN = read_data_json("bot_token_telegram")
 
-chat_id = read_data_json("id_tg_bot_parent")
+chat_id = read_data_json("chat_id")
 URL = f'https://api.telegram.org/bot{TOKEN}/sendMessage'
 
 

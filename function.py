@@ -170,6 +170,7 @@ def get_users():
             # Проверяем наличие домашнего каталога, чтобы исключить системные учетные записи
             if os.path.exists(os.path.join(DISK_LETTER, "Users", username)):
                 users.append(username)
+
         netapi32.NetApiBufferFree(bufptr)
     return users
 
@@ -366,9 +367,9 @@ def function_to_create_path_data_files():
                 "remaining_time": 0,
                 "date": "0001-02-03",
                 "protected_user": "",
-                "id_tg_bot_parent": 0,
                 "bot_token_telegram": "7456533985:AAEGOk3VUU04Z4bk9B83kzy4MW5zem3hbYw",
-                "chat_id": ""
+                "chat_id": 631191214,
+                "language": "uk"
         }
         with open(PATH_DATA_FILE, 'w', encoding='utf-8') as file:
             json.dump(initial_data, file, indent=4)  # Записываем данные в формате JSON с отступами
@@ -428,9 +429,8 @@ def function_to_create_path_data_files():
                 "remaining_time": 0,
                 "date": "0001-02-03",
                 "protected_user": "",
-                "id_tg_bot_parent": 0,
                 "bot_token_telegram": "7456533985:AAEGOk3VUU04Z4bk9B83kzy4MW5zem3hbYw",
-                "chat_id": "",
+                "chat_id": 631191214,
                 "language": "ru"
         }
         with open(PATH_DATA_FILE_PRGM_DATA, 'w', encoding='utf-8') as file:
@@ -591,26 +591,21 @@ def delete_password_from_registry():
 
 
 # ----------------------------------- Работа с BOT ---------------------------
-def send_bot_telegram_message(bot_token=read_data_json("bot_token_telegram"),
-                              chat_id=read_data_json("chat_id"),
-                              message="Default test text message."
+def send_bot_telegram_message(message="Default message.",
+                              bot_token=read_data_json("bot_token_telegram"),
+                              chat_id=read_data_json("chat_id")
                               ):
     """
     Отправляет сообщение в Telegram через указанный бот.
-
+    :param message: Сообщение, которое нужно отправить.
     :param bot_token: Токен Telegram-бота.
     :param chat_id: ID чата, куда будет отправлено сообщение.
-    :param message: Сообщение, которое нужно отправить.
     :return: None
     """
     # URL для отправки сообщения
     url = f"https://api.telegram.org/bot{bot_token}/sendMessage"
-
     # Данные, которые будут отправлены
-    data = {
-            'chat_id': chat_id,
-            'text': message,
-    }
+    data = {'chat_id': chat_id, 'text': message,}
 
     # Отправка POST-запроса к API Telegram
     response = requests.post(url, data=data)

@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-10-14 22:51+0300\n"
-"PO-Revision-Date: 2024-10-15 18:09+0300\n"
+"PO-Revision-Date: 2024-10-16 17:50+0300\n"
 "Last-Translator: EMAIL@ADDRESS\n"
 "Language-Team: Ukrainian\n"
 "Language: uk\n"
@@ -46,10 +46,6 @@ msgstr "Перегляд логів програми"
 #: app_admin.py:108
 msgid "Таймер"
 msgstr "Таймер"
-
-#: app_admin.py:112
-msgid "Таймер "
-msgstr "Таймер "
 
 #: app_admin.py:113
 msgid "Открыть окно таймера"
@@ -152,10 +148,18 @@ msgstr "Вимкнути блокування"
 msgid "OK"
 msgstr "OK"
 
+#: app_admin.py:433
+msgid "Программа CPG была выключена"
+msgstr "Програму CPG було вимкнено"
+
 #: app_admin.py:473 app_admin.py:518 app_admin.py:574 app_admin.py:603
 #: app_wnd_input_first_pass.py:262 app_wind_lang.py:78
 msgid "Предупреждение"
 msgstr "Попередження"
+
+#: app_admin.py:502
+msgid "Запуск задания блокировки"
+msgstr "Запуск завдання блокування"
 
 #: app_admin.py:517
 msgid ""
@@ -173,6 +177,11 @@ msgstr ""
 msgid "Вы не указали пользователя для отключения блокировки."
 msgstr "Ви не вказали користувача для вимкнення блокування."
 
+#: app_admin.py:582
+#, python-brace-format
+msgid "Блокировка для пользователя отключена: {usermane}"
+msgstr "Блокування для користувача вимкнено: {usermane}"
+
 #: app_admin.py:665 app_admin.py:674 app_admin.py:686 app_admin.py:697
 #: app_lock_unlock_usr.py:97 app_lock_unlock_usr.py:100
 #: app_lock_unlock_usr.py:282 app_lock_unlock_usr.py:297 app_wind_bot.py:196
@@ -189,6 +198,14 @@ msgstr "Моніторинг запущено"
 msgid "Запуск"
 msgstr "Запуск"
 
+#: app_admin.py:686
+msgid "Программа мониторинга запущена в фоновом режиме"
+msgstr "Програму моніторингу запущено у фоновому режимі"
+
+#: app_admin.py:725
+msgid "Настройки программы сброшены через кнопку в интерфейсе"
+msgstr "Налаштування програми скинуто через кнопку в інтерфейсі"
+
 #: app_admin.py:733
 msgid "Настройки программы сброшены!"
 msgstr "Налаштування програми скинуто!"
@@ -196,6 +213,18 @@ msgstr "Налаштування програми скинуто!"
 #: app_admin.py:733
 msgid "СБРОС ДАННЫХ"
 msgstr "СКИДАННЯ ДАНИХ"
+
+#: app_admin.py:767 app_wind_pass.py:98
+msgid ""
+"Кто то пытается разблокировать интерфейс программы\n"
+"Пароль не совпал"
+msgstr ""
+"Хтось намагається розблокувати інтерфейс програми\n"
+"Пароль не збігся"
+
+#: app_admin.py:773 app_admin.py:778
+msgid "Интерфейс программы разблокирован"
+msgstr "Інтерфейс програми розблоковано"
 
 #: app_admin.py:783 app_admin.py:813 app_admin.py:818
 #: app_lock_unlock_usr.py:320 app_timer.py:97 app_timer.py:140 app_timer.py:157
@@ -208,6 +237,15 @@ msgstr "ПОМИЛКА"
 #: app_tg_bot.py:223
 msgid "Доступ к мьютексу запрещен."
 msgstr "Доступ до м'ютексу заборонено."
+
+#: app_admin.py:824 app_tg_bot.py:231
+#, python-brace-format
+msgid ""
+"Неизвестная ошибка:\n"
+"{error_code}"
+msgstr ""
+"Невідома помилка:\n"
+"{error_code}"
 
 #: app_admin.py:832
 msgid ""
@@ -268,14 +306,6 @@ msgstr "Немає заблокованих"
 msgid "Успешно"
 msgstr "Успішно"
 
-#: app_lock_unlock_usr.py:312
-msgid "Приложение Unlock User CPGuard уже запущено."
-msgstr "Додаток Unlock User CPGuard вже запущено."
-
-#: app_lock_unlock_usr.py:313 app_timer.py:152 app_tg_bot.py:217
-msgid "ПРЕДУПРЕЖДЕНИЕ"
-msgstr "ПОПЕРЕДЖЕННЯ"
-
 #: app_timer.py:28
 msgid "Осталось времени"
 msgstr "Залишилося часу"
@@ -293,10 +323,6 @@ msgstr ""
 "Помилка прочитування часу.\n"
 "Таймер буде закрито.\n"
 "Повторний запуск таймера може виправити проблему"
-
-#: app_timer.py:152
-msgid "Приложение Child PC Timer уже запущено."
-msgstr "Програма Child PC Timer вже запущена."
 
 #: app_wind_bot.py:25
 msgid "Настройка оповещения через Telegram"
@@ -345,6 +371,14 @@ msgstr ""
 #: app_wind_bot.py:127
 msgid "Ваш chat_id: (номер который вам выдаст бот)"
 msgstr "Ваш chat_id: (номер, який вам видасть бот)"
+
+#: app_wind_bot.py:190
+msgid ""
+"ID записан в БД\n"
+"Бот Telegram запущен и настроен для уведомлений о работе программы"
+msgstr ""
+"ID записаний у БД\n"
+"Робот Telegram запущено та налаштовано для повідомлень про роботу програми"
 
 #: app_wind_bot.py:204
 msgid "Ошибка ID может содержать только цифры\n"
@@ -616,16 +650,3 @@ msgstr "Увімкнути програму"
 #: app_tg_bot.py:202
 msgid "Приложение включено."
 msgstr "Додаток увімкнено."
-
-#: app_tg_bot.py:217
-msgid "Приложение BOT Child PC Timer уже запущено."
-msgstr "Програма BOT Child PC Timer вже запущена."
-
-#: app_tg_bot.py:230
-#, python-brace-format
-msgid ""
-"Неизвестная ошибка:\n"
-"{error_code}"
-msgstr ""
-"Невідома помилка:\n"
-"{error_code}"

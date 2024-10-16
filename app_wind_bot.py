@@ -168,6 +168,7 @@ class BotWindow(wx.Dialog):
         self.sizer_btnOK.Bind(wx.EVT_BUTTON, self.on_ok)  # Событие, нажатия OK
         self.sizer_btnCancel.Bind(wx.EVT_BUTTON, self.on_close)  # Событие, нажатия Cancel
 
+
     # Обработчики событий --------------------------------
     def on_close(self, event):
         """Обработчик закрытия окна"""
@@ -181,13 +182,13 @@ class BotWindow(wx.Dialog):
         if id_chat.isdigit():
             try:
                 # Запись
-                function.update_data_json("id_tg_bot_parent", id_chat)
+                function.update_data_json("chat_id", id_chat)
                 # Попутка запуска приложения БОТА .exe файл через subprocess
                 subprocess.Popen([path_bot_tg_exe])
                 # Выводим сообщение об успешной операции
                 function.show_message_with_auto_close(
-                        "ID записан в БД\nБот Telegram запущен и настроен для уведомлений о работе программы",
-                        "Успешно"
+                        _("ID записан в БД\nБот Telegram запущен и настроен для уведомлений о работе программы"),
+                        _("Успешно")
                 )
             except Exception as e:
                 # Выводим сообщение об ошибке, если не удалось запустить приложение
@@ -211,7 +212,7 @@ class BotWindow(wx.Dialog):
             # Очищаем ввод если это не цифры
             self.input_id_chat_bot.SetLabel("")
 
-    def log_error_(self, message):
+    def log_error(self, message):
         """Логирование ошибок в файл."""
         try:
             with open(PATH_LOG_FILE, 'a', encoding="utf-8") as log_file:

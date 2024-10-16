@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-10-14 22:51+0300\n"
-"PO-Revision-Date: 2024-10-15 18:07+0300\n"
+"PO-Revision-Date: 2024-10-16 17:51+0300\n"
 "Last-Translator: EMAIL@ADDRESS\n"
 "Language-Team: English\n"
 "Language: en_US\n"
@@ -45,10 +45,6 @@ msgstr "View program logs"
 #: app_admin.py:108
 msgid "Таймер"
 msgstr "Timer"
-
-#: app_admin.py:112
-msgid "Таймер "
-msgstr "Timer "
 
 #: app_admin.py:113
 msgid "Открыть окно таймера"
@@ -151,6 +147,10 @@ msgstr "Disable blocking"
 msgid "OK"
 msgstr "OK"
 
+#: app_admin.py:433
+msgid "Программа CPG была выключена"
+msgstr "The CPG program has been disabled"
+
 #: app_admin.py:473 app_admin.py:518 app_admin.py:574 app_admin.py:603
 #: app_wnd_input_first_pass.py:262 app_wind_lang.py:78
 msgid "Предупреждение"
@@ -172,11 +172,15 @@ msgstr ""
 msgid "Вы не указали пользователя для отключения блокировки."
 msgstr "You have not specified a user to disable blocking."
 
+#: app_admin.py:582
+#, python-brace-format
+msgid "Блокировка для пользователя отключена: {usermane}"
+msgstr "The lock for the user is disabled: {usermane}"
+
 #: app_admin.py:665 app_admin.py:674 app_admin.py:686 app_admin.py:697
 #: app_lock_unlock_usr.py:97 app_lock_unlock_usr.py:100
 #: app_lock_unlock_usr.py:282 app_lock_unlock_usr.py:297 app_wind_bot.py:196
-#: app_wind_exit_prog.py:116 app_wnd_input_first_pass.py:260
-#: app_wind_pass.py:97
+#: app_wind_exit_prog.py:116 app_wnd_input_first_pass.py:260 app_wind_pass.py:97
 msgid "Ошибка"
 msgstr "Error"
 
@@ -188,6 +192,14 @@ msgstr "Monitoring has been started"
 msgid "Запуск"
 msgstr "Launch"
 
+#: app_admin.py:686
+msgid "Программа мониторинга запущена в фоновом режиме"
+msgstr "The monitoring program is running in the background"
+
+#: app_admin.py:725
+msgid "Настройки программы сброшены через кнопку в интерфейсе"
+msgstr "The program settings have been reset via the button in the interface"
+
 #: app_admin.py:733
 msgid "Настройки программы сброшены!"
 msgstr "Program settings have been reset!"
@@ -196,10 +208,22 @@ msgstr "Program settings have been reset!"
 msgid "СБРОС ДАННЫХ"
 msgstr "DATA RESET"
 
-#: app_admin.py:783 app_admin.py:813 app_admin.py:818
-#: app_lock_unlock_usr.py:320 app_timer.py:97 app_timer.py:140 app_timer.py:157
-#: app_timer.py:163 app_wind_bot.py:207 app_wnd_input_first_pass.py:253
-#: app_tg_bot.py:223 app_tg_bot.py:231
+#: app_admin.py:767 app_wind_pass.py:98
+msgid ""
+"Кто то пытается разблокировать интерфейс программы\n"
+"Пароль не совпал"
+msgstr ""
+"Someone is trying to unlock the program interface\n"
+"Password did not match"
+
+#: app_admin.py:773 app_admin.py:778
+msgid "Интерфейс программы разблокирован"
+msgstr "The program interface is unlocked"
+
+#: app_admin.py:783 app_admin.py:813 app_admin.py:818 app_lock_unlock_usr.py:320
+#: app_timer.py:97 app_timer.py:140 app_timer.py:157 app_timer.py:163
+#: app_wind_bot.py:207 app_wnd_input_first_pass.py:253 app_tg_bot.py:223
+#: app_tg_bot.py:231
 msgid "ОШИБКА"
 msgstr "ERROR"
 
@@ -207,6 +231,15 @@ msgstr "ERROR"
 #: app_tg_bot.py:223
 msgid "Доступ к мьютексу запрещен."
 msgstr "Access to mutex is denied."
+
+#: app_admin.py:824 app_tg_bot.py:231
+#, python-brace-format
+msgid ""
+"Неизвестная ошибка:\n"
+"{error_code}"
+msgstr ""
+"Unknown error:\n"
+"{error_code}"
 
 #: app_admin.py:832
 msgid ""
@@ -267,14 +300,6 @@ msgstr "No blocked"
 msgid "Успешно"
 msgstr "Successfully"
 
-#: app_lock_unlock_usr.py:312
-msgid "Приложение Unlock User CPGuard уже запущено."
-msgstr "Unlock User CPGuard application is already running."
-
-#: app_lock_unlock_usr.py:313 app_timer.py:152 app_tg_bot.py:217
-msgid "ПРЕДУПРЕЖДЕНИЕ"
-msgstr "WARNING"
-
 #: app_timer.py:28
 msgid "Осталось времени"
 msgstr "There is time left"
@@ -292,10 +317,6 @@ msgstr ""
 "Error reading time.\n"
 "Timer will be closed.\n"
 "Restarting the timer may fix the problem"
-
-#: app_timer.py:152
-msgid "Приложение Child PC Timer уже запущено."
-msgstr "The Child PC Timer application is already running."
 
 #: app_wind_bot.py:25
 msgid "Настройка оповещения через Telegram"
@@ -345,6 +366,14 @@ msgstr ""
 #: app_wind_bot.py:127
 msgid "Ваш chat_id: (номер который вам выдаст бот)"
 msgstr "Your chat_id: (the number that the bot will give you)"
+
+#: app_wind_bot.py:190
+msgid ""
+"ID записан в БД\n"
+"Бот Telegram запущен и настроен для уведомлений о работе программы"
+msgstr ""
+"ID written to DB\n"
+"Telegram bot launched and configured for notifications about program operation"
 
 #: app_wind_bot.py:204
 msgid "Ошибка ID может содержать только цифры\n"
@@ -617,16 +646,3 @@ msgstr "Enable the application"
 #: app_tg_bot.py:202
 msgid "Приложение включено."
 msgstr "Application included."
-
-#: app_tg_bot.py:217
-msgid "Приложение BOT Child PC Timer уже запущено."
-msgstr "BOT Child PC Timer app is now running."
-
-#: app_tg_bot.py:230
-#, python-brace-format
-msgid ""
-"Неизвестная ошибка:\n"
-"{error_code}"
-msgstr ""
-"Unknown error:\n"
-"{error_code}"
