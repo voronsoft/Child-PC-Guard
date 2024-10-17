@@ -796,9 +796,6 @@ def main_app():
     # Запускаем приложение как администратор
     function.run_as_admin()
 
-    # Запускаем приложение бота
-    function.run_program_bot()
-
     # ------- Проверка кода ошибки -------
     mutex = ctypes.windll.kernel32.CreateMutexW(None, False, MUTEX_NAME_CPG)
 
@@ -854,10 +851,14 @@ def main_app():
         ctypes.windll.kernel32.CloseHandle(mutex)  # Закрываем дескриптор мьютекса
         sys.exit(0)
 
-    # Если пароля нет в реестре, то запускаем приложение как в первый раз с вводом будущего пароля для приложения
+    # Если пароля нет в реестре, то запускаем приложение как в первый раз
+    # с вводом будущего пароля для приложения
     if not password_from_registry:
         app_wnd_input_first_pass.main()
         main_splash()
+
+    # Запускаем приложение бота
+    function.run_program_bot()
 
     # Инициализируем главное окно
     app = wx.App(False)

@@ -5,7 +5,7 @@ a = Analysis(
     ['app_tg_bot.py'],
     pathex=[],
     binaries=[],
-    datas=[('locale', '.')],
+    datas=[('locale', 'locale')],
     hiddenimports=[],
     hookspath=[],
     hooksconfig={},
