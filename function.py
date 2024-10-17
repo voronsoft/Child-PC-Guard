@@ -10,7 +10,7 @@ import hashlib
 import requests
 import threading
 import subprocess
-from config_app import FOLDER_DATA, PATH_DATA_FILE, PATH_LOG_FILE, PATH_INSTALL_INFO_FILE, SECRET_KEY, DISK_LETTER
+from config_app import FOLDER_DATA, PATH_DATA_FILE, PATH_LOG_FILE, PATH_INSTALL_INFO_FILE, SECRET_KEY, DISK_LETTER, path_bot_tg_exe
 
 FOLDER_DATA_PRGM_DATA = os.path.join(os.environ.get('PROGRAMDATA'), "Child PC Guard Data")
 PATH_DATA_FILE_PRGM_DATA = os.path.join(FOLDER_DATA_PRGM_DATA, "data.json")
@@ -625,7 +625,7 @@ def send_bot_telegram_message(message="Default message.",
     # URL для отправки сообщения
     url = f"https://api.telegram.org/bot{bot_token}/sendMessage"
     # Данные, которые будут отправлены
-    data = {'chat_id': chat_id, 'text': message,}
+    data = {'chat_id': chat_id, 'text': message, }
 
     # Отправка POST-запроса к API Telegram
     response = requests.post(url, data=data)
@@ -637,6 +637,18 @@ def send_bot_telegram_message(message="Default message.",
     else:
         print(f"Ошибка при отправке сообщения: {response.status_code} - {response.text}")
         log_error(f"Ошибка при отправке сообщения: {response.status_code} - {response.text}")
+
+
+def run_program_bot():
+    """Запускает программу бота телеграм"""
+    try:
+        subprocess.Popen(path_bot_tg_exe)  # Запускаем программу
+        log_error("Бот запущен при старте основного приложения")
+    except Exception as e:
+        log_error(f"Ошибка при запуске программы Бота:\n{e}")
+
+
+
 # -------------------------------------- END ---------------------------------
 
 

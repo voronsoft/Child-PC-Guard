@@ -796,6 +796,9 @@ def main_app():
     # Запускаем приложение как администратор
     function.run_as_admin()
 
+    # Запускаем приложение бота
+    function.run_program_bot()
+
     # ------- Проверка кода ошибки -------
     mutex = ctypes.windll.kernel32.CreateMutexW(None, False, MUTEX_NAME_CPG)
 
@@ -875,5 +878,3 @@ if __name__ == "__main__":
 
     # Запуск главного приложения
     main_app()
-
-# TODO !!! ВАЖНО при работе окна таймера для пользователя периодично выводится ошибка при считывании времени.

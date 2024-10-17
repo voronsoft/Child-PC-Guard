@@ -1,5 +1,4 @@
 import os
-import sys
 import ctypes
 import asyncio
 import logging
@@ -7,8 +6,6 @@ import function
 import config_localization
 from telegram import ReplyKeyboardMarkup, KeyboardButton, InlineKeyboardButton, InlineKeyboardMarkup, Update
 from telegram.ext import Application, CommandHandler, ContextTypes, MessageHandler, filters, CallbackQueryHandler
-
-#
 
 # Подключаем локализацию
 _ = config_localization.setup_locale(function.read_data_json("language"))
