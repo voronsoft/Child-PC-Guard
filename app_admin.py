@@ -398,7 +398,7 @@ class Window(wx.Frame):
         # Если пользователь нажал "OK", закрываем все приложение
         if result == wx.ID_OK:
             # ------------- Останавливаем БОТ ---------------
-            # предусмотреть остановку бота после закрытия окна
+            function.kill_program_by_name("run_bot_telegram.exe")
             # -----------------------------------------------
 
             # print("self.remaining_time:", self.remaining_time)

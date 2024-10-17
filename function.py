@@ -513,6 +513,26 @@ def show_warning_message(msg_txt: str):
     show_message_with_auto_close()
 
 
+def kill_program_by_name(program_name="run_bot_telegram.exe"):
+    """
+    Закрывает все процессы с указанным именем программы.
+    По умолчанию ищет программу бота телеграм. (run_bot_telegram.exe)
+
+    :param program_name: Имя исполняемого файла программы (например, "example.exe").
+    """
+    # Проходим по всем процессам в системе
+    for proc in psutil.process_iter(['pid', 'name']):
+        try:
+            # Проверяем, совпадает ли имя процесса с указанным
+            if proc.info['name'].lower() == program_name.lower():
+                print(f"Закрываю процесс: {proc.info['name']} (PID: {proc.info['pid']})")
+                proc.terminate()  # Завершаем процесс
+                proc.wait()  # Ожидаем завершения процесса
+        except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
+            # Игнорируем ошибки, если процесс уже завершен или недоступен
+            pass
+
+
 # --------------------------Работа с паролем для приложения-------------------
 def hash_password(password: str) -> str:
     """Хеширует пароль с использованием HMAC и секретного ключа."""
@@ -590,7 +610,7 @@ def delete_password_from_registry():
         log_error(f"Ошибка при удалении записи пароля: {e}")
 
 
-# ----------------------------------- Работа с BOT ---------------------------
+# ----------------------------------- Работа с BOT telegram---------------------------
 def send_bot_telegram_message(message="Default message.",
                               bot_token=read_data_json("bot_token_telegram"),
                               chat_id=read_data_json("chat_id")
@@ -618,3 +638,7 @@ def send_bot_telegram_message(message="Default message.",
         print(f"Ошибка при отправке сообщения: {response.status_code} - {response.text}")
         log_error(f"Ошибка при отправке сообщения: {response.status_code} - {response.text}")
 # -------------------------------------- END ---------------------------------
+
+
+if __name__ == "__main__":
+    set_password_in_registry("1234567890")

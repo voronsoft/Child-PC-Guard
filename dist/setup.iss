@@ -57,11 +57,11 @@ Source: "log_chpcgu.txt"; DestDir: "{commonappdata}\Child PC Guard Data"; Flags:
 Source: "install_info.txt"; DestDir: "{commonappdata}\Child PC Guard Data"; Flags: ignoreversion; Permissions: "everyone-full"
 
 [Registry]
-; Создаст запись в реестре
-Root: HKLM; Subkey: "Software\CPG_Password"; ValueType: string; ValueName: "Version"; ValueData: "1.0"
 ; Удаление записи пароля из реестра (при запуске деинсталлятора программы) - "HKLM\SOFTWARE\CPG_Password"
-; После деинсталляции программы, выполняет удаление всего раздела, включая все параметры и подразделы в нём.
-Root: HKLM; Subkey: "Software\CPG_Password"; Flags: uninsdeletekey
+; Удаление ключа реестра при деинсталляции для 64-разрядной системы
+Root: HKLM64; Subkey: "SOFTWARE\CPG_Password"; Flags: uninsdeletekey
+; Удаление ключа реестра при деинсталляции для 32-разрядной системы
+Root: HKLM32; Subkey: "SOFTWARE\CPG_Password"; Flags: uninsdeletekey
 
 [Icons]
 ; Создание ярлыков в меню "Пуск" в общей папке для всех пользователей - (C:\ProgramData\Microsoft\Windows\Start Menu\Programs\)
