@@ -5,7 +5,7 @@ a = Analysis(
     ['app_admin.py'],
     pathex=[],
     binaries=[],
-    datas=[],
+    datas=[('locale', 'locale')],
     hiddenimports=[],
     hookspath=[],
     hooksconfig={},

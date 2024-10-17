@@ -150,6 +150,7 @@ def main():
 
     if error_code == 183:
         os._exit(0)
+        return
     elif error_code == 5:  # ERROR_ACCESS_DENIED
         if mutex != 0:  # Проверяем, что дескриптор валиден перед закрытием
             ctypes.windll.kernel32.CloseHandle(mutex)

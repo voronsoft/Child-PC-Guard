@@ -1,0 +1,591 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-10-16 16:22+0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: app_admin.py:37
+msgid "Child PC Guard - АДМИНИСТРАТОР"
+msgstr ""
+
+#: app_admin.py:63
+msgid "Child PC Guard - ПОЛЬЗОВАТЕЛЬ"
+msgstr ""
+
+#: app_admin.py:85 app_admin.py:91
+msgid "Lang"
+msgstr ""
+
+#: app_admin.py:92
+msgid "Выбор языка интерфейса"
+msgstr ""
+
+#: app_admin.py:97 app_admin.py:101
+msgid "Логи"
+msgstr ""
+
+#: app_admin.py:102
+msgid "Просмотр логов программы"
+msgstr ""
+
+#: app_admin.py:108
+msgid "Таймер"
+msgstr ""
+
+#: app_admin.py:113
+msgid "Открыть окно таймера"
+msgstr ""
+
+#: app_admin.py:119 app_admin.py:125
+msgid "Мониторинг"
+msgstr ""
+
+#: app_admin.py:126
+msgid "Включить-отключить мониторинг"
+msgstr ""
+
+#: app_admin.py:131
+msgid "Очистить"
+msgstr ""
+
+#: app_admin.py:137
+msgid "Очистить все"
+msgstr ""
+
+#: app_admin.py:138
+msgid "Удаляет все данные задания для блокировки. БЛОКИРОВКУ НЕ ОТКЛЮЧАЕТ"
+msgstr ""
+
+#: app_admin.py:143
+msgid "Разблокировать"
+msgstr ""
+
+#: app_admin.py:149 app_lock_unlock_usr.py:114
+msgid "Разблокировать пользователя"
+msgstr ""
+
+#: app_admin.py:150
+msgid "Открывает окно разблокировки пользователя"
+msgstr ""
+
+#: app_admin.py:155 app_admin.py:159
+msgid "Справка"
+msgstr ""
+
+#: app_admin.py:160
+msgid "Открывает окно по использованию программы"
+msgstr ""
+
+#: app_admin.py:165 app_admin.py:171
+msgid "Оповещение"
+msgstr ""
+
+#: app_admin.py:172
+msgid "Открывает окно для настройки оповещения через Telegram"
+msgstr ""
+
+#: app_admin.py:178 app_admin.py:182 app_admin.py:183
+msgid "Разблокировать интерфейс"
+msgstr ""
+
+#: app_admin.py:187 app_admin.py:191
+msgid "Заблокировать интерфейс"
+msgstr ""
+
+#: app_admin.py:192
+msgid "Блокировка интерфейса"
+msgstr ""
+
+#: app_admin.py:208
+msgid "Укажите пользователя для блокировки: "
+msgstr ""
+
+#: app_admin.py:222 app_wnd_input_first_pass.py:123
+msgid "----"
+msgstr ""
+
+#: app_admin.py:246
+msgid "Укажите время для блокировки: "
+msgstr ""
+
+#: app_admin.py:258
+msgid "0"
+msgstr ""
+
+#: app_admin.py:271
+msgid "час (0 отключено)"
+msgstr ""
+
+#: app_admin.py:284
+msgid "Осталось времени до блокировки:"
+msgstr ""
+
+#: app_admin.py:295
+msgid "00:00:00"
+msgstr ""
+
+#: app_admin.py:310
+msgid "Отключить блокировку"
+msgstr ""
+
+#: app_admin.py:320 app_lock_unlock_usr.py:68 app_wind_exit_prog.py:81
+#: app_wind_pass.py:66
+msgid "OK"
+msgstr ""
+
+#: app_admin.py:433
+msgid "Программа CPG была выключена"
+msgstr ""
+
+#: app_admin.py:473 app_admin.py:520 app_admin.py:576 app_admin.py:606
+#: app_wnd_input_first_pass.py:262 app_wind_lang.py:78
+msgid "Предупреждение"
+msgstr ""
+
+#: app_admin.py:502
+msgid "Запуск задания блокировки"
+msgstr ""
+
+#: app_admin.py:519
+msgid ""
+"Внимание убедитесь что вы выбрали не АДМИНИСТРАТОРА !!!\n"
+"Только АДМИНИСТРАТОР может снять блокировку !!!.\n"
+"В противном случае блокировку уже не снять.\n"
+"РЕШЕНИЕ - ПЕРЕУСТАНОВКА WINDOWS !!!"
+msgstr ""
+
+#: app_admin.py:575
+msgid "Вы не указали пользователя для отключения блокировки."
+msgstr ""
+
+#: app_admin.py:582
+#, python-brace-format
+msgid "Блокировка для пользователя отключена: {usermane}"
+msgstr ""
+
+#: app_admin.py:667 app_admin.py:676 app_admin.py:689 app_admin.py:700
+#: app_lock_unlock_usr.py:97 app_lock_unlock_usr.py:100
+#: app_lock_unlock_usr.py:282 app_lock_unlock_usr.py:297 app_wind_bot.py:197
+#: app_wind_exit_prog.py:116 app_wnd_input_first_pass.py:260
+#: app_wind_pass.py:97
+msgid "Ошибка"
+msgstr ""
+
+#: app_admin.py:685
+msgid "Мониторинг запущен"
+msgstr ""
+
+#: app_admin.py:685
+msgid "Запуск"
+msgstr ""
+
+#: app_admin.py:686
+msgid "Программа мониторинга запущена в фоновом режиме"
+msgstr ""
+
+#: app_admin.py:725
+msgid "Настройки программы сброшены через кнопку в интерфейсе"
+msgstr ""
+
+#: app_admin.py:737
+msgid "Настройки программы сброшены!"
+msgstr ""
+
+#: app_admin.py:737
+msgid "СБРОС ДАННЫХ"
+msgstr ""
+
+#: app_admin.py:767 app_wind_pass.py:98
+msgid ""
+"Кто то пытается разблокировать интерфейс программы\n"
+"Пароль не совпал"
+msgstr ""
+
+#: app_admin.py:773 app_admin.py:778
+msgid "Интерфейс программы разблокирован"
+msgstr ""
+
+#: app_admin.py:790 app_admin.py:819 app_admin.py:824 app_admin.py:845
+#: app_lock_unlock_usr.py:315 app_timer.py:97 app_timer.py:140 app_timer.py:156
+#: app_timer.py:162 app_wind_bot.py:208 app_wnd_input_first_pass.py:253
+#: app_tg_bot.py:225 app_tg_bot.py:232
+msgid "ОШИБКА"
+msgstr ""
+
+#: app_admin.py:819 app_lock_unlock_usr.py:315 app_timer.py:156
+#: app_tg_bot.py:225
+msgid "Доступ к мьютексу запрещен."
+msgstr ""
+
+#: app_admin.py:824 app_tg_bot.py:231
+#, python-brace-format
+msgid ""
+"Неизвестная ошибка:\n"
+"{error_code}"
+msgstr ""
+
+#: app_admin.py:839
+msgid ""
+"В системе всего один пользователь, приложение не будет работать!!\n"
+"Необходимо, что-бы в системе было два пользователя.\n"
+"1- Администратор\n"
+"2- Пользователь/Администратор\n"
+"Необходимо создать второго пользователя.\n"
+"После этого программа запустится."
+msgstr ""
+
+#: app_lock_unlock_usr.py:24
+msgid "ВВЕДИТЕ ПАРОЛЬ"
+msgstr ""
+
+#: app_lock_unlock_usr.py:54 app_wind_exit_prog.py:67 app_wind_pass.py:52
+msgid "Пароль: "
+msgstr ""
+
+#: app_lock_unlock_usr.py:96
+msgid ""
+"Не задан пароль для главного приложения.\n"
+"Откройте главное приложение и задайте пароль для главной программы.\n"
+"Потом вернитесь и введите пароль опять, что-бы получить доступ"
+msgstr ""
+
+#: app_lock_unlock_usr.py:100 app_wind_exit_prog.py:116 app_wind_pass.py:97
+#: app_tg_bot.py:94
+msgid "Неверный пароль. Попробуйте снова."
+msgstr ""
+
+#: app_lock_unlock_usr.py:158
+msgid "АДМИНИСТРАТОР"
+msgstr ""
+
+#: app_lock_unlock_usr.py:158
+msgid "НЕТ ПРАВ администратора"
+msgstr ""
+
+#: app_lock_unlock_usr.py:227
+msgid "UnLock"
+msgstr ""
+
+#: app_lock_unlock_usr.py:270
+msgid "Нет заблокированных"
+msgstr ""
+
+#: app_lock_unlock_usr.py:277 app_wind_bot.py:191
+msgid "Успешно"
+msgstr ""
+
+#: app_timer.py:28
+msgid "Осталось времени"
+msgstr ""
+
+#: app_timer.py:54 app_timer.py:90
+msgid "Выключен"
+msgstr ""
+
+#: app_timer.py:95
+msgid ""
+"Ошибка считывания времени.\n"
+"Таймер будет закрыт.\n"
+"Повторный запуск таймера может исправить проблему"
+msgstr ""
+
+#: app_wind_bot.py:25
+msgid "Настройка оповещения через Telegram"
+msgstr ""
+
+#: app_wind_bot.py:45 app_wind_bot.py:55
+msgid ""
+"В этом окне, вам нужно ввести ID вашего чата с ботом программы.\n"
+"1- Откройте Telegram и в строке поиска введите: Child Pc Guard Bot или "
+"@ChildPCGuard_bot\n"
+"2- Для начала беседы нужно ввести /start или нажать кнопку Старт если она "
+"есть на экране.\n"
+"3- После этого вы получите сообщение от бота:"
+msgstr ""
+
+#: app_wind_bot.py:69 app_wind_bot.py:79
+msgid ""
+"Ваш chat_id: хххххххххх\n"
+"Этот номер вам нужно ввести в программе - Child PC Guard\n"
+"Нажав на кнопку в меню - 'Подключить оповещения через - Telegram'\n"
+"Введите номер в поле для ввода и нажмите - ОК\n"
+"После этого программа сможет понять кому отправлять сообщения"
+msgstr ""
+
+#: app_wind_bot.py:100 app_wind_bot.py:109
+msgid ""
+"4- Введите номер в поле что ниже и нажмите ОК.\n"
+"5- После этого программа будет присылать вам оповещение.\n"
+"6- Что бы получить доступ к меню бота, введите пароль от этой программы."
+msgstr ""
+
+#: app_wind_bot.py:127
+msgid "Ваш chat_id: (номер который вам выдаст бот)"
+msgstr ""
+
+#: app_wind_bot.py:190
+msgid ""
+"ID записан в БД\n"
+"Бот Telegram запущен и настроен для уведомлений о работе программы"
+msgstr ""
+
+#: app_wind_bot.py:205
+msgid ""
+"Ошибка ID может содержать только цифры\n"
+"Пример: 'Ваш chat_id: 1234567890'"
+msgstr ""
+
+#: app_wind_documentation.py:33
+msgid "Документация"
+msgstr ""
+
+#: app_wind_documentation.py:51
+msgid "ТЕКСТ ЗАПОЛНИТЕЛЬ - документация в разработке\n"
+msgstr ""
+
+#: app_wind_exit_prog.py:22
+msgid "ВЫХОД из программы"
+msgstr ""
+
+#: app_wind_exit_prog.py:53
+msgid "Закрыв программу таймер программы будет отключен."
+msgstr ""
+
+#: app_wind_exit_prog.py:84
+msgid "Отмена"
+msgstr ""
+
+#: app_wnd_input_first_pass.py:23
+msgid "Настройка программы"
+msgstr ""
+
+#: app_wnd_input_first_pass.py:40
+msgid ""
+"Если фон главного окна КРАСНОГО цвета,\n"
+"значит программа запущена без прав АДМИНИСТРАТОРА.\n"
+"Необходимо перезапустить программу от имени АДМИНИСТРАТОРА"
+msgstr ""
+
+#: app_wnd_input_first_pass.py:73
+msgid "Введите пароль для приложения"
+msgstr ""
+
+#: app_wnd_input_first_pass.py:111
+msgid "Выберите пользователя которого НЕЛЬЗЯ БЛОКИРОВАТЬ"
+msgstr ""
+
+#: app_wnd_input_first_pass.py:153
+msgid "Язык приложения: "
+msgstr ""
+
+#: app_wnd_input_first_pass.py:242
+#, python-brace-format
+msgid ""
+"Пароль ЗАПИСАН в программу.\n"
+"Пользователь ЗАПИСАН в программу\n"
+"Язык программы - {lng}"
+msgstr ""
+
+#: app_wnd_input_first_pass.py:244
+msgid "ОТЛИЧНО"
+msgstr ""
+
+#: app_wnd_input_first_pass.py:252
+msgid "Вы не выбрали пользователя которого нельзя блокировать"
+msgstr ""
+
+#: app_wnd_input_first_pass.py:260
+msgid "Пароль уже есть в БД"
+msgstr ""
+
+#: app_wnd_input_first_pass.py:262
+msgid "Пароль не может быть меньше пять знаков"
+msgstr ""
+
+#: app_wind_lang.py:29
+msgid "Выбор языка"
+msgstr ""
+
+#: app_wind_lang.py:43 app_wind_lang.py:44
+msgid "Русский"
+msgstr ""
+
+#: app_wind_lang.py:47 app_wind_lang.py:48
+msgid "English"
+msgstr ""
+
+#: app_wind_lang.py:51 app_wind_lang.py:52
+msgid "Українська"
+msgstr ""
+
+#: app_wind_lang.py:77
+msgid "Перезапустите приложение что бы настройки языка вступили в силу."
+msgstr ""
+
+#: app_wind_pass.py:21
+msgid "ВХОД"
+msgstr ""
+
+#: app_wind_tray_icon.py:36
+msgid "Выход"
+msgstr ""
+
+#: app_tg_bot.py:57
+#, python-brace-format
+msgid ""
+"Ваш chat_id: {chat_id}\n"
+"Этот номер вам нужно ввести в программе - Child PC Guard\n"
+"Нажав на кнопку в меню - 'Подключить оповещения через - Telegram'\n"
+"Введите номер в поле для ввода и нажмите - ОК\n"
+"После этого программа сможет понять кому отправлять сообщения"
+msgstr ""
+
+#: app_tg_bot.py:66
+msgid ""
+"Введите пароль для доступа\n"
+"(тот который вы вводили в программе):"
+msgstr ""
+
+#: app_tg_bot.py:91
+msgid "Доступ разрешен."
+msgstr ""
+
+#: app_tg_bot.py:101 app_tg_bot.py:177
+msgid "Получить статус CPG"
+msgstr ""
+
+#: app_tg_bot.py:101 app_tg_bot.py:165
+msgid "Вывести предупреждение"
+msgstr ""
+
+#: app_tg_bot.py:102 app_tg_bot.py:197
+msgid "Выключить ПК"
+msgstr ""
+
+#: app_tg_bot.py:102 app_tg_bot.py:195
+msgid "Разблокировать ПК"
+msgstr ""
+
+#: app_tg_bot.py:103 app_tg_bot.py:207
+msgid "Выбрать время для блокировки"
+msgstr ""
+
+#: app_tg_bot.py:106
+msgid "Меню:"
+msgstr ""
+
+#: app_tg_bot.py:113
+msgid "1 час"
+msgstr ""
+
+#: app_tg_bot.py:113
+msgid "2 часа"
+msgstr ""
+
+#: app_tg_bot.py:114
+msgid "3 часа"
+msgstr ""
+
+#: app_tg_bot.py:114
+msgid "4 часа"
+msgstr ""
+
+#: app_tg_bot.py:115
+msgid "5 часов"
+msgstr ""
+
+#: app_tg_bot.py:118
+msgid "Выберите время для блокировки:"
+msgstr ""
+
+#: app_tg_bot.py:128
+#, python-brace-format
+msgid ""
+"Вы выбрали: {time_selected} часа(ов) до блокировки.\n"
+"Таймер начал отсчет времени!\n"
+"Как только время выйдет, вы получите уведомление."
+msgstr ""
+
+#: app_tg_bot.py:142
+msgid "Устрашающее сообщение выведено на главном экране."
+msgstr ""
+
+#: app_tg_bot.py:162
+msgid "Вы не авторизованы. Введите пароль."
+msgstr ""
+
+#: app_tg_bot.py:166
+msgid "Пожалуйста, введите текст для сообщения."
+msgstr ""
+
+#: app_tg_bot.py:179
+msgid "Работает"
+msgstr ""
+
+#: app_tg_bot.py:179
+msgid "Выключено"
+msgstr ""
+
+#: app_tg_bot.py:180
+msgid "Не найдено"
+msgstr ""
+
+#: app_tg_bot.py:181
+msgid "Не включено"
+msgstr ""
+
+#: app_tg_bot.py:182
+msgid "Отключено"
+msgstr ""
+
+#: app_tg_bot.py:185
+#, python-brace-format
+msgid ""
+"СТАТУС ПРОГРАММЫ:\n"
+"- CPG: {status_cpg}\n"
+"- Пользователь: {user_status}\n"
+"- Таймер: {timer_status}\n"
+"- Оповещение Telegram: {bot_status}"
+msgstr ""
+
+#: app_tg_bot.py:196
+#, python-brace-format
+msgid "Пользователь {username} разблокирован."
+msgstr ""
+
+#: app_tg_bot.py:199
+msgid "ПК будет выключен через 30 секунд."
+msgstr ""
+
+#: app_tg_bot.py:201
+msgid "Выключить приложение"
+msgstr ""
+
+#: app_tg_bot.py:202
+msgid ""
+"Приложение выключено.\n"
+"Все настройки стерты.\n"
+"Таймер остановлен.\n"
+" БЛОКИРОВКА НЕ СНЯТА"
+msgstr ""
+
+#: app_tg_bot.py:204
+msgid "Включить приложение"
+msgstr ""
+
+#: app_tg_bot.py:205
+msgid "Приложение включено."
+msgstr ""

@@ -533,11 +533,11 @@ def check_password(input_password: str, stored_hashed_password: str) -> bool:
 
 
 # -------------------------------- Работа с реестром -------------------------
-# Путь в реестре - Компьютер\HKEY_LOCAL_MACHINE\SOFTWARE\CPG Password
+# Путь в реестре - Компьютер\HKEY_LOCAL_MACHINE\SOFTWARE\CPG_Password
 def set_password_in_registry(password: str):
     """Записывает пароль в реестр."""
-    # Путь в реестре - Компьютер-HKEY_LOCAL_MACHINE-SOFTWARE-CPG Password
-    key_path = r"Software\CPG Password"
+    # Путь в реестре - Компьютер-HKEY_LOCAL_MACHINE-SOFTWARE-CPG_Password
+    key_path = r"Software\CPG_Password"
 
     # Открываем или создаем ключ реестра
     try:
@@ -553,7 +553,7 @@ def set_password_in_registry(password: str):
 
 def get_password_from_registry():
     """Читает пароль из реестра."""
-    key_path = r"Software\CPG Password"
+    key_path = r"Software\CPG_Password"
 
     try:
         # Открываем ключ реестра
@@ -573,7 +573,7 @@ def get_password_from_registry():
 
 def delete_password_from_registry():
     """Удаляет запись пароля из реестра."""
-    key_path = r"Software\CPG Password"
+    key_path = r"Software\CPG_Password"
 
     try:
         # Открываем ключ реестра с правами на запись

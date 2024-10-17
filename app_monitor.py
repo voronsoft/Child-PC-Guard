@@ -6,6 +6,8 @@ import os
 import json
 import time
 import ctypes
+from pprint import pprint
+
 import psutil
 import traceback
 import config_localization
@@ -26,40 +28,36 @@ path_to_program_bot = path_bot_tg_exe
 
 # Функция для проверки, запущена ли программа
 def check_and_restart_program():
+    print("\nПроверка программ...")  # Отладочный принт
     program_running = False
     bot_program_running = False
 
+    # Получаем список всех запущенных процессов в ос
+    proc_run_os = [proc.info['name'] for proc in psutil.process_iter(['pid', 'name'])]
+
     # Проверяем, запущены ли приложения
-    for proc in psutil.process_iter(['pid', 'name']):
-        if proc.info['name'] == 'Child PC Guard.exe':  # Главное приложение
-            program_running = True
-            break
+    if "Child PC Guard.exe" in proc_run_os:  # Приложение - CPG
+        program_running = True
 
-        if proc.info['name'] == 'run_bot_telegram.exe':  # Главное приложение
-            program_running = True
-            break
+    if "run_bot_telegram.exe" in proc_run_os:  # Приложение - BOT
+        bot_program_running = True
 
-    # Главная программа  запуск
+    # Главная программа запуск
     if not program_running:
-        print("Программа не запущена. Перезапуск...")
+        print("CPG не запущена. Перезапуск...")
         # Сообщение записываем в log
-        log_error_monitor(f"Программа не запущена. Перезапуск...")
-
+        log_error_monitor(f"CPG не запущена. Перезапуск...\nПуть: {path_to_program}")
         try:
             # Запускаем .exe файл через subprocess
             os.startfile(path_to_program)
         except Exception as e:
             print("1 Планировщик остановлен.")
-            send_bot_telegram_message(_("1 Планировщик остановлен."))
+            send_bot_telegram_message(_("1 MonitorCPG - Планировщик остановлен."))
             # Отключаем планировщик
-            log_error_monitor(f"1 Планировщик остановлен.:\n{e}")
-            # Вывод ошибки на рабочий стол если приложение не найдено по указанному пути.
-            # show_message_with_auto_close(f"(1CPG) CPG Monitor({time.strftime('%Y-%m-%d %H:%M:%S')})\n{e}",
-            #                              "Ошибка",
-            #                              30
-            #                              )
-            # Закрываем планировщик
+            log_error_monitor(f"1 MonitorCPG - Планировщик остановлен.:\n{e}")
             scheduler.shutdown(wait=False)
+    else:
+        print("CPG работает")
 
     # Задаем паузу 5ть секунд
     time.sleep(5)
@@ -69,24 +67,20 @@ def check_and_restart_program():
     if not bot_program_running:
         print("БОТ программа не запущена. Перезапуск...")
         # Сообщение записываем в log
-        log_error_monitor(f"БОТ программа не запущена. Перезапуск...")
+        log_error_monitor(f"БОТ программа не запущена. Перезапуск...\nПуть: {path_to_program_bot}")
 
         try:
             # Запускаем .exe файл через subprocess
             os.startfile(path_to_program_bot)
         except Exception as e:
             print("1-1 Планировщик остановлен.")
-            send_bot_telegram_message(_("1-1 Планировщик остановлен."))
+            send_bot_telegram_message(_("1-1 MonitorCPG - Планировщик остановлен."))
 
             # Отключаем планировщик
-            log_error_monitor(f"1-1 Планировщик остановлен.:\n{e}")
-            # Вывод ошибки на рабочий стол если приложение не найдено по указанному пути.
-            # show_message_with_auto_close(f"(2BOT) CPG Monitor({time.strftime('%Y-%m-%d %H:%M:%S')})\n{e}",
-            #                              "Ошибка",
-            #                              30
-            #                              )
-            # Закрываем планировщик
+            log_error_monitor(f"1-1 MonitorCPG - Планировщик остановлен.:\n{e}")
             scheduler.shutdown(wait=False)
+    else:
+        print("BOT работает")
 
 
 # Функция для обновления данных в файле
@@ -146,7 +140,7 @@ def log_error_monitor(message):
         )
 
 
-def main():
+def main_run_monitor():
     global scheduler
     # Запуск приложения как администратора
     run_as_admin()
@@ -157,17 +151,17 @@ def main():
     error_code = ctypes.windll.kernel32.GetLastError()
 
     if error_code == 183:
-        os._exit(0)
+        print(183)
+        return
     elif error_code == 5:  # ERROR_ACCESS_DENIED
         if mutex != 0:  # Проверяем, что дескриптор валиден перед закрытием
             ctypes.windll.kernel32.CloseHandle(mutex)
-        show_message_with_auto_close("Доступ к мьютексу запрещен.", "ОШИБКА")
+        show_message_with_auto_close("MonitorCPG - Доступ к мьютексу запрещен.", "ОШИБКА")
         return
     elif error_code != 0:
         if mutex != 0:  # Проверяем, что дескриптор валиден перед закрытием
             ctypes.windll.kernel32.CloseHandle(mutex)
-        show_message_with_auto_close(f"Неизвестная ошибка:\n{error_code}", "ОШИБКА")
-
+        show_message_with_auto_close(f"MonitorCPG - Неизвестная ошибка:\n{error_code}", "ОШИБКА")
         return
     # -------------- END ---------------
 
@@ -175,36 +169,28 @@ def main():
     scheduler = BlockingScheduler()
 
     # TODO Настройка времени для заданий в мониторинге (релиз\разработка)
-    # Задача 1: Следить за процессом и перезапускать, если не запущен (каждые 300 секунд)
-    scheduler.add_job(check_and_restart_program, 'interval', seconds=10)  # TODO Включить в момент релиза
+    # Задача 1: Следить за процессом и перезапускать, если не запущен (каждые 60 секунд)
+    scheduler.add_job(check_and_restart_program, 'interval', seconds=60)  # TODO Включить в момент релиза
     # scheduler.add_job(check_and_restart_program, 'interval', seconds=10)  # Отключить после разработки
 
-    # Задача 2: Следить за датой и обновлять данные (каждый час)
+    # Задача 2: Следить за датой и обновлять данные (каждый 1 час)
     scheduler.add_job(update_data, 'interval', hours=1)  # TODO Включить в момент релиза
     # scheduler.add_job(update_data, 'interval', seconds=10)  # Отключить после разработки
 
     try:
-        print("Запуск планировщика...")
+        print("Запуск заданий")
         scheduler.start()
 
     except Exception as e:
-        log_error_monitor(f"Ошибка в главном цикле планировщика: {str(e)}\n{traceback.format_exc()}")
+        log_error_monitor(f"MonitorCPG - Ошибка в главном цикле планировщика: {str(e)}\n{traceback.format_exc()}")
         if scheduler.running:
             scheduler.shutdown(wait=False)
 
     except (KeyboardInterrupt, SystemExit):
         print("5 Планировщик остановлен.")
-        send_bot_telegram_message(_("5 Планировщик остановлен."))
+        send_bot_telegram_message(_("5 MonitorCPG - Планировщик остановлен."))
         # Отключаем планировщик
         scheduler.shutdown()
 
-
-    finally:
-        # Освобождение мьютекса при завершении программы
-        if mutex != 0:  # Проверяем, что дескриптор валиден перед закрытием
-            ctypes.windll.kernel32.CloseHandle(mutex)
-        print("Мьютекс освобожден.")
-
-
 if __name__ == '__main__':
-    main()
+    main_run_monitor()

@@ -56,6 +56,13 @@ Source: "log_chpcgu.txt"; DestDir: "{commonappdata}\Child PC Guard Data"; Flags:
 ; Копируем install_info.txt с правами на изменение (файл находится на одном уровне с .iss)
 Source: "install_info.txt"; DestDir: "{commonappdata}\Child PC Guard Data"; Flags: ignoreversion; Permissions: "everyone-full"
 
+[Registry]
+; Создаст запись в реестре
+Root: HKLM; Subkey: "Software\CPG_Password"; ValueType: string; ValueName: "Version"; ValueData: "1.0"
+; Удаление записи пароля из реестра (при запуске деинсталлятора программы) - "HKLM\SOFTWARE\CPG_Password"
+; После деинсталляции программы, выполняет удаление всего раздела, включая все параметры и подразделы в нём.
+Root: HKLM; Subkey: "Software\CPG_Password"; Flags: uninsdeletekey
+
 [Icons]
 ; Создание ярлыков в меню "Пуск" в общей папке для всех пользователей - (C:\ProgramData\Microsoft\Windows\Start Menu\Programs\)
 Name: "{commonstartmenu}\Programs\Child PC Guard\Child PC Guard"; Filename: "{app}\Child PC Guard.exe"; WorkingDir: "{app}"; IconFilename: "{app}\img\icon.ico"
@@ -66,6 +73,7 @@ Name: "{commonstartmenu}\Programs\Child PC Guard\Logs Child PC Guard"; Filename:
 
 ; Создание ярлыков для приложений на "Рабочем столе" (для всех пользователей - (C:\Users\Public\Desktop))
 Name: "{commondesktop}\Child PC Timer"; Filename: "{app}\Child PC Timer.exe"; WorkingDir: "{app}"; IconFilename: "{app}\img\timer.ico"
+Name: "{commondesktop}\Child PC Guard"; Filename: "{app}\Child PC Guard.exe"; WorkingDir: "{app}"; IconFilename: "{app}\img\icon.ico"
 
 [Run]
 ; Запуск приложения создания задачи в планировщике заданий в момент установки (приложение должно быть в одной папке и на одном уровне с файлом инсталляции программы)
@@ -79,10 +87,6 @@ Filename: "{cmd}"; Parameters: "/C schtasks /Delete /TN ""Start CPG Monitor"" /F
 Type: files; Name: "{commonappdata}\Child PC Guard Data\*"
 ; Удаление самой папки
 Type: dirifempty; Name: "{commonappdata}\Child PC Guard Data"
-
-[Registry]
-; Удаление записи пароля из реестра (при запуске деинсталлятора программы) - "HKLM\SOFTWARE\CPG Password"
-Root: HKLM; Subkey: "SOFTWARE\CPG Password"; Flags: deletekey dontcreatekey
 
 ; Код выполняет запись в файл (install_info.txt) пути установки программы для последующего считывания приложением
 [Code]

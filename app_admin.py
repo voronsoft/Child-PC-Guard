@@ -813,6 +813,7 @@ def main_app():
 
     if error_code == 183:  # Объект с таким именем уже существует.
         os._exit(0)
+        return
     elif error_code == 5:  # ERROR_ACCESS_DENIED
         if mutex != 0:
             ctypes.windll.kernel32.CloseHandle(mutex)
