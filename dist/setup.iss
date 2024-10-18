@@ -20,11 +20,12 @@ DisableDirPage=yes
 ; Отключить страницу выбора группы программ
 DisableProgramGroupPage=yes
 ; Отключение стандартного деинсталлятора
-Uninstallable=no
+Uninstallable=yes
 ; Имя для деинсталлятора (Будет отображаться в апплете панели управления "Удаление или изменение программы". )
-;UninstallDisplayName=Uninstaller CPG
+UninstallDisplayName=Uninstaller CPG
 ; Иконка деинсталлятора в панели управления (Будет отображаться в апплете панели управления "Удаление или изменение программы".)
-;UninstallDisplayIcon={app}\img\uninstall.ico
+UninstallDisplayIcon={app}\img\uninstall.ico
+; Права для установщика
 PrivilegesRequired=admin
 
 ; Включение диалога выбора языка
@@ -73,6 +74,8 @@ Name: "{commondesktop}\Child PC Guard"; Filename: "{app}\Child PC Guard.exe"; Wo
 [Run]
 ; Запуск приложения создания задачи в планировщике заданий в момент установки (приложение должно быть в одной папке и на одном уровне с файлом инсталляции программы)
 Filename: "{app}\add_task_schedule.exe"; Flags: waituntilterminated
+; Запуск программы после установки
+Filename: "{app}\Child PC Guard.exe"; Flags: nowait postinstall
 
 [UninstallRun]
 ; Указание на деинсталлятор

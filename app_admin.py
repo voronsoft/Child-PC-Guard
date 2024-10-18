@@ -113,19 +113,18 @@ class Window(wx.Frame):
                                                     _("Открыть окно таймера"),
                                                     None
                                                     )
-        # self.btn_tool2.Enable(False)  # Отключение кнопки в тулбаре
-        self.tool_bar.AddStretchableSpace()  # Вставляем гибкое пространство
-        self.btn_tool_monitor = self.tool_bar.AddTool(wx.ID_ANY,
-                                                      _("Мониторинг"),
-                                                      wx.Bitmap(os.path.join(FOLDER_IMG, "monitor.ico"),
-                                                                wx.BITMAP_TYPE_ANY
-                                                                ),
-                                                      wx.NullBitmap,
-                                                      wx.ITEM_NORMAL,
-                                                      _("Мониторинг"),
-                                                      _("Включить-отключить мониторинг"),
-                                                      None
-                                                      )
+        # self.tool_bar.AddStretchableSpace()  # Вставляем гибкое пространство
+        # self.btn_tool_monitor = self.tool_bar.AddTool(wx.ID_ANY,
+        #                                               _("Мониторинг"),
+        #                                               wx.Bitmap(os.path.join(FOLDER_IMG, "monitor.ico"),
+        #                                                         wx.BITMAP_TYPE_ANY
+        #                                                         ),
+        #                                               wx.NullBitmap,
+        #                                               wx.ITEM_NORMAL,
+        #                                               _("Мониторинг"),
+        #                                               _("Включить-отключить мониторинг"),
+        #                                               None
+        #                                               )
         self.tool_bar.AddStretchableSpace()  # Вставляем гибкое пространство
         self.btn_tool_clear_data = self.tool_bar.AddTool(wx.ID_ANY,
                                                          _("Очистить"),
@@ -373,7 +372,7 @@ class Window(wx.Frame):
         # Запуск окошка таймера
         self.Bind(wx.EVT_TOOL, self.on_run_timer, self.btn_tool_timer)
         # Запуск мониторинга приложения
-        self.Bind(wx.EVT_TOOL, self.on_run_monitor, self.btn_tool_monitor)
+        # self.Bind(wx.EVT_TOOL, self.on_run_monitor, self.btn_tool_monitor)
         # Стирает все данные приложения и пароль
         self.Bind(wx.EVT_TOOL, self.on_run_clear_data, self.btn_tool_clear_data)
         # Запуск приложения разблокировки пользователя
@@ -499,7 +498,7 @@ class Window(wx.Frame):
         """
         Обработчик запуска задания блокировки. Кнопка ОК
         """
-        function.send_bot_telegram_message(_("Запуск задания блокировки"))
+        # function.send_bot_telegram_message(_("Запуск задания блокировки"))
 
         username = self.input_username.GetValue()  # Получаем имя пользователя для блокировки
         hours = int(self.input_time.GetValue())  # Получаем время для таймера из поля выбора времени
@@ -619,10 +618,10 @@ class Window(wx.Frame):
         # Деактивируем кнопки в тулбаре
         self.tool_bar.EnableTool(self.btn_tool_log.GetId(), False)
         self.tool_bar.EnableTool(self.btn_tool_timer.GetId(), False)
-        self.tool_bar.EnableTool(self.btn_tool_monitor.GetId(), False)
+        # self.tool_bar.EnableTool(self.btn_tool_monitor.GetId(), False)
         self.tool_bar.EnableTool(self.btn_tool_clear_data.GetId(), False)
         self.tool_bar.EnableTool(self.btn_tool_run_unblock_usr.GetId(), False)
-        self.tool_bar.EnableTool(self.btn_tool_info.GetId(), False)
+        # self.tool_bar.EnableTool(self.btn_tool_info.GetId(), True)
         self.tool_bar.EnableTool(self.btn_tool_bot.GetId(), False)
 
         self.tool_bar.EnableTool(self.btn_tool_unblock_interface.GetId(), False)
@@ -636,10 +635,10 @@ class Window(wx.Frame):
         # Активируем кнопки в тулбаре
         self.tool_bar.EnableTool(self.btn_tool_log.GetId(), True)
         self.tool_bar.EnableTool(self.btn_tool_timer.GetId(), True)
-        self.tool_bar.EnableTool(self.btn_tool_monitor.GetId(), True)
+        # self.tool_bar.EnableTool(self.btn_tool_monitor.GetId(), True)
         self.tool_bar.EnableTool(self.btn_tool_clear_data.GetId(), True)
         self.tool_bar.EnableTool(self.btn_tool_run_unblock_usr.GetId(), True)
-        self.tool_bar.EnableTool(self.btn_tool_info.GetId(), True)
+        # self.tool_bar.EnableTool(self.btn_tool_info.GetId(), True)
         self.tool_bar.EnableTool(self.btn_tool_bot.GetId(), True)
         self.tool_bar.EnableTool(self.btn_tool_unblock_interface.GetId(), True)
         self.tool_bar.EnableTool(self.btn_tool_block_interface.GetId(), True)
@@ -677,18 +676,18 @@ class Window(wx.Frame):
             # Записываем лог
             self.log_error(f"{path_timer_exe}\n{str(e)}")
 
-    def on_run_monitor(self, event):
-        """Запуск программы мониторинга """
-        try:
-            # Запускаем .exe файл через subprocess
-            subprocess.Popen([path_monitor_exe])
-            function.show_message_with_auto_close(_("Мониторинг запущен"), _("Запуск"))
-            function.send_bot_telegram_message(_("Программа мониторинга запущена в фоновом режиме"))
-        except Exception as e:
-            # Выводим сообщение об ошибке, если не удалось запустить приложение
-            function.show_message_with_auto_close(f"{path_monitor_exe}\n{str(e)}", _("Ошибка"))
-            # Записываем лог
-            self.log_error(f"{path_monitor_exe}\n{str(e)}")
+    # def on_run_monitor(self, event):
+    #     """Запуск программы мониторинга """
+    #     try:
+    #         # Запускаем .exe файл через subprocess
+    #         subprocess.Popen([path_monitor_exe])
+    #         function.show_message_with_auto_close(_("Мониторинг запущен"), _("Запуск"))
+    #         function.send_bot_telegram_message(_("Программа мониторинга запущена в фоновом режиме"))
+    #     except Exception as e:
+    #         # Выводим сообщение об ошибке, если не удалось запустить приложение
+    #         function.show_message_with_auto_close(f"{path_monitor_exe}\n{str(e)}", _("Ошибка"))
+    #         # Записываем лог
+    #         self.log_error(f"{path_monitor_exe}\n{str(e)}")
 
     def on_run_unblock(self, event):
         """Запуск программы для разблокировки пользователя"""

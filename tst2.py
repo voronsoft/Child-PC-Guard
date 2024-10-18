@@ -1,92 +1,90 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
-import sys
-
 import wx
-import os
-import gettext
+import wx.html
 import function
+import config_localization
+
+# Подключаем локализацию
+_ = config_localization.setup_locale(function.read_data_json("language"))
 
 
-class ErrorWindow(wx.Frame):
-    def __init__(self, parent, title, lang_code='ru'):
-        super(ErrorWindow, self).__init__(parent, title=title, size=(400, 200))
+###########################################################################
+## Class DocWindow
+## Класс окна для документации
+###########################################################################
 
-        # Устанавливаем язык
-        self.set_language(lang_code)
+class DocWindow(wx.Dialog):
 
-        # Панель и текст
-        panel = wx.Panel(self)
-        sizer = wx.BoxSizer(wx.VERTICAL)
+    def __init__(self, parent):
+        wx.Dialog.__init__(self,
+                           parent,
+                           id=wx.ID_ANY,
+                           title=_("Документация"),
+                           pos=wx.DefaultPosition,
+                           size=(700, 500),
+                           style=wx.DEFAULT_DIALOG_STYLE
+                           )
 
-        # Текст выводится большими буквами
-        self.text = wx.StaticText(panel, label=_("Блокировка интерфейса").upper(), style=wx.ALIGN_CENTER)
-        font = wx.Font(18, wx.DEFAULT, wx.NORMAL, wx.BOLD)
-        self.text.SetFont(font)
-        sizer.Add(self.text, 1, wx.EXPAND | wx.ALL, 20)
+        self.SetSizeHints(wx.DefaultSize, wx.DefaultSize)
+        self.SetFont(wx.Font(12, wx.FONTFAMILY_SWISS, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, "Segoe UI"))
+        self.SetBackgroundColour(wx.SystemSettings.GetColour(wx.SYS_COLOUR_BTNHIGHLIGHT))
 
-        # Кнопки переключения языков
-        btn_sizer = wx.BoxSizer(wx.HORIZONTAL)
-        ru_btn = wx.Button(panel, label="Русский")
-        en_btn = wx.Button(panel, label="English")
-        uk_btn = wx.Button(panel, label="Українська")
+        # Создаем HtmlWindow для отображения документации
+        self.html_win = wx.html.HtmlWindow(self, size=(700, 450))
 
-        # Добавляем кнопки в горизонтальный бокс-сайзер
-        btn_sizer.Add(ru_btn, 1, wx.EXPAND | wx.ALL, 5)
-        btn_sizer.Add(en_btn, 1, wx.EXPAND | wx.ALL, 5)
-        btn_sizer.Add(uk_btn, 1, wx.EXPAND | wx.ALL, 5)
-
-        # Добавляем кнопки в основной сайзер
-        sizer.Add(btn_sizer, 0, wx.ALIGN_CENTER)
-        panel.SetSizer(sizer)
-
-        # Обработчики событий для кнопок
-        ru_btn.Bind(wx.EVT_BUTTON, lambda event: self.update_language('ru'))
-        en_btn.Bind(wx.EVT_BUTTON, lambda event: self.update_language('en'))
-        uk_btn.Bind(wx.EVT_BUTTON, lambda event: self.update_language('uk'))
-
-        self.Centre()  # Центрируем окно на экране
-        self.Show()  # Показываем окно
-
-    def set_language(self, lang_code):
+        # HTML-контент
+        html_content = """
+        <html>
+            <head>
+                <title>Документация</title>
+                <style>
+                    body { font-family: 'Segoe UI'; font-size: 12px; }
+                    h1 { color: #333; }
+                    h2 { color: #007acc; }
+                    ul { list-style-type: disc; }
+                    li { margin: 5px 0; }
+                </style>
+            </head>
+            <body>
+                <h1>Описание программы</h1>
+                <p>Эта программа предназначена для управления детскими компьютерами.</p>
+                <h2>Основные функции:</h2>
+                <ul>
+                    <li>Мониторинг активности</li>
+                    <li>Ограничение времени использования</li>
+                    <li>Удаленный доступ</li>
+                </ul>
+                <p>Вы можете изменить настройки в меню.</p>
+                <h2>Примечание:</h2>
+                <p>Не забудьте сохранить изменения перед выходом из программы.</p>
+            </body>
+        </html>
         """
-        Устанавливает язык для локализации
-        """
-        # Путь к папке - locale
-        locale_dir = os.path.join(os.getcwd(), 'locale')
-        print("locale_dir ", locale_dir)
 
-        # Загружаем переводы для указанного языка
-        lang = gettext.translation('messages', localedir=locale_dir, languages=[lang_code])
-        lang.install()  # Устанавливаем переводы
-        global _  # Глобальная переменная для использования перевода
-        _ = lang.gettext  # Присваиваем gettext метод для использования
+        # Устанавливаем HTML-контент
+        self.html_win.SetPage(html_content)
 
-    def update_language(self, lang_code):
-        """
-        Обновление языка и текста
-        """
-        self.set_language(lang_code)  # Устанавливаем новый язык
-        self.text.SetLabel(_("Блокировка интерфейса").upper())  # Обновляем текст
-        self.Layout()  # Перерисовываем окно
-        function.update_data_json("language", lang_code)  # Сохраняем выбранный язык
+        sizer_main = wx.BoxSizer(wx.VERTICAL)
+        sizer_main.Add(self.html_win, 1, wx.ALL | wx.EXPAND, 5)
 
+        self.SetSizer(sizer_main)
+        self.Layout()
+        sizer_main.Fit(self)
 
-def main():
-    app = wx.App(False)
-    # Получаем язык, если он существует, иначе по умолчанию 'ru'
-    lang_code = function.read_data_json("language")
-    # Создаем окно с выбранным языком
-    frame = ErrorWindow(None, "Локализация ошибки", lang_code)
-    app.MainLoop()  # Запускаем главный цикл приложения
+        self.Centre(wx.BOTH)
+
+        # Подключаемые события в программе ---------------
+        self.Bind(wx.EVT_CLOSE, self.on_close)  # Событие закрытия окна
+
+    # Обработчики событий
+    def on_close(self, event):
+        """Обработчик закрытия программы"""
+        self.Destroy()
 
 
+# Основная секция для запуска программы
 if __name__ == '__main__':
-    main()
-
-
-
-
-
-
-
+    app = wx.App(False)
+    doc_app = DocWindow(None)
+    doc_app.Show()
+    app.MainLoop()

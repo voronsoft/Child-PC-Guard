@@ -174,8 +174,8 @@ def main_run_monitor():
     # scheduler.add_job(check_and_restart_program, 'interval', seconds=10)  # Отключить после разработки
 
     # Задача 2: Следить за датой и обновлять данные (каждый 1 час)
-    scheduler.add_job(update_data, 'interval', hours=1)  # TODO Включить в момент релиза
-    # scheduler.add_job(update_data, 'interval', seconds=10)  # Отключить после разработки
+    # scheduler.add_job(update_data, 'interval', hours=1)  # TODO Включить в момент релиза
+    scheduler.add_job(update_data, 'interval', seconds=10)  # Отключить после разработки
 
     try:
         print("Запуск заданий")
