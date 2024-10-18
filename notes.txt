@@ -6,6 +6,8 @@ pyinstaller app_lock_unlock_usr.spec   Снятие блокировки с по
 pyinstaller app_monitor.spec           Мониторинг работы "Основного приложения"
 pyinstaller app_tg_bot.spec            Бот telegram
 pyinstaller app_timer.spec             Таймер времени до начала блокировки.
+pyinstaller app_uninstaller.spec       Деинсталлятор приложения
+
 --------------------------------------------------------------------------------------
 
 --------------------------------------------------------------------------------------

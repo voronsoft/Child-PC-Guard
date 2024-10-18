@@ -19,15 +19,16 @@ SolidCompression=yes
 DisableDirPage=yes
 ; Отключить страницу выбора группы программ
 DisableProgramGroupPage=yes
+; Отключение стандартного деинсталлятора
+Uninstallable=no
 ; Имя для деинсталлятора (Будет отображаться в апплете панели управления "Удаление или изменение программы". )
-UninstallDisplayName=CPG uninstall
+UninstallDisplayName=Uninstaller CPG
 ; Иконка деинсталлятора в панели управления (Будет отображаться в апплете панели управления "Удаление или изменение программы".)
 UninstallDisplayIcon={app}\img\uninstall.ico
 PrivilegesRequired=admin
 
 ; Включение диалога выбора языка
 ShowLanguageDialog=yes
-;LanguageDetectionMethod=none
 
 [Languages]
 Name: "en"; MessagesFile: "compiler:Default.isl"
@@ -46,6 +47,7 @@ Source: "Child PC Unlock User.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "Windows CPG Monitor.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "add_task_schedule.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "run_bot_telegram.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "UNinstallerCPG.exe"; DestDir: "{app}"; Flags: ignoreversion
 
 ; Копирование папки img в папку с приложениями (и всем содержимым)
 Source: "img\*"; DestDir: "{app}\img"; Flags: ignoreversion recursesubdirs createallsubdirs
@@ -55,13 +57,6 @@ Source: "data.json"; DestDir: "{commonappdata}\Child PC Guard Data"; Flags: igno
 Source: "log_chpcgu.txt"; DestDir: "{commonappdata}\Child PC Guard Data"; Flags: ignoreversion; Permissions: "everyone-full"
 ; Копируем install_info.txt с правами на изменение (файл находится на одном уровне с .iss)
 Source: "install_info.txt"; DestDir: "{commonappdata}\Child PC Guard Data"; Flags: ignoreversion; Permissions: "everyone-full"
-
-[Registry]
-; Удаление записи пароля из реестра (при запуске деинсталлятора программы) - "HKLM\SOFTWARE\CPG_Password"
-; Удаление ключа реестра при деинсталляции для 64-разрядной системы
-Root: HKLM64; Subkey: "SOFTWARE\CPG_Password"; Flags: uninsdeletekey
-; Удаление ключа реестра при деинсталляции для 32-разрядной системы
-Root: HKLM32; Subkey: "SOFTWARE\CPG_Password"; Flags: uninsdeletekey
 
 [Icons]
 ; Создание ярлыков в меню "Пуск" в общей папке для всех пользователей - (C:\ProgramData\Microsoft\Windows\Start Menu\Programs\)
@@ -80,16 +75,24 @@ Name: "{commondesktop}\Child PC Guard"; Filename: "{app}\Child PC Guard.exe"; Wo
 Filename: "{app}\add_task_schedule.exe"; Flags: waituntilterminated
 
 [UninstallRun]
-; Удаление задачи - 'Start CPG Monitor', через CMD из планировщика заданий (для деинсталлятора)
-Filename: "{cmd}"; Parameters: "/C schtasks /Delete /TN ""Start CPG Monitor"" /F"; Flags: runhidden; RunOnceId: "RemoveTaskCPGMonitor"
-[UninstallDelete]
-; Удаление файлов внутри папки
-Type: files; Name: "{commonappdata}\Child PC Guard Data\*"
-; Удаление самой папки
-Type: dirifempty; Name: "{commonappdata}\Child PC Guard Data"
+; Указание на деинсталлятор
+Filename: "{app}\UNinstallerCPG.exe"; RunOnceId: "UninstallerCPG"
 
 ; Код выполняет запись в файл (install_info.txt) пути установки программы для последующего считывания приложением
 [Code]
+function AppRunning(AppName: string): Boolean;
+var
+  ResultCode: Integer;
+begin
+  Result := false;
+  // Запускаем команду tasklist для проверки наличия процесса в списке запущенных
+  if Exec(ExpandConstant('{cmd}'), '/C tasklist /FI "IMAGENAME eq ' + AppName + '"', '', SW_HIDE, ewWaitUntilTerminated, ResultCode) then
+  begin
+    // Если процесс найден, результат не равен 0, значит, он запущен
+    Result := ResultCode = 0;
+  end;
+end;
+
 procedure UpdateInstallInfoFile;
 var
   // Переменная для хранения пути к файлу install_info.txt
