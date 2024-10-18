@@ -22,9 +22,9 @@ DisableProgramGroupPage=yes
 ; Отключение стандартного деинсталлятора
 Uninstallable=no
 ; Имя для деинсталлятора (Будет отображаться в апплете панели управления "Удаление или изменение программы". )
-UninstallDisplayName=Uninstaller CPG
+;UninstallDisplayName=Uninstaller CPG
 ; Иконка деинсталлятора в панели управления (Будет отображаться в апплете панели управления "Удаление или изменение программы".)
-UninstallDisplayIcon={app}\img\uninstall.ico
+;UninstallDisplayIcon={app}\img\uninstall.ico
 PrivilegesRequired=admin
 
 ; Включение диалога выбора языка

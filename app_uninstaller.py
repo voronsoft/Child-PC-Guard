@@ -179,6 +179,37 @@ def delete_folder_and_contents(folder_path=r"C:\Program Files (x86)\Child PC Gua
         print(f"Ошибка при удалении папки '{folder_path}': {e}")
 
 
+# Функция удаления самого деинсталлятора и папки расположения
+def create_cleanup_script(executable_path, folder_to_delete):
+    """Создаёт временный скрипт для удаления деинсталлятора и его папки."""
+    cleanup_script_path = os.path.join(os.path.dirname(executable_path), 'cleanup_script.py')
+
+    with open(cleanup_script_path, 'w') as f:
+        f.write(f"""
+        import os
+        import time
+        
+        # Пауза, чтобы убедиться, что процесс деинсталляции завершился
+        time.sleep(1)
+        
+        # Удаляем исполняемый файл
+        try:
+            os.remove(r'{executable_path}')
+            print(f'Файл {executable_path} удалён.')
+        except Exception:
+            print(f'1 Ошибка при удалении файла {executable_path}')
+        
+        # Удаляем папку, если она пустая
+        try:
+            os.rmdir(r'{folder_to_delete}')
+            print(f'Папка {folder_to_delete} успешно удалена.')
+        except Exception:
+            print(f'2 Ошибка при удалении папки {folder_to_delete}')"""
+                )
+
+    return cleanup_script_path
+
+
 def uninstaller():
     # Перезапуск деинсталлятора с правами администратора
     run_as_admin()
@@ -225,6 +256,12 @@ def uninstaller():
 
     # Удаляем папку приложения
     delete_folder_and_contents()
+
+    # Создаём временный скрипт для удаления самого деинсталлятора и папки
+    cleanup_script_path = create_cleanup_script(sys.executable, os.path.dirname(sys.executable))
+
+    # Запускаем временный скрипт
+    subprocess.Popen(['python', cleanup_script_path], shell=True)
 
 
 if __name__ == '__main__':
