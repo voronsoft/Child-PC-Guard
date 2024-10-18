@@ -92,6 +92,26 @@ def delete_registry_key(key_path=r"SOFTWARE\CPG_Password"):
         print(f"Ошибка при удалении ключа реестра '{key_path}': {e}")
 
 
+# Функция удаления записи с реестра Об инсталляторе
+def remove_specific_registry_key():
+    # Путь к ключу реестра и имя удаляемого подключа
+    key_path = r"SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall"
+    subkey_name = "Child PC Guard Suite_is1"
+
+    try:
+        # Открываем ключ реестра по указанному пути
+        with winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, key_path, 0, winreg.KEY_ALL_ACCESS) as key:
+            # Удаляем подключ по его имени
+            winreg.DeleteKey(key, subkey_name)
+            print(f'Запись "{subkey_name}" успешно удалена из реестра.')
+    except FileNotFoundError:
+        print(f'Запись "{subkey_name}" не найдена.')
+    except PermissionError:
+        print(f'Недостаточно прав для удаления записи. Запустите скрипт от имени администратора.')
+    except Exception as e:
+        print(f'Произошла ошибка при удалении записи: {e}')
+
+
 # Функция удаления задания из планировщика задач
 def delete_task(task_name=r"Start CPG Monitor"):
     try:
@@ -176,38 +196,7 @@ def delete_folder_and_contents(folder_path=r"C:\Program Files (x86)\Child PC Gua
         else:
             print(f"Папка '{folder_path}' не найдена.")
     except Exception as e:
-        print(f"Ошибка при удалении папки '{folder_path}': {e}")
-
-
-# Функция удаления самого деинсталлятора и папки расположения
-def create_cleanup_script(executable_path, folder_to_delete):
-    """Создаёт временный скрипт для удаления деинсталлятора и его папки."""
-    cleanup_script_path = os.path.join(os.path.dirname(executable_path), 'cleanup_script.py')
-
-    with open(cleanup_script_path, 'w') as f:
-        f.write(f"""
-        import os
-        import time
-        
-        # Пауза, чтобы убедиться, что процесс деинсталляции завершился
-        time.sleep(1)
-        
-        # Удаляем исполняемый файл
-        try:
-            os.remove(r'{executable_path}')
-            print(f'Файл {executable_path} удалён.')
-        except Exception:
-            print(f'1 Ошибка при удалении файла {executable_path}')
-        
-        # Удаляем папку, если она пустая
-        try:
-            os.rmdir(r'{folder_to_delete}')
-            print(f'Папка {folder_to_delete} успешно удалена.')
-        except Exception:
-            print(f'2 Ошибка при удалении папки {folder_to_delete}')"""
-                )
-
-    return cleanup_script_path
+        print(f"Ошибка при удалении папки '{folder_path}': {e}\n")
 
 
 def uninstaller():
@@ -219,6 +208,9 @@ def uninstaller():
 
     # Удаление записи с реестра
     delete_registry_key("SOFTWARE\\CPG_Password")
+
+    # Удаление записи с реестра Об инсталляторе
+    remove_specific_registry_key()
 
     # Вызов функции для удаления всех ярлыков
     delete_all_shortcuts()
@@ -256,12 +248,6 @@ def uninstaller():
 
     # Удаляем папку приложения
     delete_folder_and_contents()
-
-    # Создаём временный скрипт для удаления самого деинсталлятора и папки
-    cleanup_script_path = create_cleanup_script(sys.executable, os.path.dirname(sys.executable))
-
-    # Запускаем временный скрипт
-    subprocess.Popen(['python', cleanup_script_path], shell=True)
 
 
 if __name__ == '__main__':

@@ -47,7 +47,7 @@ Source: "Child PC Unlock User.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "Windows CPG Monitor.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "add_task_schedule.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "run_bot_telegram.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "UNinstallerCPG.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "unins000.exe"; DestDir: "{app}"; Flags: ignoreversion
 
 ; Копирование папки img в папку с приложениями (и всем содержимым)
 Source: "img\*"; DestDir: "{app}\img"; Flags: ignoreversion recursesubdirs createallsubdirs
