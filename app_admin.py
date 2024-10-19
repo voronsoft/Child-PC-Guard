@@ -7,6 +7,7 @@ import ctypes
 import function
 import subprocess
 import config_localization
+import app_wind_documentation
 import app_wnd_input_first_pass
 from app_wind_pass import WndPass
 from app_wind_bot import BotWindow
@@ -832,7 +833,6 @@ def main_app():
 
     # Получаем пользователей системы
     user_list_os = function.get_users()
-    print(user_list_os, len(user_list_os))
     if len(user_list_os) <= 1:
         # Выводим окно предупреждения, что в системе должно быть как минимум 2 пользователя
         # (1 админ 1 пользователь/админ)
@@ -850,10 +850,14 @@ def main_app():
         ctypes.windll.kernel32.CloseHandle(mutex)  # Закрываем дескриптор мьютекса
         sys.exit(0)
 
-    # Если пароля нет в реестре, то запускаем приложение как в первый раз
-    # с вводом будущего пароля для приложения
+    # Если пароля нет в реестре, то запускаем приложение как в первый раз с вводом будущего пароля для приложения
     if not password_from_registry:
+        print(121212111)
+        # Выводим описание о программе
+        app_wind_documentation.run_wind_doc()
+        # Вывод окна для настройки приложения
         app_wnd_input_first_pass.main()
+        # Вывод заставки программы
         main_splash()
 
     # Запускаем приложение бота
