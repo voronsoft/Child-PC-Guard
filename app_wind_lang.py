@@ -9,8 +9,9 @@
 
 import wx
 import wx.xrc
-import function
+
 import config_localization
+import function
 
 # Подключаем локализацию
 _ = config_localization.setup_locale(function.read_data_json("language"))

@@ -2,19 +2,22 @@
 # Следит за запуском и перезапускает приложения если оно было закрыто.
 # Обновляет дату каждый день в файле данных приложения Child PC Guard.exe и добавляет пользователю 2 часа.
 
-import os
-import json
-import time
 import ctypes
+import json
+import os
+import time
+import traceback
+from datetime import datetime
 from pprint import pprint
 
 import psutil
-import traceback
-import config_localization
-from datetime import datetime
 from apscheduler.schedulers.blocking import BlockingScheduler
-from config_app import PATH_DATA_FILE, PATH_LOG_FILE, path_main_app, path_bot_tg_exe
-from function import run_as_admin, show_message_with_auto_close, send_bot_telegram_message, read_data_json
+
+import config_localization
+from config_app import (PATH_DATA_FILE, PATH_LOG_FILE, path_bot_tg_exe,
+                        path_main_app)
+from function import (read_data_json, run_as_admin, send_bot_telegram_message,
+                      show_message_with_auto_close)
 
 # Подключаем локализацию
 _ = config_localization.setup_locale(read_data_json("language"))

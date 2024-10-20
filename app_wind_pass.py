@@ -1,9 +1,12 @@
 import os
+
 import wx
 import wx.xrc
+
 import config_localization
 from config_app import FOLDER_IMG
-from function import get_password_from_registry, check_password, read_data_json, send_bot_telegram_message
+from function import (check_password, get_password_from_registry,
+                      read_data_json, send_bot_telegram_message)
 
 # Подключаем локализацию
 _ = config_localization.setup_locale(read_data_json("language"))

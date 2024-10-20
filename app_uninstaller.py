@@ -1,11 +1,12 @@
+import ctypes
 import os
+import shutil
+import subprocess
 import sys
 import time
-import ctypes
-import shutil
-import psutil
 import winreg
-import subprocess
+
+import psutil
 
 
 def is_admin():

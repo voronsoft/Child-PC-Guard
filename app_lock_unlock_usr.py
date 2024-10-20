@@ -1,12 +1,14 @@
-import os
-import wx
-import time
-import wx.xrc
 import ctypes
-import function
+import os
+import time
+
+import wx
+import wx.xrc
+
 import config_localization
-from function import unblock_user, show_message_with_auto_close, read_data_json
+import function
 from config_app import FOLDER_IMG, PATH_LOG_FILE
+from function import read_data_json, show_message_with_auto_close, unblock_user
 
 # Подключаем локализацию
 _ = config_localization.setup_locale(read_data_json("language"))

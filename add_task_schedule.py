@@ -1,11 +1,11 @@
 # Файл отвечает за автоматизацию процесса добавления задания (для запуска мониторинга за программой Child PC Guard),
 # в планировщике заданий.
 #
+import ctypes
 import os
+import subprocess
 import sys
 import time
-import ctypes
-import subprocess
 
 # Определяем корневую папку проекта
 PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))

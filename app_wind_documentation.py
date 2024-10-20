@@ -6,14 +6,16 @@
 ## PLEASE DO *NOT* EDIT THIS FILE!
 ###########################################################################
 import os
+
 import wx
-import wx.xrc
 import wx.html2
-import function
 import wx.richtext
+import wx.xrc
+
 import config_localization
+import function
 from config_app import FOLDER_IMG
-from lang_doc_text import ru_html_content, uk_html_content, en_html_content
+from lang_doc_text import en_html_content, ru_html_content, uk_html_content
 
 # Подключаем локализацию
 _ = config_localization.setup_locale(function.read_data_json("language"))

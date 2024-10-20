@@ -1,12 +1,18 @@
-import os
-import wx
-import time
+"""
+Этот модуль отвечает за работу таймера в приложении.
+"""
 import ctypes
-import wx.xrc
+import os
 import threading
+import time
+
+import wx
+import wx.xrc
+
 import config_app
 import config_localization
-from function import read_data_json, function_to_create_path_data_files, show_message_with_auto_close
+from function import (function_to_create_path_data_files, read_data_json,
+                      show_message_with_auto_close)
 
 # Подключаем локализацию
 _ = config_localization.setup_locale(read_data_json("language"))
@@ -16,11 +22,12 @@ MUTEX_NAME_CPGT = "Global\\Child_PC_Timer"
 
 
 ###########################################################################
-## Class TimerApp
-## Класс окна Таймера для пользователя
+# Class TimerApp
+# Класс окна Таймера для пользователя
 ###########################################################################
 
 class TimerApp(wx.Frame):
+    """Класс окна Таймера для пользователя"""
     def __init__(self, parent):
         wx.Frame.__init__(self,
                           parent,
@@ -87,12 +94,13 @@ class TimerApp(wx.Frame):
                 self.time_label.SetLabel(self.seconds_to_hms(remaining_time))
                 self.Layout()
             elif remaining_time == 0:
-                self.time_label.SetLabel(_(f"Выключен"))
+                self.time_label.SetLabel(_("Выключен"))
         else:
             self.time_label.SetLabel("ERROR")
             self.timer.Stop()
             wx.CallAfter(wx.MessageBox,
-                         _("Ошибка считывания времени.\nТаймер будет закрыт.\nПовторный запуск таймера может исправить проблему"
+                         _("Ошибка считывания времени.\nТаймер будет закрыт.\n"
+                           "Повторный запуск таймера может исправить проблему"
                            ),
                          _("ОШИБКА"),
                          wx.OK | wx.ICON_ERROR
@@ -107,11 +115,9 @@ class TimerApp(wx.Frame):
         """Цикл обновления времени в фоновом потоке"""
         while True:
             if self.time_label.GetLabel() == "ERROR":
-                print("Остановлен цикл", self.time_label.GetLabel())
                 break
-            else:
-                wx.CallAfter(self.update_time, None)
-                time.sleep(1)
+            wx.CallAfter(self.update_time, None)
+            time.sleep(1)
 
     def seconds_to_hms(self, seconds):
         """
@@ -143,6 +149,7 @@ class TimerApp(wx.Frame):
 
 
 def main():
+    """Запуск приложения"""
     # ------- Проверка кода ошибки -------
     # Создание мьютекса
     mutex = ctypes.windll.kernel32.CreateMutexW(None, False, MUTEX_NAME_CPGT)

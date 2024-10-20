@@ -1,8 +1,10 @@
 import os
-import wx
 import random
-import function
+
+import wx
+
 import config_localization
+import function
 from config_app import SCREENSAVER1, SCREENSAVER2
 
 # Подключаем локализацию

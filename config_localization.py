@@ -1,5 +1,5 @@
-import os
 import gettext
+import os
 
 # Получаем путь к каталогу с переводами (locale)
 LOCALE_PATH = os.path.join(os.path.dirname(__file__), 'locale')

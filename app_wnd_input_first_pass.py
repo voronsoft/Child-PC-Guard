@@ -1,8 +1,10 @@
 import os
+
 import wx
 import wx.xrc
-import function
+
 import config_localization
+import function
 from config_app import FOLDER_IMG
 
 # Подключаем локализацию

@@ -1,16 +1,20 @@
-import os
-import sys
-import time
-import json
-import hmac
-import psutil
-import winreg
 import ctypes
 import hashlib
-import requests
-import threading
+import hmac
+import json
+import os
 import subprocess
-from config_app import FOLDER_DATA, PATH_DATA_FILE, PATH_LOG_FILE, PATH_INSTALL_INFO_FILE, SECRET_KEY, DISK_LETTER, path_bot_tg_exe
+import sys
+import threading
+import time
+import winreg
+
+import psutil
+import requests
+
+from config_app import (DISK_LETTER, FOLDER_DATA, PATH_DATA_FILE,
+                        PATH_INSTALL_INFO_FILE, PATH_LOG_FILE, SECRET_KEY,
+                        path_bot_tg_exe)
 
 FOLDER_DATA_PRGM_DATA = os.path.join(os.environ.get('PROGRAMDATA'), "Child PC Guard Data")
 PATH_DATA_FILE_PRGM_DATA = os.path.join(FOLDER_DATA_PRGM_DATA, "data.json")

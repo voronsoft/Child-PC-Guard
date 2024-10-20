@@ -1,22 +1,25 @@
+import ctypes
 import os
-import wx
+import subprocess
 import sys
 import time
+
+import wx
 import wx.xrc
-import ctypes
-import function
-import subprocess
-import config_localization
+
 import app_wind_documentation
 import app_wnd_input_first_pass
-from app_wind_pass import WndPass
+import config_localization
+import function
 from app_wind_bot import BotWindow
-from app_wind_lang import LanguageWnd
-from app_wind_tray_icon import TrayIcon
-from app_wind_exit_prog import WndCloseApp
 from app_wind_documentation import DocWindow
+from app_wind_exit_prog import WndCloseApp
+from app_wind_lang import LanguageWnd
+from app_wind_pass import WndPass
 from app_wind_splash_screen import main_splash
-from config_app import FOLDER_IMG, path_timer_exe, path_monitor_exe, path_unblock_usr_exe, PATH_LOG_FILE
+from app_wind_tray_icon import TrayIcon
+from config_app import (FOLDER_IMG, PATH_LOG_FILE, path_timer_exe,
+                        path_unblock_usr_exe)
 
 # Подключаем локализацию
 _ = config_localization.setup_locale(function.read_data_json("language"))

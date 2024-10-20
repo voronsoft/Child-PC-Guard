@@ -1,10 +1,12 @@
 import os
-import wx
-import time
-import wx.xrc
-import function
 import subprocess
+import time
+
+import wx
+import wx.xrc
+
 import config_localization
+import function
 from config_app import FOLDER_IMG, PATH_LOG_FILE, path_bot_tg_exe
 
 # Подключаем локализацию
