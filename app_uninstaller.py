@@ -30,13 +30,13 @@ def run_as_admin():
         # Перезапускаем с запросом прав администратора
         try:
             ctypes.windll.shell32.ShellExecuteW(
-                    None,
-                    "runas",
-                    sys.executable,
-                    ' '.join([f'"{arg}"' for arg in sys.argv]),
-                    None,
-                    # TODO отобразить окно консоли или скрыть
-                    1  # 1-отобразить консоль \ 0-скрыть консоль
+                None,
+                "runas",
+                sys.executable,
+                " ".join([f'"{arg}"' for arg in sys.argv]),
+                None,
+                # TODO отобразить окно консоли или скрыть
+                1,  # 1-отобразить консоль \ 0-скрыть консоль
             )
             sys.exit()  # Завершаем текущий процесс, чтобы предотвратить двойной запуск
         except Exception as e:
@@ -47,10 +47,10 @@ def run_as_admin():
 def kill_process(process_name):
     try:
         # Проверяем, активен ли процесс
-        for proc in psutil.process_iter(['name']):
-            if proc.info['name'] == process_name:
+        for proc in psutil.process_iter(["name"]):
+            if proc.info["name"] == process_name:
                 # Завершаем процесс принудительно
-                subprocess.run(['taskkill', '/F', '/IM', process_name], check=True, shell=True)
+                subprocess.run(["taskkill", "/F", "/IM", process_name], check=True, shell=True)
                 print(f"Процесс {process_name} завершён.\n")
                 return True
         print(f"Процесс {process_name} не найден.")
@@ -88,14 +88,16 @@ def delete_registry_key(key_path=r"SOFTWARE\CPG_Password"):
     except FileNotFoundError:
         print(f"Ключ реестра '{key_path}' не найден.\n")
     except PermissionError:
-        print(f"Недостаточно прав для удаления ключа '{key_path}'. Попробуйте запустить скрипт с правами администратора.")
+        print(
+            f"Недостаточно прав для удаления ключа '{key_path}'. Попробуйте запустить скрипт с правами администратора."
+        )
     except Exception as e:
         print(f"Ошибка при удалении ключа реестра '{key_path}': {e}")
 
 
 # Функция удаления записи с реестра Об инсталляторе
 def remove_specific_registry_key():
-    # Путь к ключу реестра и имя удаляемого подключа
+    # Путь к ключу реестра и имя удаляемого ключа
     key_path = r"SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall"
     subkey_name = "Child PC Guard Suite_is1"
 
@@ -108,9 +110,9 @@ def remove_specific_registry_key():
     except FileNotFoundError:
         print(f'Запись "{subkey_name}" не найдена.')
     except PermissionError:
-        print(f'Недостаточно прав для удаления записи. Запустите скрипт от имени администратора.')
+        print(f"Недостаточно прав для удаления записи. Запустите скрипт от имени администратора.")
     except Exception as e:
-        print(f'Произошла ошибка при удалении записи: {e}')
+        print(f"Произошла ошибка при удалении записи: {e}")
 
 
 # Функция удаления задания из планировщика задач
@@ -128,17 +130,17 @@ def delete_all_shortcuts():
     try:
         # Список ярлыков из меню "Пуск"
         start_menu_shortcuts = [
-                r"C:\ProgramData\Microsoft\Windows\Start Menu\Programs\Child PC Guard\Child PC Guard.lnk",
-                r"C:\ProgramData\Microsoft\Windows\Start Menu\Programs\Child PC Guard\Child PC Timer.lnk",
-                r"C:\ProgramData\Microsoft\Windows\Start Menu\Programs\Child PC Guard\Child PC Unlock User.lnk",
-                r"C:\ProgramData\Microsoft\Windows\Start Menu\Programs\Child PC Guard\Child PC Monitor.lnk",
-                r"C:\ProgramData\Microsoft\Windows\Start Menu\Programs\Child PC Guard\Logs Child PC Guard.lnk"
+            r"C:\ProgramData\Microsoft\Windows\Start Menu\Programs\Child PC Guard\Child PC Guard.lnk",
+            r"C:\ProgramData\Microsoft\Windows\Start Menu\Programs\Child PC Guard\Child PC Timer.lnk",
+            r"C:\ProgramData\Microsoft\Windows\Start Menu\Programs\Child PC Guard\Child PC Unlock User.lnk",
+            r"C:\ProgramData\Microsoft\Windows\Start Menu\Programs\Child PC Guard\Child PC Monitor.lnk",
+            r"C:\ProgramData\Microsoft\Windows\Start Menu\Programs\Child PC Guard\Logs Child PC Guard.lnk",
         ]
 
         # Список ярлыков с рабочего стола
         desktop_shortcuts = [
-                r"C:\Users\Public\Desktop\Child PC Timer.lnk",
-                r"C:\Users\Public\Desktop\Child PC Guard.lnk"
+            r"C:\Users\Public\Desktop\Child PC Timer.lnk",
+            r"C:\Users\Public\Desktop\Child PC Guard.lnk",
         ]
 
         # Объединяем все ярлыки в один список
@@ -219,11 +221,11 @@ def uninstaller():
     # ----------------------------------------------------
     # Список процессов и путей к исполняемым файлам
     processes = {
-            "Windows CPG Monitor.exe": r"C:\Program Files (x86)\Child PC Guard\Windows CPG Monitor.exe",
-            "Child PC Guard.exe": r"C:\Program Files (x86)\Child PC Guard\Child PC Guard.exe",
-            "run_bot_telegram.exe": r"C:\Program Files (x86)\Child PC Guard\run_bot_telegram.exe",
-            "Child PC Timer.exe": r"C:\Program Files (x86)\Child PC Guard\Child PC Timer.exe",
-            "Child PC Unlock User.exe": r"C:\Program Files (x86)\Child PC Guard\Child PC Unlock User.exe",
+        "Windows CPG Monitor.exe": r"C:\Program Files (x86)\Child PC Guard\Windows CPG Monitor.exe",
+        "Child PC Guard.exe": r"C:\Program Files (x86)\Child PC Guard\Child PC Guard.exe",
+        "run_bot_telegram.exe": r"C:\Program Files (x86)\Child PC Guard\run_bot_telegram.exe",
+        "Child PC Timer.exe": r"C:\Program Files (x86)\Child PC Guard\Child PC Timer.exe",
+        "Child PC Unlock User.exe": r"C:\Program Files (x86)\Child PC Guard\Child PC Unlock User.exe",
     }
 
     # Завершаем процессы и удаляем приложения (исполняемые файлы)
@@ -251,5 +253,5 @@ def uninstaller():
     delete_folder_and_contents()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     uninstaller()
