@@ -12,11 +12,17 @@ import winreg
 import psutil
 import requests
 
-from config_app import (DISK_LETTER, FOLDER_DATA, PATH_DATA_FILE,
-                        PATH_INSTALL_INFO_FILE, PATH_LOG_FILE, SECRET_KEY,
-                        path_bot_tg_exe)
+from config_app import (
+    DISK_LETTER,
+    FOLDER_DATA,
+    PATH_DATA_FILE,
+    PATH_INSTALL_INFO_FILE,
+    PATH_LOG_FILE,
+    SECRET_KEY,
+    path_bot_tg_exe,
+)
 
-FOLDER_DATA_PRGM_DATA = os.path.join(os.environ.get('PROGRAMDATA'), "Child PC Guard Data")
+FOLDER_DATA_PRGM_DATA = os.path.join(os.environ.get("PROGRAMDATA"), "Child PC Guard Data")
 PATH_DATA_FILE_PRGM_DATA = os.path.join(FOLDER_DATA_PRGM_DATA, "data.json")
 PATH_LOG_FILE_PRGM_DATA = os.path.join(FOLDER_DATA_PRGM_DATA, "log_chpcgu.txt")
 PATH_INSTALL_INFO_FILE_PRGM_DATA = os.path.join(FOLDER_DATA_PRGM_DATA, "install_info.txt")
@@ -32,18 +38,17 @@ PATH_INSTALL_INFO_FILE_PRGM_DATA = os.path.join(FOLDER_DATA_PRGM_DATA, "install_
 def log_error(message):
     """Метод для логирования ошибок в файл."""
     try:
-        with open(PATH_LOG_FILE, 'a', encoding='utf-8') as log_file:
-            log_file.write(f"function.py({time.strftime('%Y-%m-%d %H:%M:%S')}) -"
-                           f" {message}\n==================\n"
-                           )
+        with open(PATH_LOG_FILE, "a", encoding="utf-8") as log_file:
+            log_file.write(f"function.py({time.strftime('%Y-%m-%d %H:%M:%S')}) -" f" {message}\n==================\n")
     except Exception as e:
         print(f"Ошибка при записи лога в файл лога: {str(e)}")
-        show_message_with_auto_close(f"function.py({time.strftime('%Y-%m-%d %H:%M:%S')}) - {message}\n==================\n",
-                                     "Ошибка"
-                                     )
+        show_message_with_auto_close(
+            f"function.py({time.strftime('%Y-%m-%d %H:%M:%S')}) - {message}\n==================\n", "Ошибка"
+        )
 
 
 # -------------------------------------- END ---------------------------------
+
 
 def is_admin():
     """
@@ -66,21 +71,18 @@ def run_as_admin():
         # Перезапускаем с запросом прав администратора
         try:
             ctypes.windll.shell32.ShellExecuteW(
-                    None,
-                    "runas",
-                    sys.executable,
-                    ' '.join([f'"{arg}"' for arg in sys.argv]),
-                    None,
-                    # TODO отобразить окно консоли или скрыть
-                    1  # 1-отобразить консоль \ 0-скрыть консоль
+                None,
+                "runas",
+                sys.executable,
+                " ".join([f'"{arg}"' for arg in sys.argv]),
+                None,
+                # TODO отобразить окно консоли или скрыть
+                1,  # 1-отобразить консоль \ 0-скрыть консоль
             )
             sys.exit()  # Завершаем текущий процесс, чтобы предотвратить двойной запуск
         except Exception as e:
             log_error(f"Не удалось запустить программу с правами администратора:\n{e}")
-            show_message_with_auto_close(
-                    f"Не удалось запустить программу с правами администратора:\n{e}",
-                    "Ошибка"
-            )
+            show_message_with_auto_close(f"Не удалось запустить программу с правами администратора:\n{e}", "Ошибка")
 
 
 def read_data_json(key, file_path=PATH_DATA_FILE):
@@ -91,7 +93,7 @@ def read_data_json(key, file_path=PATH_DATA_FILE):
     :param file_path: Путь к JSON-файлу.
     """
     try:
-        with open(file_path, 'r', encoding='utf-8') as file:
+        with open(file_path, "r", encoding="utf-8") as file:
             # Получаем данные из файла
             data = json.load(file)
         return data[key]
@@ -119,7 +121,7 @@ def update_data_json(key, value, file_path=PATH_DATA_FILE):
     """
     try:
         # Читаем текущие данные из файла
-        with open(file_path, 'r', encoding='utf-8') as file:
+        with open(file_path, "r", encoding="utf-8") as file:
             data = json.load(file)  # Читаем весь JSON-объект
 
         # Обновляем значение по указанному ключу
@@ -131,7 +133,7 @@ def update_data_json(key, value, file_path=PATH_DATA_FILE):
             data[key] = str(value)
 
         # Сохраняем обновленные данные обратно в файл
-        with open(file_path, 'w', encoding='utf-8') as file:
+        with open(file_path, "w", encoding="utf-8") as file:
             json.dump(data, file, indent=4, ensure_ascii=False)
 
         return True
@@ -163,8 +165,14 @@ def get_users():
 
     # Получаем список пользователей
     res = netapi32.NetUserEnum(
-            None, 0, 0, ctypes.byref(bufptr),
-            ctypes.c_ulong(-1), ctypes.byref(entriesread), ctypes.byref(totalentries), None
+        None,
+        0,
+        0,
+        ctypes.byref(bufptr),
+        ctypes.c_ulong(-1),
+        ctypes.byref(entriesread),
+        ctypes.byref(totalentries),
+        None,
     )
 
     if res == 0:
@@ -182,11 +190,11 @@ def get_users():
 def get_block_user():
     """Получаем заблокированного пользователя"""
     # Выполняем команду для получения списка всех пользователей
-    command = 'net user'
+    command = "net user"
 
     try:
         # Выполняем команду и получаем список всех пользователей
-        result = subprocess.run(command, capture_output=True, text=True, shell=True, encoding='cp866')
+        result = subprocess.run(command, capture_output=True, text=True, shell=True, encoding="cp866")
 
         # Ищем пользователей в выводе команды
         users = get_users()
@@ -195,29 +203,26 @@ def get_block_user():
         # Проверяем каждого пользователя, активна ли его учетная запись
         for user in users:
             user_info_command = f'net user "{user}"'
-            user_info_result = subprocess.run(user_info_command,
-                                              capture_output=True,
-                                              text=True,
-                                              shell=True,
-                                              encoding='cp866'
-                                              )
+            user_info_result = subprocess.run(
+                user_info_command, capture_output=True, text=True, shell=True, encoding="cp866"
+            )
             user_info_output = user_info_result.stdout
 
-            keyword_list = ['Account active', 'Учетная запись активна', 'Обліковий запис активний']
+            keyword_list = ["Account active", "Учетная запись активна", "Обліковий запис активний"]
 
             # Ищем строку активности учетной записи для разных языков
             if any(keyword in user_info_output for keyword in keyword_list):
                 for line in user_info_output.splitlines():
                     # Проверяем для английской версии
-                    if 'Account active' in line and 'No' in line:
+                    if "Account active" in line and "No" in line:
                         disabled_users.append(user)
                         break
                     # Проверяем для русской версии
-                    elif 'Учетная запись активна' in line and 'No' in line:
+                    elif "Учетная запись активна" in line and "No" in line:
                         disabled_users.append(user)
                         break
                     # Проверяем для украинской версии
-                    elif 'Обліковий запис активний' in line and 'No' in line:
+                    elif "Обліковий запис активний" in line and "No" in line:
                         disabled_users.append(user)
                         break
         # обновляем поле с именем
@@ -236,8 +241,8 @@ def get_session_id_by_username(username: str):
     """
     try:
         # Выполняем команду `quser` и получаем её вывод
-        command = 'quser'  # Альтернатива команде `query user`
-        result = subprocess.run(command, capture_output=True, shell=True, text=True, check=True, encoding='cp866')
+        command = "quser"  # Альтернатива команде `query user`
+        result = subprocess.run(command, capture_output=True, shell=True, text=True, check=True, encoding="cp866")
 
         # Разбиваем вывод на строки и проходимся по каждой строке
         for line in result.stdout.splitlines():
@@ -301,9 +306,7 @@ def unblock_user(username):
         return True
     except Exception as e:
         log_error(f"Ошибка при разблокировке пользователя - {username}:\n{e}")
-        show_message_with_auto_close(f"Ошибка при разблокировке пользователя - {username}:\n{e}",
-                                     "Ошибка"
-                                     )
+        show_message_with_auto_close(f"Ошибка при разблокировке пользователя - {username}:\n{e}", "Ошибка")
         return False
 
 
@@ -352,11 +355,12 @@ def function_to_create_path_data_files():
         log_error(f"Создана папка: {FOLDER_DATA}")
 
         # Применяем полные права ко всем пользователям на созданную папку
-        subprocess.run(['icacls', FOLDER_DATA, '/grant', 'Everyone:F', '/T', '/C'],
-                       shell=True,
-                       stdout=subprocess.DEVNULL,
-                       stderr=subprocess.DEVNULL
-                       )
+        subprocess.run(
+            ["icacls", FOLDER_DATA, "/grant", "Everyone:F", "/T", "/C"],
+            shell=True,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+        )
         # /grant - предоставить права
         # Everyone:F - разрешить полные права для всех пользователей
         # /T - рекурсивно для всех вложенных файлов и папок
@@ -367,40 +371,41 @@ def function_to_create_path_data_files():
     # Проверяем, существует ли файл data.json. Если нет, то создаем его и записываем начальные данные.
     if not os.path.exists(PATH_DATA_FILE):
         initial_data = {
-                "username_blocking": "",
-                "remaining_time": 0,
-                "date": "0001-02-03",
-                "protected_user": "",
-                "bot_token_telegram": "7456533985:AAEGOk3VUU04Z4bk9B83kzy4MW5zem3hbYw",
-                "chat_id": 631191214,
-                "language": "uk"
+            "username_blocking": "",
+            "remaining_time": 0,
+            "date": "0001-02-03",
+            "protected_user": "",
+            "bot_token_telegram": "7456533985:AAEGOk3VUU04Z4bk9B83kzy4MW5zem3hbYw",
+            "chat_id": 631191214,
+            "language": "uk",
         }
-        with open(PATH_DATA_FILE, 'w', encoding='utf-8') as file:
+        with open(PATH_DATA_FILE, "w", encoding="utf-8") as file:
             json.dump(initial_data, file, indent=4)  # Записываем данные в формате JSON с отступами
         print(f"Создан файл: {PATH_DATA_FILE} с начальными данными")
         log_error(f"Создан файл: {PATH_DATA_FILE} с начальными данными")
 
     # Проверяем, существует ли файл log_chpcgu.txt. Если нет, то создаем его.
     if not os.path.exists(PATH_LOG_FILE):
-        with open(PATH_LOG_FILE, 'w', encoding='utf-8') as file:
+        with open(PATH_LOG_FILE, "w", encoding="utf-8") as file:
             file.write("")  # Создаем пустой лог-файл
         print(f"Создан файл: {PATH_LOG_FILE}")
         log_error(f"Создан файл: {PATH_LOG_FILE}")
 
     # Проверяем, существует ли файл install_info.txt. Если нет, то создаем его.
     if not os.path.exists(PATH_INSTALL_INFO_FILE):
-        with open(PATH_INSTALL_INFO_FILE, 'w', encoding='utf-8') as file:
+        with open(PATH_INSTALL_INFO_FILE, "w", encoding="utf-8") as file:
             file.write("")  # Создаем пустой лог-файл
         print(f"Создан файл: {PATH_INSTALL_INFO_FILE}")
         log_error(f"Создан файл: {PATH_INSTALL_INFO_FILE}")
 
     # Применяем полные права ко всем пользователям на файлы, если они уже существуют или только что были созданы.
     # Задаем доступ для всех на запись чтение изменение.
-    subprocess.run(['icacls', FOLDER_DATA, '/grant', 'Everyone:F', '/T', '/C'],
-                   shell=True,
-                   stdout=subprocess.DEVNULL,
-                   stderr=subprocess.DEVNULL
-                   )
+    subprocess.run(
+        ["icacls", FOLDER_DATA, "/grant", "Everyone:F", "/T", "/C"],
+        shell=True,
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+    )
     # print(f"Права доступа обновлены для папки и вложенных файлов: {FOLDER_DATA}")
     log_error(f"Права доступа обновлены для папки и вложенных файлов: {FOLDER_DATA}")
     #
@@ -414,11 +419,12 @@ def function_to_create_path_data_files():
         log_error(f"2Создана папка: {FOLDER_DATA_PRGM_DATA}")
 
         # Применяем полные права ко всем пользователям на созданную папку
-        subprocess.run(['icacls', FOLDER_DATA_PRGM_DATA, '/grant', 'Everyone:F', '/T', '/C'],
-                       shell=True,
-                       stdout=subprocess.DEVNULL,
-                       stderr=subprocess.DEVNULL
-                       )
+        subprocess.run(
+            ["icacls", FOLDER_DATA_PRGM_DATA, "/grant", "Everyone:F", "/T", "/C"],
+            shell=True,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+        )
         # /grant - предоставить права
         # Everyone:F - разрешить полные права для всех пользователей
         # /T - рекурсивно для всех вложенных файлов и папок
@@ -429,40 +435,41 @@ def function_to_create_path_data_files():
     # Проверяем, существует ли файл data.json. Если нет, то создаем его и записываем начальные данные.
     if not os.path.exists(PATH_DATA_FILE_PRGM_DATA):
         initial_data = {
-                "username_blocking": "",
-                "remaining_time": 0,
-                "date": "0001-02-03",
-                "protected_user": "",
-                "bot_token_telegram": "7456533985:AAEGOk3VUU04Z4bk9B83kzy4MW5zem3hbYw",
-                "chat_id": 631191214,
-                "language": "ru"
+            "username_blocking": "",
+            "remaining_time": 0,
+            "date": "0001-02-03",
+            "protected_user": "",
+            "bot_token_telegram": "7456533985:AAEGOk3VUU04Z4bk9B83kzy4MW5zem3hbYw",
+            "chat_id": 631191214,
+            "language": "ru",
         }
-        with open(PATH_DATA_FILE_PRGM_DATA, 'w', encoding='utf-8') as file:
+        with open(PATH_DATA_FILE_PRGM_DATA, "w", encoding="utf-8") as file:
             json.dump(initial_data, file, indent=4)  # Записываем данные в формате JSON с отступами
         print(f"2Создан файл: {PATH_DATA_FILE_PRGM_DATA} с начальными данными")
         log_error(f"2Создан файл: {PATH_DATA_FILE_PRGM_DATA} с начальными данными")
 
     # Проверяем, существует ли файл log_chpcgu.txt. Если нет, то создаем его.
     if not os.path.exists(PATH_LOG_FILE_PRGM_DATA):
-        with open(PATH_LOG_FILE_PRGM_DATA, 'w', encoding='utf-8') as file:
+        with open(PATH_LOG_FILE_PRGM_DATA, "w", encoding="utf-8") as file:
             file.write("")  # Создаем пустой лог-файл
         print(f"2Создан файл: {PATH_LOG_FILE_PRGM_DATA}")
         log_error(f"2Создан файл: {PATH_LOG_FILE_PRGM_DATA}")
 
     # Проверяем, существует ли файл install_info.txt. Если нет, то создаем его.
     if not os.path.exists(PATH_INSTALL_INFO_FILE_PRGM_DATA):
-        with open(PATH_INSTALL_INFO_FILE_PRGM_DATA, 'w', encoding='utf-8') as file:
+        with open(PATH_INSTALL_INFO_FILE_PRGM_DATA, "w", encoding="utf-8") as file:
             file.write("")  # Создаем пустой лог-файл
         print(f"2Создан файл: {PATH_INSTALL_INFO_FILE_PRGM_DATA}")
         log_error(f"2Создан файл: {PATH_INSTALL_INFO_FILE_PRGM_DATA}")
 
     # Применяем полные права ко всем пользователям на файлы, если они уже существуют или только что были созданы.
     # Задаем доступ для всех на запись чтение изменение.
-    subprocess.run(['icacls', FOLDER_DATA_PRGM_DATA, '/grant', 'Everyone:F', '/T', '/C'],
-                   shell=True,
-                   stdout=subprocess.DEVNULL,
-                   stderr=subprocess.DEVNULL
-                   )
+    subprocess.run(
+        ["icacls", FOLDER_DATA_PRGM_DATA, "/grant", "Everyone:F", "/T", "/C"],
+        shell=True,
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+    )
     # print(f"2 Права доступа обновлены для папки и файлов: {FOLDER_DATA_PRGM_DATA}")
     log_error(f"2Права доступа обновлены для папки и вложенных файлов: {FOLDER_DATA_PRGM_DATA}")
 
@@ -470,7 +477,7 @@ def function_to_create_path_data_files():
 def check_mode_run_app():
     """Проверяет, запущено ли приложение от имени администратора."""
     try:
-        if os.name == 'nt':
+        if os.name == "nt":
             app_is_admin = bool(ctypes.windll.shell32.IsUserAnAdmin())
             return "admin" if app_is_admin else "user"
     except:
@@ -481,10 +488,10 @@ def check_mode_run_app():
 def check_if_program_running(program_name):
     """Проверка сатуса работы программы в Windows"""
     # Получаем список всех запущенных процессов
-    for process in psutil.process_iter(['pid', 'name']):
+    for process in psutil.process_iter(["pid", "name"]):
         try:
             # Сравниваем имя процесса с искомым
-            if process.info['name'].lower() == program_name.lower():
+            if process.info["name"].lower() == program_name.lower():
                 return True
         except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
             pass
@@ -525,10 +532,10 @@ def kill_program_by_name(program_name="run_bot_telegram.exe"):
     :param program_name: Имя исполняемого файла программы (например, "example.exe").
     """
     # Проходим по всем процессам в системе
-    for proc in psutil.process_iter(['pid', 'name']):
+    for proc in psutil.process_iter(["pid", "name"]):
         try:
             # Проверяем, совпадает ли имя процесса с указанным
-            if proc.info['name'].lower() == program_name.lower():
+            if proc.info["name"].lower() == program_name.lower():
                 print(f"Закрываю процесс: {proc.info['name']} (PID: {proc.info['pid']})")
                 proc.terminate()  # Завершаем процесс
                 proc.wait()  # Ожидаем завершения процесса
@@ -540,7 +547,7 @@ def kill_program_by_name(program_name="run_bot_telegram.exe"):
 # --------------------------Работа с паролем для приложения-------------------
 def hash_password(password: str) -> str:
     """Хеширует пароль с использованием HMAC и секретного ключа."""
-    hash_psw = hmac.new(SECRET_KEY, password.encode('utf-8'), hashlib.sha256).hexdigest()
+    hash_psw = hmac.new(SECRET_KEY, password.encode("utf-8"), hashlib.sha256).hexdigest()
     return hash_psw
 
 
@@ -615,10 +622,9 @@ def delete_password_from_registry():
 
 
 # ----------------------------------- Работа с BOT telegram---------------------------
-def send_bot_telegram_message(message="Default message.",
-                              bot_token=read_data_json("bot_token_telegram"),
-                              chat_id=read_data_json("chat_id")
-                              ):
+def send_bot_telegram_message(
+    message="Default message.", bot_token=read_data_json("bot_token_telegram"), chat_id=read_data_json("chat_id")
+):
     """
     Отправляет сообщение в Telegram через указанный бот.
     :param message: Сообщение, которое нужно отправить.
@@ -629,7 +635,10 @@ def send_bot_telegram_message(message="Default message.",
     # URL для отправки сообщения
     url = f"https://api.telegram.org/bot{bot_token}/sendMessage"
     # Данные, которые будут отправлены
-    data = {'chat_id': chat_id, 'text': message, }
+    data = {
+        "chat_id": chat_id,
+        "text": message,
+    }
 
     # Отправка POST-запроса к API Telegram
     response = requests.post(url, data=data)
@@ -652,9 +661,8 @@ def run_program_bot():
         log_error(f"Ошибка при запуске программы Бота:\n{e}")
 
 
-
 # -------------------------------------- END ---------------------------------
 
 
 if __name__ == "__main__":
-    set_password_in_registry("1234567890")
+    ...
