@@ -309,21 +309,7 @@ def main():
     mutex = ctypes.windll.kernel32.CreateMutexW(None, False, MUTEX_NAME_UUCPG)
     error_code = ctypes.windll.kernel32.GetLastError()
 
-    if error_code == 183:
-        sys.exit()
-        return
-    elif error_code == 5:  # ERROR_ACCESS_DENIED
-        if mutex != 0:  # Проверяем, что дескриптор валиден перед закрытием
-            ctypes.windll.kernel32.CloseHandle(mutex)
-        show_message_with_auto_close(_("Доступ к мьютексу запрещен."), _("ОШИБКА"))
-
-        return
-    elif error_code != 0:
-        if mutex != 0:  # Проверяем, что дескриптор валиден перед закрытием
-            ctypes.windll.kernel32.CloseHandle(mutex)
-        show_message_with_auto_close(f"{_('Неизвестная ошибка')}:\n{error_code}", "ОШИБКА")
-
-        return
+    function.process_mutex_error(error_code, mutex)
     # -------------- END ---------------
 
     app = wx.App(False)

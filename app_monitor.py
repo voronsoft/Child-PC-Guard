@@ -8,7 +8,6 @@ import os
 import time
 import traceback
 from datetime import datetime
-from pprint import pprint
 
 import psutil
 from apscheduler.schedulers.blocking import BlockingScheduler
@@ -17,7 +16,7 @@ import config_localization
 from config_app import (PATH_DATA_FILE, PATH_LOG_FILE, path_bot_tg_exe,
                         path_main_app)
 from function import (read_data_json, run_as_admin, send_bot_telegram_message,
-                      show_message_with_auto_close)
+                      show_message_with_auto_close, process_mutex_error)
 
 # Подключаем локализацию
 _ = config_localization.setup_locale(read_data_json("language"))
@@ -153,19 +152,7 @@ def main_run_monitor():
     mutex = ctypes.windll.kernel32.CreateMutexW(None, False, MUTEX_NAME_CPGM)
     error_code = ctypes.windll.kernel32.GetLastError()
 
-    if error_code == 183:
-        print(183)
-        return
-    elif error_code == 5:  # ERROR_ACCESS_DENIED
-        if mutex != 0:  # Проверяем, что дескриптор валиден перед закрытием
-            ctypes.windll.kernel32.CloseHandle(mutex)
-        show_message_with_auto_close("MonitorCPG - Доступ к мьютексу запрещен.", "ОШИБКА")
-        return
-    elif error_code != 0:
-        if mutex != 0:  # Проверяем, что дескриптор валиден перед закрытием
-            ctypes.windll.kernel32.CloseHandle(mutex)
-        show_message_with_auto_close(f"MonitorCPG - Неизвестная ошибка:\n{error_code}", "ОШИБКА")
-        return
+    process_mutex_error(error_code, mutex)
     # -------------- END ---------------
 
     # Создаем экземпляр планировщика

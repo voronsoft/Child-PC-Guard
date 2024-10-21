@@ -8,6 +8,7 @@ import sys
 import threading
 import time
 import winreg
+import inspect
 
 import psutil
 import requests
@@ -28,12 +29,6 @@ PATH_LOG_FILE_PRGM_DATA = os.path.join(FOLDER_DATA_PRGM_DATA, "log_chpcgu.txt")
 PATH_INSTALL_INFO_FILE_PRGM_DATA = os.path.join(FOLDER_DATA_PRGM_DATA, "install_info.txt")
 
 
-# print("111-FOLDER_DATA_PRGM_DATA", FOLDER_DATA_PRGM_DATA)
-# print("111-PATH_DATA_FILE_PRGM_DATA", PATH_DATA_FILE_PRGM_DATA)
-# print("111-PATH_LOG_FILE_PRGM_DATA", PATH_LOG_FILE_PRGM_DATA)
-# print("111-PATH_INSTALL_INFO_FILE_PRGM_DATA", PATH_INSTALL_INFO_FILE_PRGM_DATA)
-
-
 # ----------------------------------- Логирование ----------------------------
 def log_error(message):
     """Метод для логирования ошибок в файл."""
@@ -43,7 +38,7 @@ def log_error(message):
     except Exception as e:
         print(f"Ошибка при записи лога в файл лога: {str(e)}")
         show_message_with_auto_close(
-            f"function.py({time.strftime('%Y-%m-%d %H:%M:%S')}) - {message}\n==================\n", "Ошибка"
+                f"function.py({time.strftime('%Y-%m-%d %H:%M:%S')}) - {message}\n==================\n", "Ошибка"
         )
 
 
@@ -71,13 +66,13 @@ def run_as_admin():
         # Перезапускаем с запросом прав администратора
         try:
             ctypes.windll.shell32.ShellExecuteW(
-                None,
-                "runas",
-                sys.executable,
-                " ".join([f'"{arg}"' for arg in sys.argv]),
-                None,
-                # TODO отобразить окно консоли или скрыть
-                1,  # 1-отобразить консоль \ 0-скрыть консоль
+                    None,
+                    "runas",
+                    sys.executable,
+                    " ".join([f'"{arg}"' for arg in sys.argv]),
+                    None,
+                    # TODO отобразить окно консоли или скрыть
+                    1,  # 1-отобразить консоль \ 0-скрыть консоль
             )
             sys.exit()  # Завершаем текущий процесс, чтобы предотвратить двойной запуск
         except Exception as e:
@@ -165,14 +160,14 @@ def get_users():
 
     # Получаем список пользователей
     res = netapi32.NetUserEnum(
-        None,
-        0,
-        0,
-        ctypes.byref(bufptr),
-        ctypes.c_ulong(-1),
-        ctypes.byref(entriesread),
-        ctypes.byref(totalentries),
-        None,
+            None,
+            0,
+            0,
+            ctypes.byref(bufptr),
+            ctypes.c_ulong(-1),
+            ctypes.byref(entriesread),
+            ctypes.byref(totalentries),
+            None,
     )
 
     if res == 0:
@@ -204,7 +199,7 @@ def get_block_user():
         for user in users:
             user_info_command = f'net user "{user}"'
             user_info_result = subprocess.run(
-                user_info_command, capture_output=True, text=True, shell=True, encoding="cp866"
+                    user_info_command, capture_output=True, text=True, shell=True, encoding="cp866"
             )
             user_info_output = user_info_result.stdout
 
@@ -356,10 +351,10 @@ def function_to_create_path_data_files():
 
         # Применяем полные права ко всем пользователям на созданную папку
         subprocess.run(
-            ["icacls", FOLDER_DATA, "/grant", "Everyone:F", "/T", "/C"],
-            shell=True,
-            stdout=subprocess.DEVNULL,
-            stderr=subprocess.DEVNULL,
+                ["icacls", FOLDER_DATA, "/grant", "Everyone:F", "/T", "/C"],
+                shell=True,
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
         )
         # /grant - предоставить права
         # Everyone:F - разрешить полные права для всех пользователей
@@ -371,13 +366,13 @@ def function_to_create_path_data_files():
     # Проверяем, существует ли файл data.json. Если нет, то создаем его и записываем начальные данные.
     if not os.path.exists(PATH_DATA_FILE):
         initial_data = {
-            "username_blocking": "",
-            "remaining_time": 0,
-            "date": "0001-02-03",
-            "protected_user": "",
-            "bot_token_telegram": "7456533985:AAEGOk3VUU04Z4bk9B83kzy4MW5zem3hbYw",
-            "chat_id": 631191214,
-            "language": "uk",
+                "username_blocking": "",
+                "remaining_time": 0,
+                "date": "0001-02-03",
+                "protected_user": "",
+                "bot_token_telegram": "7456533985:AAEGOk3VUU04Z4bk9B83kzy4MW5zem3hbYw",
+                "chat_id": 631191214,
+                "language": "uk",
         }
         with open(PATH_DATA_FILE, "w", encoding="utf-8") as file:
             json.dump(initial_data, file, indent=4)  # Записываем данные в формате JSON с отступами
@@ -401,10 +396,10 @@ def function_to_create_path_data_files():
     # Применяем полные права ко всем пользователям на файлы, если они уже существуют или только что были созданы.
     # Задаем доступ для всех на запись чтение изменение.
     subprocess.run(
-        ["icacls", FOLDER_DATA, "/grant", "Everyone:F", "/T", "/C"],
-        shell=True,
-        stdout=subprocess.DEVNULL,
-        stderr=subprocess.DEVNULL,
+            ["icacls", FOLDER_DATA, "/grant", "Everyone:F", "/T", "/C"],
+            shell=True,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
     )
     # print(f"Права доступа обновлены для папки и вложенных файлов: {FOLDER_DATA}")
     log_error(f"Права доступа обновлены для папки и вложенных файлов: {FOLDER_DATA}")
@@ -420,10 +415,10 @@ def function_to_create_path_data_files():
 
         # Применяем полные права ко всем пользователям на созданную папку
         subprocess.run(
-            ["icacls", FOLDER_DATA_PRGM_DATA, "/grant", "Everyone:F", "/T", "/C"],
-            shell=True,
-            stdout=subprocess.DEVNULL,
-            stderr=subprocess.DEVNULL,
+                ["icacls", FOLDER_DATA_PRGM_DATA, "/grant", "Everyone:F", "/T", "/C"],
+                shell=True,
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
         )
         # /grant - предоставить права
         # Everyone:F - разрешить полные права для всех пользователей
@@ -435,13 +430,13 @@ def function_to_create_path_data_files():
     # Проверяем, существует ли файл data.json. Если нет, то создаем его и записываем начальные данные.
     if not os.path.exists(PATH_DATA_FILE_PRGM_DATA):
         initial_data = {
-            "username_blocking": "",
-            "remaining_time": 0,
-            "date": "0001-02-03",
-            "protected_user": "",
-            "bot_token_telegram": "7456533985:AAEGOk3VUU04Z4bk9B83kzy4MW5zem3hbYw",
-            "chat_id": 631191214,
-            "language": "ru",
+                "username_blocking": "",
+                "remaining_time": 0,
+                "date": "0001-02-03",
+                "protected_user": "",
+                "bot_token_telegram": "7456533985:AAEGOk3VUU04Z4bk9B83kzy4MW5zem3hbYw",
+                "chat_id": 631191214,
+                "language": "ru",
         }
         with open(PATH_DATA_FILE_PRGM_DATA, "w", encoding="utf-8") as file:
             json.dump(initial_data, file, indent=4)  # Записываем данные в формате JSON с отступами
@@ -465,10 +460,10 @@ def function_to_create_path_data_files():
     # Применяем полные права ко всем пользователям на файлы, если они уже существуют или только что были созданы.
     # Задаем доступ для всех на запись чтение изменение.
     subprocess.run(
-        ["icacls", FOLDER_DATA_PRGM_DATA, "/grant", "Everyone:F", "/T", "/C"],
-        shell=True,
-        stdout=subprocess.DEVNULL,
-        stderr=subprocess.DEVNULL,
+            ["icacls", FOLDER_DATA_PRGM_DATA, "/grant", "Everyone:F", "/T", "/C"],
+            shell=True,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
     )
     # print(f"2 Права доступа обновлены для папки и файлов: {FOLDER_DATA_PRGM_DATA}")
     log_error(f"2Права доступа обновлены для папки и вложенных файлов: {FOLDER_DATA_PRGM_DATA}")
@@ -623,7 +618,7 @@ def delete_password_from_registry():
 
 # ----------------------------------- Работа с BOT telegram---------------------------
 def send_bot_telegram_message(
-    message="Default message.", bot_token=read_data_json("bot_token_telegram"), chat_id=read_data_json("chat_id")
+        message="Default message.", bot_token=read_data_json("bot_token_telegram"), chat_id=read_data_json("chat_id")
 ):
     """
     Отправляет сообщение в Telegram через указанный бот.
@@ -636,8 +631,8 @@ def send_bot_telegram_message(
     url = f"https://api.telegram.org/bot{bot_token}/sendMessage"
     # Данные, которые будут отправлены
     data = {
-        "chat_id": chat_id,
-        "text": message,
+            "chat_id": chat_id,
+            "text": message,
     }
 
     # Отправка POST-запроса к API Telegram
@@ -663,6 +658,33 @@ def run_program_bot():
 
 # -------------------------------------- END ---------------------------------
 
+
+# ------------------------- Работа с Дескриптором мьютекса --------------------
+def process_mutex_error(error_code, mutex):
+    """Функция для обработки ошибок, связанных с мьютексом и кодом ошибки."""
+    # Получение файла, в котором функция была вызвана
+    caller_frame = inspect.stack()[1]
+    caller_file = os.path.basename(caller_frame.filename)
+
+    if error_code == 183:  # Объект с таким именем уже существует.
+        log_error(f"({caller_file}) Error mutex: {error_code}\n"
+                  f"The application is already running. A second instance of the application cannot be launched."
+                  )
+        sys.exit()
+
+    elif error_code == 5:  # ERROR_ACCESS_DENIED
+        if mutex != 0:
+            log_error(f"({caller_file}) ERROR: Access to mutex is denied.")
+        return
+
+    elif error_code != 0:  # Обработка других ошибок
+        if mutex != 0:
+            log_error(f"({caller_file}) ERROR: Unknown error {error_code}")
+            sys.exit()
+        return
+
+
+# --------------------------------------- END ---------------------------------
 
 if __name__ == "__main__":
     ...

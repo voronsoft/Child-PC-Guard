@@ -2,6 +2,7 @@ import asyncio
 import ctypes
 import logging
 import os
+import sys
 
 from telegram import KeyboardButton, ReplyKeyboardMarkup, Update
 from telegram.ext import (Application, CommandHandler, ContextTypes,
@@ -183,23 +184,7 @@ async def main_bot_run():
     mutex = ctypes.windll.kernel32.CreateMutexW(None, False, MUTEX_NAME_BCPG)
     error_code = ctypes.windll.kernel32.GetLastError()
 
-    if error_code == 183:
-        sys.exit()
-        return
-    elif error_code == 5:  # ERROR_ACCESS_DENIED
-        if mutex != 0:  # Проверяем, что дескриптор валиден перед закрытием
-            ctypes.windll.kernel32.CloseHandle(mutex)
-
-        function.show_message_with_auto_close(_("Доступ к мьютексу запрещен."), _("ОШИБКА"))
-        return
-    elif error_code != 0:
-        if mutex != 0:  # Проверяем, что дескриптор валиден перед закрытием
-            ctypes.windll.kernel32.CloseHandle(mutex)
-
-        error_message = _("Неизвестная ошибка:\n{error_code}").format(error_code=error_code)
-        title = _("ОШИБКА")
-        function.show_message_with_auto_close(error_message, title)
-        return
+    function.process_mutex_error(mutex, error_code)
     # -------------- END ---------------
 
     # Создаем приложение Telegram

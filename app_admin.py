@@ -409,25 +409,9 @@ def main_app():
 
     # ------- Проверка кода ошибки -------
     mutex = ctypes.windll.kernel32.CreateMutexW(None, False, MUTEX_NAME_CPG)
-
     error_code = ctypes.windll.kernel32.GetLastError()
 
-    if error_code == 183:  # Объект с таким именем уже существует.
-        sys.exit()
-        print(111111)
-        # return
-    elif error_code == 5:  # ERROR_ACCESS_DENIED
-        if mutex != 0:
-            ctypes.windll.kernel32.CloseHandle(mutex)
-        function.show_message_with_auto_close(_("Доступ к мьютексу запрещен."), _("ОШИБКА"))
-        return
-    elif error_code != 0:  #
-        if mutex != 0:
-            ctypes.windll.kernel32.CloseHandle(mutex)
-        function.show_message_with_auto_close(
-                _("Неизвестная ошибка:\n{error_code}").format(error_code=error_code), _("ОШИБКА")
-        )
-        return
+    function.process_mutex_error(error_code, mutex)
 
     # Создаем папки и файлы с данными для работы приложения если они не существуют
     function.function_to_create_path_data_files()

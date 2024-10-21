@@ -1,0 +1,4 @@
+function.py(2024-10-22 02:09:21) - (app_tg_bot.py) ERROR: Unknown error 412
+==================
+function.py(2024-10-22 02:10:11) - (app_tg_bot.py) ERROR: Unknown error 844
+==================
