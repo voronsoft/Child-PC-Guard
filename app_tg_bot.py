@@ -46,7 +46,7 @@ async def shutdown(application, mutex):
     # Ждем завершения оставшихся задач
     await application.stop()  # Функция, которая корректно завершает работу
     # Завершить текущий процесс
-    os._exit(0)  # 0 обозначает успешное завершение
+    sys.exit()  # 0 обозначает успешное завершение
 
 
 # Запуск бота
@@ -184,7 +184,7 @@ async def main_bot_run():
     error_code = ctypes.windll.kernel32.GetLastError()
 
     if error_code == 183:
-        os._exit(0)
+        sys.exit()
         return
     elif error_code == 5:  # ERROR_ACCESS_DENIED
         if mutex != 0:  # Проверяем, что дескриптор валиден перед закрытием
