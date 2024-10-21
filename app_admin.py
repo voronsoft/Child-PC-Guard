@@ -1,7 +1,12 @@
+"""
+Главное приложения CPG
+"""
+
 import ctypes
 import os
 import subprocess
 import sys
+
 import time
 
 import wx
@@ -18,8 +23,7 @@ from app_wind_lang import LanguageWnd
 from app_wind_pass import WndPass
 from app_wind_splash_screen import main_splash
 from app_wind_tray_icon import TrayIcon
-from config_app import (FOLDER_IMG, PATH_LOG_FILE, path_timer_exe,
-                        path_unblock_usr_exe)
+from config_app import FOLDER_IMG, PATH_LOG_FILE, path_timer_exe, path_unblock_usr_exe
 
 # Подключаем локализацию
 _ = config_localization.setup_locale(function.read_data_json("language"))
@@ -34,15 +38,18 @@ MUTEX_NAME_CPG = "Global\\Child_PC_Guard"
 ## Класс окна основного приложения
 ###########################################################################
 class Window(wx.Frame):
+    """Класс окна основного приложения"""
+
     def __init__(self, parent):
-        wx.Frame.__init__(self,
-                          parent,
-                          id=wx.ID_ANY,
-                          title=_("Child PC Guard - АДМИНИСТРАТОР"),
-                          pos=wx.DefaultPosition,
-                          size=wx.DefaultSize,
-                          style=wx.DEFAULT_FRAME_STYLE & ~wx.MAXIMIZE_BOX | wx.TAB_TRAVERSAL
-                          )
+        wx.Frame.__init__(
+            self,
+            parent,
+            id=wx.ID_ANY,
+            title=_("Child PC Guard - АДМИНИСТРАТОР"),
+            pos=wx.DefaultPosition,
+            size=wx.DefaultSize,
+            style=wx.DEFAULT_FRAME_STYLE & ~wx.MAXIMIZE_BOX | wx.TAB_TRAVERSAL,
+        )
 
         self.SetSizeHints(wx.Size(700, 450), wx.Size(700, 450))
         self.SetForegroundColour(wx.SystemSettings.GetColour(wx.SYS_COLOUR_BACKGROUND))
@@ -56,7 +63,9 @@ class Window(wx.Frame):
 
         # Основные переменные ==========================================
         self.timer = wx.Timer(self)  # Таймеp
-        self.username_blocking = function.read_data_json("username_blocking")  # Имя пользователя для блокировки из файла
+        self.username_blocking = function.read_data_json(
+            "username_blocking"
+        )  # Имя пользователя для блокировки из файла
         self.remaining_time = function.read_data_json("remaining_time")  # Время задаваемой блокировки из файла
         self.elapsed_time = 0  #
         self.passwort_registry = ""
@@ -74,49 +83,45 @@ class Window(wx.Frame):
         # self.tool_bar = self.CreateToolBar(wx.TB_TEXT, wx.ID_ANY)
         self.tool_bar = self.CreateToolBar(wx.TB_HORIZONTAL, wx.ID_ANY)
         self.tool_bar.SetToolSeparation(5)
-        self.tool_bar.SetFont(wx.Font(8,
-                                      wx.FONTFAMILY_SWISS,
-                                      wx.FONTSTYLE_NORMAL,
-                                      wx.FONTWEIGHT_NORMAL,
-                                      False,
-                                      "Segoe UI"
-                                      )
-                              )
+        self.tool_bar.SetFont(
+            wx.Font(8, wx.FONTFAMILY_SWISS, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, "Segoe UI")
+        )
         self.tool_bar.SetBackgroundColour(wx.SystemSettings.GetColour(wx.SYS_COLOUR_BTNHIGHLIGHT))
 
         self.tool_bar.AddStretchableSpace()  # Вставляем гибкое пространство
-        self.btn_tool_lang = self.tool_bar.AddTool(wx.ID_ANY,
-                                                   _("Lang"),
-                                                   wx.Bitmap(os.path.join(FOLDER_IMG, "language.ico"),
-                                                             wx.BITMAP_TYPE_ANY
-                                                             ),
-                                                   wx.NullBitmap,
-                                                   wx.ITEM_NORMAL,
-                                                   _("Lang"),
-                                                   _("Выбор языка интерфейса"),
-                                                   None
-                                                   )
+        self.btn_tool_lang = self.tool_bar.AddTool(
+            wx.ID_ANY,
+            _("Lang"),
+            wx.Bitmap(os.path.join(FOLDER_IMG, "language.ico"), wx.BITMAP_TYPE_ANY),
+            wx.NullBitmap,
+            wx.ITEM_NORMAL,
+            _("Lang"),
+            _("Выбор языка интерфейса"),
+            None,
+        )
         self.tool_bar.AddStretchableSpace()  # Вставляем гибкое пространство
-        self.btn_tool_log = self.tool_bar.AddTool(wx.ID_ANY,
-                                                  _("Логи"),
-                                                  wx.Bitmap(os.path.join(FOLDER_IMG, "logs.ico"), wx.BITMAP_TYPE_ANY),
-                                                  wx.NullBitmap,
-                                                  wx.ITEM_NORMAL,
-                                                  _("Логи"),
-                                                  _("Просмотр логов программы"),
-                                                  None
-                                                  )
+        self.btn_tool_log = self.tool_bar.AddTool(
+            wx.ID_ANY,
+            _("Логи"),
+            wx.Bitmap(os.path.join(FOLDER_IMG, "logs.ico"), wx.BITMAP_TYPE_ANY),
+            wx.NullBitmap,
+            wx.ITEM_NORMAL,
+            _("Логи"),
+            _("Просмотр логов программы"),
+            None,
+        )
         # self.btn_tool_log.Enable(False)  # Отключение кнопки в тулбаре
         self.tool_bar.AddStretchableSpace()  # Вставляем гибкое пространство
-        self.btn_tool_timer = self.tool_bar.AddTool(wx.ID_ANY,
-                                                    _("Таймер"),
-                                                    wx.Bitmap(os.path.join(FOLDER_IMG, "time.ico"), wx.BITMAP_TYPE_ANY),
-                                                    wx.NullBitmap,
-                                                    wx.ITEM_NORMAL,
-                                                    _("Таймер"),
-                                                    _("Открыть окно таймера"),
-                                                    None
-                                                    )
+        self.btn_tool_timer = self.tool_bar.AddTool(
+            wx.ID_ANY,
+            _("Таймер"),
+            wx.Bitmap(os.path.join(FOLDER_IMG, "time.ico"), wx.BITMAP_TYPE_ANY),
+            wx.NullBitmap,
+            wx.ITEM_NORMAL,
+            _("Таймер"),
+            _("Открыть окно таймера"),
+            None,
+        )
         # self.tool_bar.AddStretchableSpace()  # Вставляем гибкое пространство
         # self.btn_tool_monitor = self.tool_bar.AddTool(wx.ID_ANY,
         #                                               _("Мониторинг"),
@@ -130,71 +135,71 @@ class Window(wx.Frame):
         #                                               None
         #                                               )
         self.tool_bar.AddStretchableSpace()  # Вставляем гибкое пространство
-        self.btn_tool_clear_data = self.tool_bar.AddTool(wx.ID_ANY,
-                                                         _("Очистить"),
-                                                         wx.Bitmap(os.path.join(FOLDER_IMG, "clear.ico"),
-                                                                   wx.BITMAP_TYPE_ANY
-                                                                   ),
-                                                         wx.NullBitmap,
-                                                         wx.ITEM_NORMAL,
-                                                         _("Очистить все"),
-                                                         _("Удаляет все данные задания для блокировки. БЛОКИРОВКУ НЕ ОТКЛЮЧАЕТ"),
-                                                         None
-                                                         )
+        self.btn_tool_clear_data = self.tool_bar.AddTool(
+            wx.ID_ANY,
+            _("Очистить"),
+            wx.Bitmap(os.path.join(FOLDER_IMG, "clear.ico"), wx.BITMAP_TYPE_ANY),
+            wx.NullBitmap,
+            wx.ITEM_NORMAL,
+            _("Очистить все"),
+            _("Удаляет все данные задания для блокировки. БЛОКИРОВКУ НЕ ОТКЛЮЧАЕТ"),
+            None,
+        )
         self.tool_bar.AddStretchableSpace()  # Вставляем гибкое пространство
-        self.btn_tool_run_unblock_usr = self.tool_bar.AddTool(wx.ID_ANY,
-                                                              _(r"Разблокировать"),
-                                                              wx.Bitmap(os.path.join(FOLDER_IMG, "unlock.ico"),
-                                                                        wx.BITMAP_TYPE_ANY
-                                                                        ),
-                                                              wx.NullBitmap,
-                                                              wx.ITEM_NORMAL,
-                                                              _("Разблокировать пользователя"),
-                                                              _("Открывает окно разблокировки пользователя"),
-                                                              None
-                                                              )
+        self.btn_tool_run_unblock_usr = self.tool_bar.AddTool(
+            wx.ID_ANY,
+            _(r"Разблокировать"),
+            wx.Bitmap(os.path.join(FOLDER_IMG, "unlock.ico"), wx.BITMAP_TYPE_ANY),
+            wx.NullBitmap,
+            wx.ITEM_NORMAL,
+            _("Разблокировать пользователя"),
+            _("Открывает окно разблокировки пользователя"),
+            None,
+        )
         self.tool_bar.AddStretchableSpace()  # Вставляем гибкое пространство
-        self.btn_tool_info = self.tool_bar.AddTool(wx.ID_ANY,
-                                                   _("Справка"),
-                                                   wx.Bitmap(os.path.join(FOLDER_IMG, "doc.ico"), wx.BITMAP_TYPE_ANY),
-                                                   wx.NullBitmap,
-                                                   wx.ITEM_NORMAL,
-                                                   _("Справка"),
-                                                   _("Открывает окно по использованию программы"),
-                                                   None
-                                                   )
+        self.btn_tool_info = self.tool_bar.AddTool(
+            wx.ID_ANY,
+            _("Справка"),
+            wx.Bitmap(os.path.join(FOLDER_IMG, "doc.ico"), wx.BITMAP_TYPE_ANY),
+            wx.NullBitmap,
+            wx.ITEM_NORMAL,
+            _("Справка"),
+            _("Открывает окно по использованию программы"),
+            None,
+        )
         self.tool_bar.AddStretchableSpace()  # Вставляем гибкое пространство
-        self.btn_tool_bot = self.tool_bar.AddTool(wx.ID_ANY,
-                                                  _("Оповещение"),
-                                                  wx.Bitmap(os.path.join(FOLDER_IMG, "telegram.ico"),
-                                                            wx.BITMAP_TYPE_ANY
-                                                            ),
-                                                  wx.NullBitmap,
-                                                  wx.ITEM_NORMAL,
-                                                  _("Оповещение"),
-                                                  _("Открывает окно для настройки оповещения через Telegram"),
-                                                  None
-                                                  )
+        self.btn_tool_bot = self.tool_bar.AddTool(
+            wx.ID_ANY,
+            _("Оповещение"),
+            wx.Bitmap(os.path.join(FOLDER_IMG, "telegram.ico"), wx.BITMAP_TYPE_ANY),
+            wx.NullBitmap,
+            wx.ITEM_NORMAL,
+            _("Оповещение"),
+            _("Открывает окно для настройки оповещения через Telegram"),
+            None,
+        )
         self.tool_bar.AddStretchableSpace()  # Вставляем гибкое пространство
 
-        self.btn_tool_unblock_interface = self.tool_bar.AddTool(wx.ID_ANY,
-                                                                _("Разблокировать интерфейс"),
-                                                                wx.Bitmap(os.path.join(FOLDER_IMG, "open.ico")),
-                                                                wx.NullBitmap,
-                                                                wx.ITEM_RADIO,
-                                                                _("Разблокировать интерфейс"),
-                                                                _("Разблокировать интерфейс"),
-                                                                None
-                                                                )
-        self.btn_tool_block_interface = self.tool_bar.AddTool(wx.ID_ANY,
-                                                              _("Заблокировать интерфейс"),
-                                                              wx.Bitmap(os.path.join(FOLDER_IMG, "close.ico")),
-                                                              wx.NullBitmap,
-                                                              wx.ITEM_RADIO,
-                                                              _("Заблокировать интерфейс"),
-                                                              _("Блокировка интерфейса"),
-                                                              None
-                                                              )
+        self.btn_tool_unblock_interface = self.tool_bar.AddTool(
+            wx.ID_ANY,
+            _("Разблокировать интерфейс"),
+            wx.Bitmap(os.path.join(FOLDER_IMG, "open.ico")),
+            wx.NullBitmap,
+            wx.ITEM_RADIO,
+            _("Разблокировать интерфейс"),
+            _("Разблокировать интерфейс"),
+            None,
+        )
+        self.btn_tool_block_interface = self.tool_bar.AddTool(
+            wx.ID_ANY,
+            _("Заблокировать интерфейс"),
+            wx.Bitmap(os.path.join(FOLDER_IMG, "close.ico")),
+            wx.NullBitmap,
+            wx.ITEM_RADIO,
+            _("Заблокировать интерфейс"),
+            _("Блокировка интерфейса"),
+            None,
+        )
 
         self.tool_bar.AddStretchableSpace()
         self.tool_bar.Realize()
@@ -206,13 +211,9 @@ class Window(wx.Frame):
 
         sizer_top = wx.BoxSizer(wx.HORIZONTAL)
 
-        self.txt_input_username = wx.StaticText(self,
-                                                wx.ID_ANY,
-                                                _("Укажите пользователя для блокировки: "),
-                                                wx.DefaultPosition,
-                                                wx.DefaultSize,
-                                                0
-                                                )
+        self.txt_input_username = wx.StaticText(
+            self, wx.ID_ANY, _("Укажите пользователя для блокировки: "), wx.DefaultPosition, wx.DefaultSize, 0
+        )
         self.txt_input_username.Wrap(-1)
         sizer_top.Add(self.txt_input_username, 0, wx.ALL, 5)
 
@@ -223,14 +224,15 @@ class Window(wx.Frame):
 
         if not user_list:
             user_list = [_("----")]
-        self.input_username = wx.ComboBox(self,
-                                          wx.ID_ANY,
-                                          wx.EmptyString,
-                                          wx.DefaultPosition,
-                                          wx.Size(150, -1),
-                                          choices=user_list,
-                                          style=wx.CB_DROPDOWN | wx.CB_READONLY
-                                          )
+        self.input_username = wx.ComboBox(
+            self,
+            wx.ID_ANY,
+            wx.EmptyString,
+            wx.DefaultPosition,
+            wx.Size(150, -1),
+            choices=user_list,
+            style=wx.CB_DROPDOWN | wx.CB_READONLY,
+        )
         # self.input_username.SetSelection(-1)
         sizer_top.Add(self.input_username, 0, wx.ALL, 5)
         sizer_main.Add(sizer_top, 0, wx.EXPAND, 5)
@@ -244,26 +246,17 @@ class Window(wx.Frame):
 
         sizer_top = wx.BoxSizer(wx.HORIZONTAL)
 
-        self.txt_timer = wx.StaticText(self,
-                                       wx.ID_ANY,
-                                       _("Укажите время для блокировки: "),
-                                       wx.DefaultPosition,
-                                       wx.DefaultSize,
-                                       0
-                                       )
+        self.txt_timer = wx.StaticText(
+            self, wx.ID_ANY, _("Укажите время для блокировки: "), wx.DefaultPosition, wx.DefaultSize, 0
+        )
         self.txt_timer.Wrap(-1)
         sizer_top.Add(self.txt_timer, 0, wx.ALL, 5)
 
         combo_box_choices = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10"]
 
-        self.input_time = wx.ComboBox(self,
-                                      wx.ID_ANY,
-                                      _("0"),
-                                      wx.DefaultPosition,
-                                      wx.DefaultSize,
-                                      combo_box_choices,
-                                      wx.CB_READONLY
-                                      )
+        self.input_time = wx.ComboBox(
+            self, wx.ID_ANY, _("0"), wx.DefaultPosition, wx.DefaultSize, combo_box_choices, wx.CB_READONLY
+        )
         # Устанавливаем начальное значение временем на 0
         self.input_time.SetSelection(0)
 
@@ -282,24 +275,14 @@ class Window(wx.Frame):
         sizer_main.Add(self.staticline, 0, wx.EXPAND | wx.ALL, 5)
 
         sizer_center1 = wx.BoxSizer(wx.VERTICAL)
-        self.txt_3 = wx.StaticText(self,
-                                   wx.ID_ANY,
-                                   _("Осталось времени до блокировки:"),
-                                   wx.DefaultPosition,
-                                   wx.DefaultSize,
-                                   0
-                                   )
+        self.txt_3 = wx.StaticText(
+            self, wx.ID_ANY, _("Осталось времени до блокировки:"), wx.DefaultPosition, wx.DefaultSize, 0
+        )
         self.txt_3.Wrap(-1)
 
         sizer_center1.Add(self.txt_3, 0, wx.ALIGN_CENTER | wx.ALL, 5)
 
-        self.timer_time = wx.StaticText(self,
-                                        wx.ID_ANY,
-                                        _("00:00:00"),
-                                        wx.DefaultPosition,
-                                        wx.DefaultSize,
-                                        0
-                                        )
+        self.timer_time = wx.StaticText(self, wx.ID_ANY, _("00:00:00"), wx.DefaultPosition, wx.DefaultSize, 0)
         self.timer_time.Wrap(-1)
         sizer_center1.Add(self.timer_time, 0, wx.ALIGN_CENTER | wx.ALL, 5)
 
@@ -308,13 +291,9 @@ class Window(wx.Frame):
         sizer_main.Add(sizer_center1, 1, wx.ALL | wx.EXPAND, 5)
 
         sizer_center2 = wx.BoxSizer(wx.VERTICAL)
-        self.btn_disable_blocking = wx.Button(self,
-                                              wx.ID_ANY,
-                                              _("Отключить блокировку"),
-                                              wx.DefaultPosition,
-                                              wx.DefaultSize,
-                                              0
-                                              )
+        self.btn_disable_blocking = wx.Button(
+            self, wx.ID_ANY, _("Отключить блокировку"), wx.DefaultPosition, wx.DefaultSize, 0
+        )
         sizer_center2.Add(self.btn_disable_blocking, 0, wx.ALIGN_CENTER | wx.ALL, 5)
         self.btn_disable_blocking.Disable()
         sizer_main.Add(sizer_center2, 1, wx.EXPAND, 5)
@@ -471,18 +450,21 @@ class Window(wx.Frame):
             self.btn_disable_blocking.Disable()  # Отключаем кнопку - Отключить блокировку
 
             # Выводим сообщение что-бы выбранный пользователь зашел в систему (сессию)
-            dialog = wx.MessageDialog(self,
-                                      f"{_("Выбранный пользователь:")} {self.username_blocking} {_("не вошел в свой аккаунт Windows.\nРЕШЕНИЕ:\n1 - Нужно зайти в его аккаунт.\n2 - Запустить программу от имени АДМИНИСТРАТОРА\n3 - Провести процедуру настройки блокировки снова.")}",
-                                      _("Предупреждение"),
-                                      wx.ICON_WARNING
-                                      )
+            dialog = wx.MessageDialog(
+                self,
+                f"{_("Выбранный пользователь:")} {self.username_blocking} {_("не вошел в свой аккаунт Windows.\nРЕШЕНИЕ:\n1 - Нужно зайти в его аккаунт.\n2 - Запустить программу от имени АДМИНИСТРАТОРА\n3 - Провести процедуру настройки блокировки снова.")}",
+                _("Предупреждение"),
+                wx.ICON_WARNING,
+            )
             dialog.ShowModal()
             dialog.Destroy()
 
             # Сбрасываем выбор пользователя
             self.input_username.SetSelection(-1)  # Сбрасываем поле имени
             function.update_data_json("username_blocking", "")  # Стираем имя пользователя в файле
-            self.username_blocking = function.read_data_json("username_blocking")  # Обновляем атрибут имени пользователя
+            self.username_blocking = function.read_data_json(
+                "username_blocking"
+            )  # Обновляем атрибут имени пользователя
             # Сбрасываем выбор времени
             self.input_time.SetSelection(0)  # Обнуляем время в поле
             function.update_data_json("remaining_time", 0)  # Стираем значение времени в файле
@@ -518,11 +500,14 @@ class Window(wx.Frame):
         self.input_time.Disable()  # Блокируем поле выбора времени блокировки
 
         if username == function.username_session():
-            dialog = wx.MessageDialog(self,
-                                      _("Внимание убедитесь что вы выбрали не АДМИНИСТРАТОРА !!!\nТолько АДМИНИСТРАТОР может снять блокировку !!!.\nВ противном случае блокировку уже не снять.\nРЕШЕНИЕ - ПЕРЕУСТАНОВКА WINDOWS !!!"),
-                                      _("Предупреждение"),
-                                      wx.ICON_WARNING
-                                      )
+            dialog = wx.MessageDialog(
+                self,
+                _(
+                    "Внимание убедитесь что вы выбрали не АДМИНИСТРАТОРА !!!\nТолько АДМИНИСТРАТОР может снять блокировку !!!.\nВ противном случае блокировку уже не снять.\nРЕШЕНИЕ - ПЕРЕУСТАНОВКА WINDOWS !!!"
+                ),
+                _("Предупреждение"),
+                wx.ICON_WARNING,
+            )
             dialog.ShowModal()
             dialog.Destroy()
 
@@ -574,15 +559,15 @@ class Window(wx.Frame):
 
         # Отмена блокировки если имя пользователя пустое
         if username == "":
-            dialog = wx.MessageDialog(self,
-                                      _("Вы не указали пользователя для отключения блокировки."),
-                                      _("Предупреждение"),
-                                      wx.ICON_WARNING
-                                      )
+            dialog = wx.MessageDialog(
+                self, _("Вы не указали пользователя для отключения блокировки."), _("Предупреждение"), wx.ICON_WARNING
+            )
             dialog.ShowModal()
         else:
             self.timer.Stop()  # Останавливаем таймер
-            function.send_bot_telegram_message(_("Блокировка для пользователя отключена: {usermane}").format(usermane=username))
+            function.send_bot_telegram_message(
+                _("Блокировка для пользователя отключена: {usermane}").format(usermane=username)
+            )
             self.gauge.SetValue(0)  # Стираем статус заполненности таймера
 
             # Стираем значение в поле имя пользователя.
@@ -604,11 +589,12 @@ class Window(wx.Frame):
             self.enable_fields()
 
             # Сообщение
-            dialog = wx.MessageDialog(self,
-                                      f"{_("(1)Пользователь")} - {username} - {_("разблокирован")}",
-                                      _("Предупреждение"),
-                                      wx.ICON_WARNING
-                                      )
+            dialog = wx.MessageDialog(
+                self,
+                f"{_("(1)Пользователь")} - {username} - {_("разблокирован")}",
+                _("Предупреждение"),
+                wx.ICON_WARNING,
+            )
             dialog.ShowModal()
 
     def disable_fields(self):
@@ -767,7 +753,9 @@ class Window(wx.Frame):
             self.Close()
             self.enable_fields_tool_bar()
             print("1 Должен активироваться интерфейс")
-            function.send_bot_telegram_message(_("Кто то пытается разблокировать интерфейс программы\nПароль не совпал"))
+            function.send_bot_telegram_message(
+                _("Кто то пытается разблокировать интерфейс программы\nПароль не совпал")
+            )
         # Если пароль совпал и есть остаточное время в БД
         elif dlg.password_check and function.read_data_json("remaining_time"):
             self.enable_fields()
@@ -784,10 +772,8 @@ class Window(wx.Frame):
     def log_error(self, message):
         """Логирование ошибок в файл."""
         try:
-            with open(PATH_LOG_FILE, 'a', encoding="utf-8") as log_file:
-                log_file.write(f"CPG({time.strftime('%Y-%m-%d %H:%M:%S')}) - "
-                               f"{message}\n==================\n"
-                               )
+            with open(PATH_LOG_FILE, "a", encoding="utf-8") as log_file:
+                log_file.write(f"CPG({time.strftime('%Y-%m-%d %H:%M:%S')}) - " f"{message}\n==================\n")
         except Exception as e:
             print(f"(1)Ошибка при записи лога в файл: {str(e)}")
             function.show_message_with_auto_close(f"{_("Ошибка при записи в файл лога:\n")}{str(e)}", _("ОШИБКА"))
@@ -825,7 +811,9 @@ def main_app():
     elif error_code != 0:  #
         if mutex != 0:
             ctypes.windll.kernel32.CloseHandle(mutex)
-        function.show_message_with_auto_close(_("Неизвестная ошибка:\n{error_code}").format(error_code=error_code), _("ОШИБКА"))
+        function.show_message_with_auto_close(
+            _("Неизвестная ошибка:\n{error_code}").format(error_code=error_code), _("ОШИБКА")
+        )
         return
 
     # Создаем папки и файлы с данными для работы приложения если они не существуют
@@ -839,15 +827,17 @@ def main_app():
     if len(user_list_os) <= 1:
         # Выводим окно предупреждения, что в системе должно быть как минимум 2 пользователя
         # (1 админ 1 пользователь/админ)
-        function.show_message_with_auto_close(_("В системе всего один пользователь, приложение не будет работать!!\n"
-                                                "Необходимо, что-бы в системе было два пользователя.\n"
-                                                "1- Администратор\n2- Пользователь/Администратор\n"
-                                                "Необходимо создать второго пользователя.\n"
-                                                "После этого программа запустится."
-                                                ),
-                                              _("ОШИБКА"),
-                                              15
-                                              )
+        function.show_message_with_auto_close(
+            _(
+                "В системе всего один пользователь, приложение не будет работать!!\n"
+                "Необходимо, что-бы в системе было два пользователя.\n"
+                "1- Администратор\n2- Пользователь/Администратор\n"
+                "Необходимо создать второго пользователя.\n"
+                "После этого программа запустится."
+            ),
+            _("ОШИБКА"),
+            15,
+        )
 
         # Закрываем приложение для защиты
         ctypes.windll.kernel32.CloseHandle(mutex)  # Закрываем дескриптор мьютекса
