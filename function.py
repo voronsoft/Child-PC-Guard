@@ -661,11 +661,12 @@ def run_program_bot():
 
 # ------------------------- Работа с Дескриптором мьютекса --------------------
 def process_mutex_error(error_code, mutex):
+    print(11, error_code)
     """Функция для обработки ошибок, связанных с мьютексом и кодом ошибки."""
     # Получение файла, в котором функция была вызвана
     caller_frame = inspect.stack()[1]
     caller_file = os.path.basename(caller_frame.filename)
-
+    print(22, error_code)
     if error_code == 183:  # Объект с таким именем уже существует.
         log_error(f"({caller_file}) Error mutex: {error_code}\n"
                   f"The application is already running. A second instance of the application cannot be launched."
@@ -673,11 +674,13 @@ def process_mutex_error(error_code, mutex):
         sys.exit()
 
     elif error_code == 5:  # ERROR_ACCESS_DENIED
+        print(2)
         if mutex != 0:
             log_error(f"({caller_file}) ERROR: Access to mutex is denied.")
         return
 
     elif error_code != 0:  # Обработка других ошибок
+        print(4)
         if mutex != 0:
             log_error(f"({caller_file}) ERROR: Unknown error {error_code}")
             sys.exit()

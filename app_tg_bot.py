@@ -184,7 +184,7 @@ async def main_bot_run():
     mutex = ctypes.windll.kernel32.CreateMutexW(None, False, MUTEX_NAME_BCPG)
     error_code = ctypes.windll.kernel32.GetLastError()
 
-    function.process_mutex_error(mutex, error_code)
+    function.process_mutex_error(error_code, mutex)
     # -------------- END ---------------
 
     # Создаем приложение Telegram
