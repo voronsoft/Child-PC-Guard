@@ -74,15 +74,29 @@ Name: "{commondesktop}\Child PC Guard"; Filename: "{app}\Child PC Guard.exe"; Wo
 [Run]
 ; Запуск приложения создания задачи в планировщике заданий в момент установки (приложение должно быть в одной папке и на одном уровне с файлом инсталляции программы)
 Filename: "{app}\add_task_schedule.exe"; Flags: waituntilterminated
-; Запуск программы после установки
-Filename: "{app}\Child PC Guard.exe"; Flags: nowait postinstall
+; Перезагрузка ПК после установки
+Filename: "{cmd}"; Parameters: "/C shutdown /r /t 5"; Flags: runhidden; Description: "Система будет перезагружена через 5 секунд..."
 
 [UninstallRun]
 ; Указание на деинсталлятор
 Filename: "{app}\UNinstallerCPG.exe"; RunOnceId: "UninstallerCPG"
 
+[Registry]
+; Flags: overwrite: Указывает, что если значение уже существует, оно будет перезаписано.
+; Включаем UAC на уровне системы
+Root: HKLM; Subkey: "SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System"; ValueType: dword; ValueName: "EnableLUA"; ValueData: "1"
+; Отключение UAC предупреждения для администраторов
+Root: HKLM; Subkey: "SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System"; ValueType: dword; ValueName: "ConsentPromptBehaviorAdmin"; ValueData: "0"
+; Отключение UAC предупреждения для пользователей
+Root: HKLM; Subkey: "SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System"; ValueType: dword; ValueName: "ConsentPromptBehaviorUser"; ValueData: "0"
+
 ; Код выполняет запись в файл (install_info.txt) пути установки программы для последующего считывания приложением
 [Code]
+procedure InitializeWizard();
+begin
+  MsgBox('Для успешной установки может потребоваться подтвердить действие UAC. Пожалуйста, нажмите "Да" для продолжения.', mbInformation, MB_OK);
+end;
+
 function AppRunning(AppName: string): Boolean;
 var
   ResultCode: Integer;
