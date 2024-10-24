@@ -121,7 +121,7 @@ async def handle_warning_message(update: Update, context: ContextTypes.DEFAULT_T
     function.show_message_with_auto_close(message=text, delay=30)
     await update.message.reply_text(_("Устрашающее сообщение выведено на главном экране."))
 
-
+# Обработка сообщений от пользователя.
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Обработка сообщений от пользователя."""
     text = update.message.text
@@ -131,9 +131,6 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     time = function.seconds_to_hms(time_bd)
 
     status_prg = function.check_if_program_running("Child PC Guard.exe")
-
-    # Имя пользователя для кого назначена блокировка
-    username_block = function.read_data_json("username_blocking")
 
     status_bot = function.read_data_json("chat_id")
 
@@ -155,8 +152,22 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
             return
 
     if text == _("Получить статус CPG"):
+        # ---- Имя пользователя для кого назначена блокировка. ----
+        # Получаем имя пользователя из БД
+        username_block_bd = function.read_data_json("username_blocking")
+        # Получаем имя пользователя из системы windows если есть заблокированные учетные записи
+        username_block_sistem = function.get_block_user()
+
+        if len(username_block_bd) >= 2:
+            username_block = username_block_bd
+        elif len(username_block_sistem) >= 2 and len(username_block_bd) == 0:
+            username_block = username_block_sistem
+        else:
+            username_block = _("Не найдено")
+
+        user_status = username_block
+
         status_cpg = _("Работает") if status_prg else _("Выключено")
-        user_status = username_block if len(username_block) else _("Не найдено")
         timer_status = time if time else _("Не включено")
         bot_status = status_bot if status_bot else _("Отключено")
 
@@ -196,20 +207,26 @@ async def main_bot_run():
     # Обработчик для проверки пароля
     application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, check_password))
 
-    # Запуск бота
-    await application.initialize()  # Инициализация приложения
-    await application.start()
-    await application.updater.start_polling()
-
-    # Ждем сигнала для завершения работы
     try:
-        await asyncio.Event().wait()  # Это основной цикл, который ждет завершения
+        # Запуск бота
+        await application.initialize()  # Инициализация приложения
+        await application.start()
+        await application.updater.start_polling()
+        # Ждем сигнала для завершения работы
+        # Это основной цикл, который ждет завершения
+        await asyncio.Event().wait()
+
     except (KeyboardInterrupt, SystemExit):
+        print(1)
+        # Закрытие мьютекса при завершении
+        await shutdown(application, mutex)  # Корректное завершение работы бота
+    except Exception as e:
+        print(2)
         # Закрытие мьютекса при завершении
         if mutex != 0:
             ctypes.windll.kernel32.CloseHandle(mutex)
 
-        await shutdown(application, mutex)  # Корректное завершение работы бота
+        sys.exit()  # 0 обозначает успешное завершение
 
 
 # --------------------------------------------------------------------------------------------------

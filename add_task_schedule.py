@@ -103,7 +103,7 @@ def run_as_admin():
                 sys.executable,
                 " ".join([f'"{arg}"' for arg in sys.argv]),
                 None,
-                1,  # 1 - отображать консоль; 0 - скрыть консоль
+                0,  # 1 - отображать консоль; 0 - скрыть консоль
             )
             sys.exit()  # Завершаем текущий процесс, чтобы предотвратить двойной запуск
         except Exception as e:

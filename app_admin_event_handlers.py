@@ -1,9 +1,6 @@
 """Обработчики событий для файла app_admin.py"""
-import ctypes
 import os
 import subprocess
-import sys
-
 import time
 
 import wx
@@ -12,7 +9,6 @@ import config_localization
 import function
 from app_wind_bot import BotWindow
 from app_wind_documentation import DocWindow
-
 from app_wind_lang import LanguageWnd
 from app_wind_pass import WndPass
 from config_app import PATH_LOG_FILE, path_timer_exe, path_unblock_usr_exe
@@ -44,7 +40,8 @@ class EventHandlers:
         self.main_window.username_blocking = function.read_data_json("username_blocking")
 
         # Время блокировки получаем из поля выбора и записываем в файл данных переведя в секунды
-        time_choice = int(self.main_window.input_time.GetValue()) * 3600  # TODO Перевести значение в часы после разработки (*3600)
+        # TODO Перевести значение в часы после разработки (*3600)
+        time_choice = int(self.main_window.input_time.GetValue()) * 3600
         # Записывает выбранное время для блокировки в файл данных.
         function.update_data_json("remaining_time", time_choice)
         # Обновляем атрибут в классе
@@ -270,7 +267,6 @@ class EventHandlers:
         try:
             # Запускаем .exe файл через subprocess
             subprocess.Popen([path_timer_exe])
-            # subprocess.Popen([path_unblock_usr_exe])
         except Exception as e:
             # Выводим сообщение об ошибке, если не удалось запустить приложение
             function.show_message_with_auto_close(f"{path_timer_exe}\n{str(e)}", _("Ошибка"))
