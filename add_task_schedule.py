@@ -1,172 +1,99 @@
 """
-Файл отвечает за автоматизацию процесса добавления задания
-(для запуска мониторинга за программой Child PC Guard), в планировщике заданий.
+Модуль добавления задания в 'Планировщик заданий'
+Запуск каждые две минуты приложения - Windows CPG Monitor.exe
+(для запуска мониторинга за программой Child PC Guard)
 """
 
-import ctypes
-import os
-import subprocess
+import datetime
 import sys
-import time
 
-# Определяем корневую папку проекта
-PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
-# Получаем имя диска (вид С:\)
-DISK_LETTER = os.path.splitdrive(PROJECT_ROOT)[0] + "\\"
-# TODO Путь к папке с данными
-FOLDER_DATA = os.path.join(DISK_LETTER, "ProgramData", "Child PC Guard Data")
-# Путь к файлу логов - log_chpcgu.txt
-PATH_LOG_FILE = os.path.join(FOLDER_DATA, "log_chpcgu.txt")
+import win32com.client
 
-# Получаем путь к файлу XML
-if getattr(sys, "frozen", False):
-    # Если приложение запущено как исполняемый файл (.exe), используем _MEIPASS
-    base_path = sys._MEIPASS  # noqa
-else:
-    # Если приложение запущено из исходного кода (.py), используем текущую директорию
-    base_path = os.path.dirname(__file__)
+from config_app import path_monitor_exe
+from function import log_error
 
-# Указываем путь к XML файлу (относительный путь к файлу XML)
-xml_path = os.path.join(base_path, "task_data.xml")
+scheduler = win32com.client.Dispatch('Schedule.Service')
+scheduler.Connect()
+rootFolder = scheduler.GetFolder("\\")
+
+# Название задачи в планировщике задач
+taskName = "Start CPG Monitor"
 
 
-# ---------------------
-def set_full_access(directory_path):
-    """Устанавливает полный доступ для всех пользователей к указанной папке и её вложениям."""
-    try:
-        # Выполняем команду icacls для установки полных прав на папку и все вложенные файлы
-        command = f'icacls "{directory_path}" /grant Everyone:F /T /C'
-        subprocess.run(command, shell=True, check=True)
-        print(f"Полный доступ установлен для {directory_path}")
-    except subprocess.CalledProcessError as e:
-        print(f"Ошибка при установке прав доступа:\n{str(e)}")
-
-
-def create_directory_with_permissions(directory_path):
-    """Создаёт папку и устанавливает полный доступ для всех пользователей."""
-    try:
-        # Создаём папку, если её ещё нет
-        if not os.path.exists(directory_path):
-            os.makedirs(directory_path)
-            print(f"Папка создана: {directory_path}")
-        # Устанавливаем полный доступ
-        set_full_access(directory_path)
-    except Exception as e:
-        print(f"Ошибка при создании папки или установке прав:\n{str(e)}")
-
-
-def log_error(message):
-    """Метод для логирования ошибок в файл."""
-    directory_path = os.path.dirname(PATH_LOG_FILE)
-
-    # Проверяем, существует ли папка для логов
-    if not os.path.exists(directory_path):
-        create_directory_with_permissions(directory_path)
-
-    try:
-        # Проверяем, существует ли файл
-        mode = "w" if not os.path.exists(PATH_LOG_FILE) else "a"
-        with open(PATH_LOG_FILE, mode, encoding="utf-8") as log_file:
-            log_file.write(f"ADD_TASK_SCHEDULE({time.strftime('%Y-%m-%d %H:%M:%S')}) - {message}\n==================\n")
-        if mode == "w":
-            print(f"Лог-файл был создан: {PATH_LOG_FILE}")
-    except Exception as e:
-        print(f"(add_task_schedule) Ошибка при записи в лог-файл:\n{str(e)}")
-
-
-# ---------------------
-
-
-def is_admin():
+def task_exists(task_name):
     """
-    Проверяет, запущен ли скрипт с правами администратора.
+    Проверяет, существует ли задача с таким именем в Планировщике заданий.
 
-    :return: True, если запущен с правами администратора, иначе False.
+    :param task_name: Название задачи
+    :return: bool: True/False
     """
     try:
-        return bool(ctypes.windll.shell32.IsUserAnAdmin())
+        task = rootFolder.GetTask(task_name)
+        return True
     except Exception:
         return False
 
 
-def run_as_admin():
+def run_add_task():
     """
-    Проверяет, запущено ли приложение с правами администратора.
-    Если нет, перезапускает его с запросом прав администратора.
+    Функция добавления задачи в 'Планировщик заданий'
+    :return:
     """
-    if not is_admin():
-        # Перезапускаем с запросом прав администратора
-        try:
-            ctypes.windll.shell32.ShellExecuteW(
-                None,
-                "runas",
-                sys.executable,
-                " ".join([f'"{arg}"' for arg in sys.argv]),
-                None,
-                0,  # 1 - отображать консоль; 0 - скрыть консоль
-            )
-            sys.exit()  # Завершаем текущий процесс, чтобы предотвратить двойной запуск
-        except Exception as e:
-            log_error(f"Не удалось запустить программу с правами администратора:\n{e}")
-
-
-def run_powershell_commands():
-    """
-    Выполняет команды PowerShell для установки политики выполнения, получения пути к XML
-    и регистрации задачи в планировщике заданий.
-    """
-    # Устанавливаем политику выполнения для текущей сессии
-    set_policy_command = "Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process"
-
-    # Команда для чтения XML файла и регистрации задачи в планировщике заданий
-    register_task_command = f"""
-    $xmlContent = Get-Content -Path '{xml_path}' -Raw;
-    Register-ScheduledTask -Xml $xmlContent -TaskName 'Start CPG Monitor';
-    """
-
-    # Выполняем команды в PowerShell
-    try:
-        # Выполняем команду для установки политики выполнения
-        subprocess.run(["powershell", "-Command", set_policy_command], check=True)
-
-        # Выполняем команду для регистрации задачи через PowerShell
-        subprocess.run(["powershell", "-Command", register_task_command], check=True)
-        log_error("Задача 'Start CPG Monitor'\nуспешно зарегистрирована в планировщике заданий.")
-
-    except subprocess.CalledProcessError as e:
-        log_error(f"Произошла ошибка при выполнении PowerShell команд:\n - {e}")
-
-        sys.exit(1)  # Завершаем программу с кодом ошибки
-
-
-def check_task_exists(tsk_name):
-    """
-    Проверяет, существует ли задача в планировщике задач.
-
-    :param tsk_name: Имя задачи для проверки.
-    :return: True, если задача существует, иначе False.
-    """
-
-    try:
-        # Выполняем команду для проверки существования задания
-        command = ["schtasks", "/Query", "/TN", tsk_name]
-        subprocess.run(command, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        return True
-    except subprocess.CalledProcessError:
-        return False
-
-
-if __name__ == "__main__":
-    run_as_admin()  # Проверяем и запускаем от имени администратора
-
-    # Указываем имя задачи для проверки
-    task_name = "Start CPG Monitor"
-    # Проверяем, существует ли задача
-    if check_task_exists(task_name):
-        log_error(f"Задача '{task_name}'\nуже существует в планировщике задач. Установка отменена.")
-
-        sys.exit()  # Завершаем выполнение, если задача уже существует
+    # Если задача уже существует, выводим сообщение и выходим
+    if task_exists(taskName):
+        log_error(f"Задача '{taskName}' уже существует в Планировщике заданий.\nУстановка отменена.")
     else:
-        run_powershell_commands()  # Выполняем команды PowerShell напрямую из Python
+        # Создание новой задачи, если ее еще нет
+        taskDef = scheduler.NewTask(0)
 
-        sys.exit(1)  # Завершаем программу с кодом ошибки
+        # Заполнение информации о задаче
+        registrationInfo = taskDef.RegistrationInfo
+        registrationInfo.Description = ("Запускает CPG APP Monitor каждые 2 минуты в течении:"
+                                        " Безгранично. Работает от имени группа: Пользователи.")
+        registrationInfo.Author = "TG: @norovprog"
+        registrationInfo.Date = datetime.datetime.now().isoformat()
+
+        # Настройки задачи
+        settings = taskDef.Settings
+        settings.Enabled = True
+        settings.MultipleInstances = 1  # IgnoreNew
+        settings.AllowHardTerminate = True
+        settings.ExecutionTimeLimit = "PT72H"
+        settings.Priority = 7
+
+        # Триггер запуска
+        trigger = taskDef.Triggers.Create(1)  # TimeTrigger
+        trigger.StartBoundary = "2024-09-30T00:00:00"
+        trigger.Repetition.Interval = "PT2M"
+        trigger.Repetition.StopAtDurationEnd = False
+        trigger.Enabled = True
+
+        # Привилегии
+        principal = taskDef.Principal
+        principal.GroupId = "S-1-5-32-545"  # Группа Пользователи (SID)
+        principal.RunLevel = 0  # LeastPrivilege
+
+        # Действие запуска программы
+        action = taskDef.Actions.Create(0)  # Exec
+        # Путь к приложению для запуска из Планировщика задач
+        action.Path = path_monitor_exe
+        # action.Path = r"C:\Program Files (x86)\Child PC Guard\Windows CPG Monitor.exe"
+
+        # Регистрируем задачу в планировщике
+        rootFolder.RegisterTaskDefinition(
+                taskName,
+                taskDef,
+                6,  # TASK_CREATE_OR_UPDATE
+                None,  # Логин пользователя (None = текущий пользователь)
+                None,
+                3,  # TASK_LOGON_GROUP
+                None
+        )
+
+        log_error(f"Задача '{taskName}' успешно добавлена в 'Планировщик заданий'")
+
+    sys.exit()
+
+
+if __name__ == '__main__':
+    run_add_task()
