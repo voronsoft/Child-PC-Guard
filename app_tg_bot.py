@@ -165,10 +165,13 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
         else:
             username_block = _("Не найдено")
 
-        user_status = username_block
-
+        # статус программы
         status_cpg = _("Работает") if status_prg else _("Выключено")
-        timer_status = time if time else _("Не включено")
+        # имя пользователя
+        user_status = username_block
+        # время таймера
+        timer_status = time if time != "00:00:00" else _("Не включено")
+        # статус бота
         bot_status = status_bot if status_bot else _("Отключено")
 
         await update.message.reply_text(

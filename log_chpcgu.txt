@@ -1,0 +1,8 @@
+function.py(2024-10-24 23:19:39) - (Function: get_block_user()) Произошла ошибка: list index out of range
+==================
+function.py(2024-10-24 23:32:46) - (Function: get_block_user()) Произошла ошибка: list index out of range
+==================
+function.py(2024-10-24 23:34:19) - (Function: get_block_user()) Произошла ошибка: list index out of range
+==================
+function.py(2024-10-24 23:46:55) - (Function: get_block_user()) Произошла ошибка: list index out of range
+==================
