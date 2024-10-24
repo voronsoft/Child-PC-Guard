@@ -13,6 +13,7 @@ import app_wind_documentation
 import app_wnd_input_first_pass
 import config_localization
 import function
+from add_task_schedule import run_add_task
 from app_admin_event_handlers import EventHandlers
 from app_wind_exit_prog import WndCloseApp
 from app_wind_splash_screen import main_splash
@@ -413,11 +414,12 @@ def main_app():
     # Запускаем приложение как администратор
     function.run_as_admin()
 
-    # ------- Проверка кода ошибки -------
+    # ------- Проверка кода ошибки на запуск приложения в единственном числе -------
     mutex = ctypes.windll.kernel32.CreateMutexW(None, False, MUTEX_NAME_CPG)
     error_code = ctypes.windll.kernel32.GetLastError()
 
     function.process_mutex_error(error_code, mutex)
+    # ------------------------------------ END -------------------------------------
 
     # Создаем папки и файлы с данными для работы приложения если они не существуют
     function.function_to_create_path_data_files()
@@ -448,13 +450,14 @@ def main_app():
 
     # Если пароля нет в реестре, то запускаем приложение как в первый раз с вводом будущего пароля для приложения
     if not password_from_registry:
-        print(121212111)
-        # Выводим описание о программе
+        # Выводим описание о программе - Документация
         app_wind_documentation.run_wind_doc()
         # Вывод окна для настройки приложения
         app_wnd_input_first_pass.main()
         # Вывод заставки программы
         main_splash()
+        # При первом запуске активируем добавление задачи в 'Планировщик заданий'
+        run_add_task()
 
     # Запускаем приложение бота
     function.run_program_bot()

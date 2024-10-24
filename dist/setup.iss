@@ -12,7 +12,7 @@ DefaultDirName={commonpf32}\Child PC Guard
 DefaultGroupName=Child PC Guard
 ; Название установщика
 OutputBaseFilename=Child PC Guard Installer
-;
+; Метод сжатия
 Compression=lzma2
 SolidCompression=yes
 ; Отключить страницу выбора каталога для установки приложения
@@ -46,7 +46,6 @@ Source: "Child PC Guard.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "Child PC Timer.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "Child PC Unlock User.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "Windows CPG Monitor.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "add_task_schedule.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "run_bot_telegram.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "unins000.exe"; DestDir: "{app}"; Flags: ignoreversion
 
@@ -72,9 +71,7 @@ Name: "{commondesktop}\Child PC Timer"; Filename: "{app}\Child PC Timer.exe"; Wo
 Name: "{commondesktop}\Child PC Guard"; Filename: "{app}\Child PC Guard.exe"; WorkingDir: "{app}"; IconFilename: "{app}\img\icon.ico"
 
 [Run]
-; Запуск приложения создания задачи в планировщике заданий в момент установки (приложение должно быть в одной папке и на одном уровне с файлом инсталляции программы)
-Filename: "{app}\add_task_schedule.exe"; Flags: waituntilterminated
-; Перезагрузка ПК после установки
+; Перезагрузка ПК после установки что бы изменения в реестре вступили в силу относится к -[Registry]
 Filename: "{cmd}"; Parameters: "/C shutdown /r /t 5"; Flags: runhidden; Description: "Система будет перезагружена через 5 секунд..."
 
 [UninstallRun]
