@@ -1,3 +1,0 @@
-function.py(2024-10-22 14:39:12) - (app_tg_bot.py) Error mutex: 183
-The application is already running. A second instance of the application cannot be launched.
-==================

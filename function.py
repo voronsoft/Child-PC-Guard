@@ -72,7 +72,7 @@ def run_as_admin():
                     " ".join([f'"{arg}"' for arg in sys.argv]),
                     None,
                     # TODO отобразить окно консоли или скрыть
-                    1,  # 1-отобразить консоль \ 0-скрыть консоль
+                    0,  # 1-отобразить консоль \ 0-скрыть консоль
             )
             sys.exit()  # Завершаем текущий процесс, чтобы предотвратить двойной запуск
         except Exception as e:
@@ -224,7 +224,7 @@ def get_block_user():
         return disabled_users[0]
 
     except Exception as e:
-        log_error(f"Произошла ошибка: {e}")
+        log_error(f"(Function: get_block_user()) Произошла ошибка: {e}")
         return ""
 
 
@@ -265,7 +265,7 @@ def blocking(username, id_ses_user):
     Функция блокировки пользователя.
 
     :param username: Имя блокируемого пользователя
-    :param id_sess_user: ID сессии для блокировки экрана рабочего стола
+    :param id_ses_user: ID сессии для блокировки экрана рабочего стола
     """
     if id_ses_user is not None:
         command_logoff = f"logoff {id_ses_user}"
@@ -274,17 +274,20 @@ def blocking(username, id_ses_user):
             # Выполнение команды logoff для указанной сессии
             subprocess.run(command_logoff, shell=True, check=True)
             print("1 Отработала команда блокировки экрана")
-            time.sleep(1)
-            # TODO закомментированная команда для теста
-            # Выполняем команду для блокировки учетной записи
+            log_error("1 Отработала команда блокировки экрана")
+        except Exception as e:
+            log_error(log_error(f"Ошибка при выполнении команды выхода на экран блокировки:\n{e}"))
+
+        time.sleep(1)
+
+        try:
+            # Выполнение команды для блокировки учетной записи
             subprocess.run(command_disable_user, shell=True, check=True)
-            print("2 Отработала команда блокировки учетной записи")
-            print(f"Учетка заблокирована {username} (ID: {id_ses_user}).")
+            log_error(f"2 Учётка заблокирована {username} (ID: {id_ses_user}).")
         except subprocess.CalledProcessError as e:
-            log_error(f"Ошибка при выполнении команд: {e}")
-            print(f"Ошибка при выполнении команд: {e}")
+            log_error(f"Ошибка при выполнении команды Блокировки учётной записи:\n{e}")
     else:
-        print("Не удалось получить ID сессии. Команды не будут выполнены.")
+        log_error("(function.py/blocking()) Не удалось получить ID сессии. Команды не будут выполнены.")
 
 
 def unblock_user(username):
@@ -306,7 +309,7 @@ def unblock_user(username):
 
 
 def username_session():
-    """Получение имени пользователя в сессии"""
+    """Получение имени пользователя в активной сессии"""
     username_session = os.getlogin()  # Получение имени текущего пользователя
     return username_session
 
@@ -690,4 +693,10 @@ def process_mutex_error(error_code, mutex):
 # --------------------------------------- END ---------------------------------
 
 if __name__ == "__main__":
-    ...
+    username = "test"  # Получаем имя пользователя для блокировки
+    session_data = get_session_id_by_username(username)  # Данные о сессии
+    id_session_username = int(*(id for id in session_data if id.isdigit()))  # ID сессии
+
+    print("username- ", username)
+    print("session_data- ", session_data)
+    print("id_session_username- ", id_session_username)
