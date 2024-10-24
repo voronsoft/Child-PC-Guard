@@ -217,7 +217,6 @@ class Window(wx.Frame):
                 choices=user_list,
                 style=wx.CB_DROPDOWN | wx.CB_READONLY,
         )
-        # self.input_username.SetSelection(-1)
         sizer_top.Add(self.input_username, 0, wx.ALL, 5)
         sizer_main.Add(sizer_top, 0, wx.EXPAND, 5)
 
@@ -298,7 +297,7 @@ class Window(wx.Frame):
         self.Centre(wx.BOTH)
 
         # ------------------------------------------------
-        # TODO логика если есть остаточное время в файле.
+        # Логика если есть остаточное время в файле.
         # Загрузка оставшегося времени из файла, если оно есть
         # Если есть остаточное время и имя в файле данных data.json
         if self.remaining_time > 0 and len(self.username_blocking) >= 1:
@@ -325,12 +324,18 @@ class Window(wx.Frame):
         # -------------------------------------------------
 
         # Подключаемые события в программе ----------------
-        self.input_username.Bind(wx.EVT_TEXT, self.event_handlers.on_input_changed)  # Событие при выборе имени пользователя
-        self.input_time.Bind(wx.EVT_COMBOBOX, self.event_handlers.on_input_changed)  # Событие при выборе времени для блокировки
-        self.Bind(wx.EVT_TIMER, self.event_handlers.run_on_timer, self.timer)  # Событие, при запуске таймера
-        self.Bind(wx.EVT_CLOSE, self.on_close)  # Событие, закрытия окна
-        self.btn_ok.Bind(wx.EVT_BUTTON, self.event_handlers.start_blocking)  # Событие, при нажатии OK (запуск задания)
-        self.btn_disable_blocking.Bind(wx.EVT_BUTTON, self.event_handlers.disable_blocking)  # Событие - Отключить блокировку
+        # Событие при выборе имени пользователя
+        self.input_username.Bind(wx.EVT_TEXT, self.event_handlers.on_input_changed)
+        # Событие при выборе времени для блокировки
+        self.input_time.Bind(wx.EVT_COMBOBOX, self.event_handlers.on_input_changed)
+        # Событие, при запуске таймера
+        self.Bind(wx.EVT_TIMER, self.event_handlers.run_on_timer, self.timer)
+        # Событие, закрытия окна
+        self.Bind(wx.EVT_CLOSE, self.on_close)
+        # Событие, при нажатии OK (запуск задания)
+        self.btn_ok.Bind(wx.EVT_BUTTON, self.event_handlers.start_blocking)
+        # Событие - Отключить блокировку
+        self.btn_disable_blocking.Bind(wx.EVT_BUTTON, self.event_handlers.disable_blocking)
         # События при нажатии кнопок в тулбаре ------------
         # Выбор языка
         self.Bind(wx.EVT_TOOL, self.event_handlers.on_lang, self.btn_tool_lang)
@@ -404,6 +409,7 @@ class Window(wx.Frame):
 
 
 def main_app():
+    """Функция запуска главного приложения"""
     # Запускаем приложение как администратор
     function.run_as_admin()
 
