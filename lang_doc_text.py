@@ -49,10 +49,10 @@ ru_html_content = r"""
             <div class="toc">
                 <h2>Содержание:</h2>
                 <ul>
-                    <li><a href="#program-features">Что может эта программа?</a></li>
-                    <li><a href="#usage-rules">Правила использования программы</a></li>
-                    <li><a href="#telegram-setup">Настройка оповещения через бот Телеграм</a></li>
-                    <li><a href="#contacts">Контакты</a></li>
+                    <li><a href="#program-features_ru">Что может эта программа?</a></li>
+                    <li><a href="#usage-rules_ru">Правила использования программы</a></li>
+                    <li><a href="#telegram-setup_ru">Настройка оповещения через бот Телеграм</a></li>
+                    <li><a href="#contacts_ru">Контакты</a></li>
                 </ul>
             </div>
 
@@ -64,7 +64,7 @@ ru_html_content = r"""
                 Поэтому всегда помните об этом как о первом правиле.<br>
             </p>
 
-            <h2 id="program-features">Итак, что может эта программа?</h2>
+            <h2 id="program-features_ru">Итак, что может эта программа?</h2>
             <p>
                 Она создана для контроля времени, сколько ваш ребенок проведет сегодня или завтра за компьютером.<br>
                 Все просто на самом деле. Вы выбираете время в часах из списка и нажимаете "Запуск".<br>
@@ -73,7 +73,7 @@ ru_html_content = r"""
                 Только вы, имея пароль к программе, сможете снова дать доступ на определенное время.<br>
             </p>
 
-            <h2 id="usage-rules">Правила использования программы</h2>
+            <h2 id="usage-rules_ru">Правила использования программы</h2>
             <ul>
                 <h3>1 Правило.</h3>
                     <p>
@@ -137,7 +137,7 @@ ru_html_content = r"""
 
             <hr>
 
-            <h2 id="telegram-setup">Настройка оповещения через бот Телеграм</h2>
+            <h2 id="telegram-setup_ru">Настройка оповещения через бот Телеграм</h2>
             <p>Вы можете подключить оповещение через Телеграм. Как это сделать?</p>
             <ul>
                 <li>Запустите программу Child PC Guard</li>
@@ -173,7 +173,7 @@ ru_html_content = r"""
                 <li>Выключить компьютер, но без блокировки пользователя.<br></li>
                 <li>Заблокировать доступ к ПК в независимости от того работает таймер отсчета времени или нет.<br></li>
             </p>
-            <p id="contacts" class="admin-warning">
+            <p id="contacts_ru" class="admin-warning">
                 Писать по адресу - <b>gbo4.net@gmail.com</b><br>
                 Мой ник в Telegram:" <b>@norovprog</b>
             </p>
@@ -242,10 +242,10 @@ uk_html_content = r"""
             <div class="toc">
                 <h2>Зміст:</h2>
                 <ul>
-                    <li><a href="#program-features">Що може ця програма?</a></li>
-                    <li><a href="#usage-rules">Правила використання програми</a></li>
-                    <li><a href="#telegram-setup">Налаштування сповіщення через бот Телеграм</a></li>
-                    <li><a href="#contacts">Контакти</a></li>
+                    <li><a href="#program-features_uk">Що може ця програма?</a></li>
+                    <li><a href="#usage-rules_uk">Правила використання програми</a></li>
+                    <li><a href="#telegram-setup_uk">Налаштування сповіщення через бот Телеграм</a></li>
+                    <li><a href="#contacts_uk">Контакти</a></li>
                 </ul>
             </div>
 
@@ -257,7 +257,7 @@ uk_html_content = r"""
                 Тому завжди пам'ятайте про це як про перше правило.<br>
             </p>
 
-            <h2 id="program-features">Отже, що може ця програма?</h2>
+            <h2 id="program-features_uk">Отже, що може ця програма?</h2>
             <p>
                 Вона створена для контролю часу, скільки ваша дитина проведе сьогодні або завтра за комп'ютером.<br>
                 Все просто насправді. Ви вибираєте час в годинах зі списку і натискаєте "Запуск".<br>
@@ -266,7 +266,7 @@ uk_html_content = r"""
                 Тільки ви, маючи пароль до програми, зможете знову дати доступ на певний час.<br>
             </p>
 
-            <h2 id="usage-rules">Правила використання програми</h2>
+            <h2 id="usage-rules_uk">Правила використання програми</h2>
             <ul>
                 <h3>1 Правило.</h3>
                     <p>
@@ -330,7 +330,7 @@ uk_html_content = r"""
 
             <hr>
 
-            <h2 id="telegram-setup">Налаштування сповіщення через бот Телеграм</h2>
+            <h2 id="telegram-setup_uk">Налаштування сповіщення через бот Телеграм</h2>
             <p>Ви можете підключити сповіщення через Телеграм. Як це зробити?</p>
             <ul>
                 <li>Запустіть програму Child PC Guard</li>
@@ -375,7 +375,7 @@ uk_html_content = r"""
                 
                 І так, це все, що стосується налаштування сповіщення про роботу програми за допомогою Бота Телеграм.<br>
             </p>
-            <p id="contacts" class="admin-warning">
+            <p id="contacts_uk" class="admin-warning">
                 Писати за адресою - <b>gbo4.net@gmail.com</b><br>
                 Мій нік у Telegram: "<b>@norovprog</b>"
             </p>
@@ -436,10 +436,10 @@ en_html_content = r"""
             <div class="toc">
                 <h2>Contents:</h2>
                 <ul>
-                    <li><a href="#program-features">What can this program do?</a></li>
-                    <li><a href="#usage-rules">Rules for using the program</a></li>
-                    <li><a href="#telegram-setup">Setting up notifications via Telegram bot</a></li>
-                    <li><a href="#contacts">Contacts</a></li>
+                    <li><a href="#program-features_en">What can this program do?</a></li>
+                    <li><a href="#usage-rules_en">Rules for using the program</a></li>
+                    <li><a href="#telegram-setup_en">Setting up notifications via Telegram bot</a></li>
+                    <li><a href="#contacts_en">Contacts</a></li>
                 </ul>
             </div>
 
@@ -451,7 +451,7 @@ en_html_content = r"""
                 Therefore, always remember this as the first rule.<br>
             </p>
 
-            <h2 id="program-features">So, what can this program do?</h2>
+            <h2 id="program-features_en">So, what can this program do?</h2>
             <p>
                 It is designed to control how much time your child spends on the computer today or tomorrow.<br>
                 It's actually quite simple. You choose the time in hours from the list and click "Start".<br>
@@ -460,7 +460,7 @@ en_html_content = r"""
                 Only you, having the password to the program, can grant access again for a certain time.<br>
             </p>
 
-            <h2 id="usage-rules">Rules for using the program</h2>
+            <h2 id="usage-rules_en">Rules for using the program</h2>
             <ul>
                 <h3>1st Rule.</h3>
                     <p>
@@ -524,7 +524,7 @@ en_html_content = r"""
 
             <hr>
 
-            <h2 id="telegram-setup">Setting up notifications via Telegram bot</h2>
+            <h2 id="telegram-setup_en">Setting up notifications via Telegram bot</h2>
             <p>You can connect notifications through Telegram. How to do this?</p>
             <ul>
                 <li>Run the Child PC Guard program</li>
@@ -569,7 +569,7 @@ en_html_content = r"""
 
                 And so this is all regarding the setup of notifications about the program's operation using the Telegram Bot.<br>
             </p>
-            <p id="contacts" class="admin-warning">
+            <p id="contacts_en" class="admin-warning">
                 Write to the address - <b>gbo4.net@gmail.com</b><br>
                 My nickname on Telegram: "<b>@norovprog</b>
             </p>
