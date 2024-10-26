@@ -414,24 +414,24 @@ def main_app():
     """Функция запуска главного приложения"""
     # Запускаем приложение как администратор
     function.run_as_admin()
-
+    print("01")
     # ------- Проверка кода ошибки на запуск приложения в единственном числе -------
     mutex = ctypes.windll.kernel32.CreateMutexW(None, False, MUTEX_NAME_CPG)
     error_code = ctypes.windll.kernel32.GetLastError()
-
+    print("02")
     function.process_mutex_error(error_code, mutex)
     # ------------------------------------ END -------------------------------------
 
     # Запуск окна соглашения о добавлении программы как доверенный источник.
     # Для отключения блокировки системой защиты от вирусов.
     app_wnd_add_app_defender.run_main_add_def_app()
-
+    print(1)
     # Создаем папки и файлы с данными для работы приложения если они не существуют
     function.function_to_create_path_data_files()
-
+    print(2)
     # Получаем пароль из реестра
     password_from_registry = function.get_password_from_registry()
-
+    print(3)
     # Получаем пользователей системы
     user_list_os = function.get_users()
     if len(user_list_os) <= 1:
@@ -452,7 +452,7 @@ def main_app():
         # Закрываем приложение для защиты
         ctypes.windll.kernel32.CloseHandle(mutex)  # Закрываем дескриптор мьютекса
         sys.exit(0)
-
+    print(4)
     # Если пароля нет в реестре, то запускаем приложение как в первый раз с вводом будущего пароля для приложения
     if not password_from_registry:
         # Выводим описание о программе - Документация
@@ -463,22 +463,23 @@ def main_app():
         main_splash()
         # При первом запуске активируем добавление задачи в 'Планировщик заданий'
         run_add_task()
-
+    print(5)
     # Запускаем приложение бота
     function.run_program_bot()
-
+    print(6)
     # Инициализируем главное окно
     app = wx.App(False)
     main_frame = Window(None)
     main_frame.event_handlers.disable_fields()
     main_frame.event_handlers.enable_fields_tool_bar()
-
+    print(7)
     main_frame.Show()
     # Основной цикл приложения
     app.MainLoop()
-
+    print(8)
     # Закрываем дескриптор мьютекса
     ctypes.windll.kernel32.CloseHandle(mutex)
+    print(9)
     sys.exit(0)
 
 
@@ -486,3 +487,4 @@ if __name__ == "__main__":
 
     # Запуск главного приложения
     main_app()
+    print(10)

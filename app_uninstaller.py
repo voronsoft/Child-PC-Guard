@@ -253,6 +253,8 @@ def uninstaller():
     # Удаляем папку приложения
     delete_folder_and_contents()
 
+    time.sleep(15)
+
 
 if __name__ == "__main__":
     uninstaller()
