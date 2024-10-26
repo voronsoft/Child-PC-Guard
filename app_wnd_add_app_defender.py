@@ -14,7 +14,8 @@ import function
 from config_app import FOLDER_INSTALL_APP
 from lang_app_wnd_add_app_defender_text import (en_html_txt_agreement,
                                                 ru_html_txt_agreement,
-                                                uk_html_txt_agreement)
+                                                uk_html_txt_agreement
+                                                )
 
 # Подключаем локализацию
 _ = config_localization.setup_locale(function.read_data_json("language"))
@@ -28,7 +29,14 @@ _ = config_localization.setup_locale(function.read_data_json("language"))
 class AddAppWindDefender(wx.Dialog):
 
     def __init__(self, parent):
-        wx.Dialog.__init__(self, parent, id=wx.ID_ANY, title=_(r"Добавить в исключения"), pos=wx.DefaultPosition, size=wx.Size(700, 700), style=wx.DEFAULT_DIALOG_STYLE)
+        wx.Dialog.__init__(self,
+                           parent,
+                           id=wx.ID_ANY,
+                           title=_("Добавить в исключения"),
+                           pos=wx.DefaultPosition,
+                           size=wx.Size(700, 700),
+                           style=wx.DEFAULT_DIALOG_STYLE & ~wx.CLOSE_BOX
+                           )
 
         self.SetSizeHints(wx.Size(700, 700), wx.Size(700, 700))
         self.SetFont(wx.Font(12, wx.FONTFAMILY_SWISS, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, False, "Segoe UI"))
@@ -84,38 +92,32 @@ class AddAppWindDefender(wx.Dialog):
     # Обработчики событий
     def on_add_to_defender(self, event):
         """Обработчик добавления папки в исключения Windows Defender"""
-        if not self.restart_as_admin():
-            return
-
-        ps_script = f"""
-        Add-MpPreference -ExclusionPath "{self.path_folder_app}"
-        """
+        ps_script = f"""Add-MpPreference -ExclusionPath "{self.path_folder_app}" -Force"""
         try:
-            subprocess.run(["powershell", "-ExecutionPolicy", "Bypass", "-Command", ps_script], check=True, shell=True)
-            wx.MessageBox(f"Папка {self.path_folder_app} успешно добавлена в исключения Windows Defender.", "Успех", wx.OK | wx.ICON_INFORMATION)
+            # subprocess.run(["powershell", "-ExecutionPolicy", "Bypass", "-Command", ps_script], check=True, shell=True)
+            result = subprocess.run(["powershell", "-ExecutionPolicy", "Bypass", "-Command", ps_script],
+                                    capture_output=True, text=True, shell=True
+                                    )
+
+            wx.MessageBox(
+                    _("Папка {pth} успешно добавлена в исключения 'Windows Defender.'").format(pth=self.path_folder_app),
+                    _("Успех"), wx.OK | wx.ICON_INFORMATION
+            )
         except subprocess.CalledProcessError as e:
-            wx.MessageBox(f"Ошибка при добавлении в исключения: {str(e)}", "Ошибка", wx.OK | wx.ICON_ERROR)
+            wx.MessageBox(_(r"Ошибка при добавлении в исключения:\n{e}").format(err=e),
+                          _("Ошибка"),
+                          wx.OK | wx.ICON_ERROR
+                          )
 
         self.Close()
 
     def on_close(self, event):
         """Обработчик закрытия программы"""
         self.Destroy()
-
-    def restart_as_admin(self):
-            """Проверка и перезапуск программы с правами администратора"""
-            if ctypes.windll.shell32.IsUserAnAdmin():
-                return True
-            else:
-                wx.MessageBox("Для добавления папки в исключения нужны права администратора.", "Требуются права администратора", wx.OK | wx.ICON_WARNING)
-                try:
-                    ctypes.windll.shell32.ShellExecuteW(None, "runas", sys.executable, None, None, 1)
-                except Exception as e:
-                    wx.MessageBox(f"Не удалось перезапустить программу с правами администратора: {str(e)}", "Ошибка", wx.OK | wx.ICON_ERROR)
-                sys.exit()
+        sys.exit()
 
 
-def run_main_add_def():
+def run_main_add_def_app():
     app = wx.App(False)
     wnd_add_def = AddAppWindDefender(None)
     wnd_add_def.ShowModal()
@@ -123,4 +125,4 @@ def run_main_add_def():
 
 
 if __name__ == '__main__':
-    run_main_add_def()
+    run_main_add_def_app()

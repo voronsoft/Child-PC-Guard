@@ -9,6 +9,7 @@ import sys
 import wx
 import wx.xrc
 
+import app_wnd_add_app_defender
 import app_wind_documentation
 import app_wnd_input_first_pass
 import config_localization
@@ -22,7 +23,6 @@ from config_app import FOLDER_IMG
 
 # Подключаем локализацию
 _ = config_localization.setup_locale(function.read_data_json("language"))
-print("Запуск программы язык в БД: ", function.read_data_json("language"))
 
 # Имя мьютекса (должно быть уникальным)
 MUTEX_NAME_CPG = "Global\\Child_PC_Guard"
@@ -421,6 +421,10 @@ def main_app():
 
     function.process_mutex_error(error_code, mutex)
     # ------------------------------------ END -------------------------------------
+
+    # Запуск окна соглашения о добавлении прогаммы как доверенный источник.
+    # Для отключения блокировки системой защиты от вирусов.
+    app_wnd_add_app_defender.run_main_add_def_app()
 
     # Создаем папки и файлы с данными для работы приложения если они не существуют
     function.function_to_create_path_data_files()
