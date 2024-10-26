@@ -150,9 +150,9 @@ class UnblockUser(wx.Dialog):
                                                wx.DefaultSize,
                                                wx.BU_AUTODRAW | 0
                                                )
-        self.btn_update_mode.SetBitmap(wx.Bitmap(r"img\update48.ico", wx.BITMAP_TYPE_ANY))
+        self.btn_update_mode.SetBitmap(wx.Bitmap(os.path.join(FOLDER_IMG, "update48.ico"), wx.BITMAP_TYPE_ANY))
         self.btn_update_mode.SetBitmapDisabled(wx.NullBitmap)
-        self.btn_update_mode.SetBitmapPressed(wx.Bitmap(r"img\update248.ico", wx.BITMAP_TYPE_ANY))
+        self.btn_update_mode.SetBitmapPressed(wx.Bitmap(os.path.join(FOLDER_IMG, "update248.ico"), wx.BITMAP_TYPE_ANY))
         self.btn_update_mode.SetBitmapFocus(wx.NullBitmap)
         sizer_top.Add(self.btn_update_mode, 0, wx.ALIGN_CENTER | wx.ALL, 0)
 
@@ -187,7 +187,7 @@ class UnblockUser(wx.Dialog):
 
         self.img_user = wx.StaticBitmap(self,
                                         wx.ID_ANY,
-                                        wx.Bitmap(r"img\user48.ico", wx.BITMAP_TYPE_ANY),
+                                        wx.Bitmap(os.path.join(FOLDER_IMG, "user48.ico"), wx.BITMAP_TYPE_ANY),
                                         wx.DefaultPosition,
                                         wx.Size(48, 48),
                                         0
@@ -230,7 +230,7 @@ class UnblockUser(wx.Dialog):
         szer_btn = wx.BoxSizer(wx.HORIZONTAL)
 
         self.btn_unlock = wx.Button(self, wx.ID_ANY, _("UnLock"), wx.DefaultPosition, wx.DefaultSize, 0)
-        self.btn_unlock.SetBitmap(wx.Bitmap(r"img\unlock32.ico", wx.BITMAP_TYPE_ANY))
+        self.btn_unlock.SetBitmap(wx.Bitmap(os.path.join(FOLDER_IMG, "unlock32.ico"), wx.BITMAP_TYPE_ANY))
         self.btn_unlock.SetForegroundColour(wx.SystemSettings.GetColour(wx.SYS_COLOUR_BTNTEXT))
         self.btn_unlock.SetBackgroundColour(wx.Colour(174, 255, 170))
 
