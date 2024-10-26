@@ -64,11 +64,11 @@ def delete_file(file_path):
     try:
         if os.path.exists(file_path):
             os.remove(file_path)
-            print(f"Файл {file_path} удалён.")
+            print(f"Файл {file_path} удалён.\n")
         else:
-            print(f"Файл {file_path} не найден.")
+            print(f"Файл {file_path} не найден.\n")
     except Exception as e:
-        print(f"Ошибка при удалении файла {file_path}: {e}")
+        print(f"Ошибка при удалении файла {file_path}: {e}\n")
 
 
 # Функция удаления записи с реестра
@@ -195,9 +195,9 @@ def delete_folder_and_contents(folder_path=r"C:\Program Files (x86)\Child PC Gua
         if os.path.exists(folder_path):
             # Удаляем папку и всё её содержимое
             shutil.rmtree(folder_path)
-            print(f"Папка '{folder_path}' и всё её содержимое успешно удалены.")
+            print(f"Папка '{folder_path}' и всё её содержимое успешно удалены.\n")
         else:
-            print(f"Папка '{folder_path}' не найдена.")
+            print(f"Папка '{folder_path}' не найдена.\n")
     except Exception as e:
         print(f"Ошибка при удалении папки '{folder_path}': {e}\n")
 
@@ -209,10 +209,10 @@ def uninstaller():
     # Удаления задания из планировщика задач
     delete_task()
 
-    # Удаление записи с реестра
+    # Удаление записи о пароле с реестра
     delete_registry_key("SOFTWARE\\CPG_Password")
 
-    # Удаление записи с реестра Об инсталляторе
+    # Удаление записи с реестра об инсталляторе
     remove_specific_registry_key()
 
     # Вызов функции для удаления всех ярлыков
@@ -240,13 +240,14 @@ def uninstaller():
             print(f"Попытка удалить файл {file_path}...")
             delete_file(file_path)
         else:
-            print(f"Пропуск удаления файла {file_path}, так как процесс не был найден.")
+            print(f"Запущенный процесс не найден: {file_path}\nПопытка удалить файл.")
+            delete_file(file_path)
 
         print("\n")
 
     # ----------------------------------------------------
 
-    # Удаляем папку с данными и всем ее содержимым
+    # Удаляем папку с данными (БД) и всем ее содержимым
     delete_folder_and_files()
 
     # Удаляем папку приложения

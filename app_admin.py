@@ -422,7 +422,7 @@ def main_app():
     function.process_mutex_error(error_code, mutex)
     # ------------------------------------ END -------------------------------------
 
-    # Запуск окна соглашения о добавлении прогаммы как доверенный источник.
+    # Запуск окна соглашения о добавлении программы как доверенный источник.
     # Для отключения блокировки системой защиты от вирусов.
     app_wnd_add_app_defender.run_main_add_def_app()
 
@@ -472,8 +472,8 @@ def main_app():
     main_frame = Window(None)
     main_frame.event_handlers.disable_fields()
     main_frame.event_handlers.enable_fields_tool_bar()
-    main_frame.Show()
 
+    main_frame.Show()
     # Основной цикл приложения
     app.MainLoop()
 
