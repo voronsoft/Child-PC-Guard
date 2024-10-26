@@ -273,7 +273,6 @@ def blocking(username, id_ses_user):
         try:
             # Выполнение команды logoff для указанной сессии
             subprocess.run(command_logoff, shell=True, check=True)
-            print("1 Отработала команда блокировки экрана")
             log_error("1 Отработала команда блокировки экрана")
         except Exception as e:
             log_error(log_error(f"Ошибка при выполнении команды выхода на экран блокировки:\n{e}"))
@@ -643,10 +642,8 @@ def send_bot_telegram_message(
 
     # Проверка ответа от Telegram
     if response.status_code == 200:
-        print("Сообщение успешно отправлено.")
         log_error(f"MSG -> BOT:\n{message}")
     else:
-        print(f"Ошибка при отправке сообщения: {response.status_code} - {response.text}")
         log_error(f"Ошибка при отправке сообщения: {response.status_code} - {response.text}")
 
 
@@ -664,12 +661,11 @@ def run_program_bot():
 
 # ------------------------- Работа с Дескриптором мьютекса --------------------
 def process_mutex_error(error_code, mutex):
-    print(11, error_code)
     """Функция для обработки ошибок, связанных с мьютексом и кодом ошибки."""
     # Получение файла, в котором функция была вызвана
     caller_frame = inspect.stack()[1]
     caller_file = os.path.basename(caller_frame.filename)
-    print(22, error_code)
+
     if error_code == 183:  # Объект с таким именем уже существует.
         log_error(f"({caller_file}) Error mutex: {error_code}\n"
                   f"The application is already running. A second instance of the application cannot be launched."

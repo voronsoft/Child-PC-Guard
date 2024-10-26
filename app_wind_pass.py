@@ -92,7 +92,6 @@ class WndPass(wx.Dialog):
     def on_ok(self, event):
         """Обработчик нажатия кнопки OK"""
         # Сравниваем пароли из БД и поля для ввода
-        print("результат сравнения паролей: ", check_password(self.m_text_ctrl1.GetValue(), self.password_from_registry))
         if check_password(self.m_text_ctrl1.GetValue(), self.password_from_registry):
             self.password_check = True
             self.Destroy()  # Закрытие окна и завершение процесса

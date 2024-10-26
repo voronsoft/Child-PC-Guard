@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-10-14 22:51+0300\n"
-"PO-Revision-Date: 2024-10-16 17:51+0300\n"
+"PO-Revision-Date: 2024-10-26 04:18+0300\n"
 "Last-Translator: EMAIL@ADDRESS\n"
 "Language-Team: English\n"
 "Language: en_US\n"
@@ -142,8 +142,7 @@ msgstr "00:00:00"
 msgid "Отключить блокировку"
 msgstr "Disable blocking"
 
-#: app_admin.py:320 app_lock_unlock_usr.py:68 app_wind_exit_prog.py:81
-#: app_wind_pass.py:66
+#: app_admin.py:320 app_lock_unlock_usr.py:68 app_wind_exit_prog.py:81 app_wind_pass.py:66
 msgid "OK"
 msgstr "OK"
 
@@ -177,10 +176,10 @@ msgstr "You have not specified a user to disable blocking."
 msgid "Блокировка для пользователя отключена: {usermane}"
 msgstr "The lock for the user is disabled: {usermane}"
 
-#: app_admin.py:665 app_admin.py:674 app_admin.py:686 app_admin.py:697
-#: app_lock_unlock_usr.py:97 app_lock_unlock_usr.py:100
-#: app_lock_unlock_usr.py:282 app_lock_unlock_usr.py:297 app_wind_bot.py:196
-#: app_wind_exit_prog.py:116 app_wnd_input_first_pass.py:260 app_wind_pass.py:97
+#: app_admin.py:665 app_admin.py:674 app_admin.py:686 app_admin.py:697 app_lock_unlock_usr.py:97
+#: app_lock_unlock_usr.py:100 app_lock_unlock_usr.py:282 app_lock_unlock_usr.py:297
+#: app_wind_bot.py:196 app_wind_exit_prog.py:116 app_wnd_input_first_pass.py:260
+#: app_wind_pass.py:97
 msgid "Ошибка"
 msgstr "Error"
 
@@ -220,15 +219,13 @@ msgstr ""
 msgid "Интерфейс программы разблокирован"
 msgstr "The program interface is unlocked"
 
-#: app_admin.py:783 app_admin.py:813 app_admin.py:818 app_lock_unlock_usr.py:320
-#: app_timer.py:97 app_timer.py:140 app_timer.py:157 app_timer.py:163
-#: app_wind_bot.py:207 app_wnd_input_first_pass.py:253 app_tg_bot.py:223
-#: app_tg_bot.py:231
+#: app_admin.py:783 app_admin.py:813 app_admin.py:818 app_lock_unlock_usr.py:320 app_timer.py:97
+#: app_timer.py:140 app_timer.py:157 app_timer.py:163 app_wind_bot.py:207
+#: app_wnd_input_first_pass.py:253 app_tg_bot.py:223 app_tg_bot.py:231
 msgid "ОШИБКА"
 msgstr "ERROR"
 
-#: app_admin.py:813 app_lock_unlock_usr.py:320 app_timer.py:157
-#: app_tg_bot.py:223
+#: app_admin.py:813 app_lock_unlock_usr.py:320 app_timer.py:157 app_tg_bot.py:223
 msgid "Доступ к мьютексу запрещен."
 msgstr "Access to mutex is denied."
 
@@ -275,8 +272,7 @@ msgstr ""
 "Open the main application and set a password for the main program.\n"
 "Then go back and enter the password again to gain access"
 
-#: app_lock_unlock_usr.py:100 app_wind_exit_prog.py:116 app_wind_pass.py:97
-#: app_tg_bot.py:91
+#: app_lock_unlock_usr.py:100 app_wind_exit_prog.py:116 app_wind_pass.py:97 app_tg_bot.py:91
 msgid "Неверный пароль. Попробуйте снова."
 msgstr "Incorrect password. Try again."
 
@@ -325,17 +321,14 @@ msgstr "Setting up notifications via Telegram"
 #: app_wind_bot.py:45 app_wind_bot.py:55
 msgid ""
 "В этом окне, вам нужно ввести ID вашего чата с ботом программы.\n"
-"1- Откройте Telegram и в строке поиска введите: Child Pc Guard Bot или "
-"@ChildPCGuard_bot\n"
-"2- Для начала беседы нужно ввести /start или нажать кнопку Старт если она "
-"есть на экране.\n"
+"1- Откройте Telegram и в строке поиска введите: Child Pc Guard Bot или @ChildPCGuard_bot\n"
+"2- Для начала беседы нужно ввести /start или нажать кнопку Старт если она есть на экране.\n"
 "3- После этого вы получите сообщение от бота:"
 msgstr ""
 "In this window, you need to enter the ID of your chat with the program bot.\n"
-"1- Open Telegram and in the search bar enter: Child Pc Guard Bot or "
-"@ChildPCGuard_bot\n"
-"2- To start a conversation, you need to enter /start or click the Start "
-"button if it is on the screen.\n"
+"1- Open Telegram and in the search bar enter: Child Pc Guard Bot or @ChildPCGuard_bot\n"
+"2- To start a conversation, you need to enter /start or click the Start button if it is on "
+"the screen.\n"
 "3- After that, you will receive a message from the bot:"
 
 #: app_wind_bot.py:69 app_wind_bot.py:79
@@ -348,8 +341,7 @@ msgid ""
 msgstr ""
 "Your chat_id: хххххххххх\n"
 "You need to enter this number in the program - Child PC Guard\n"
-"By clicking on the button in the menu - 'Connect notifications via - "
-"Telegram'\n"
+"By clicking on the button in the menu - 'Connect notifications via - Telegram'\n"
 "Enter the number in the input field and click - OK\n"
 "After that, the program will be able to understand who to send messages to"
 
@@ -491,8 +483,7 @@ msgid ""
 msgstr ""
 "Your chat_id: {chat_id}\n"
 "You need to enter this number in the program - Child PC Guard\n"
-"By clicking on the button in the menu - 'Connect notifications via - "
-"Telegram'\n"
+"By clicking on the button in the menu - 'Connect notifications via - Telegram'\n"
 "Enter the number in the input field and click - OK\n"
 "After that, the program will be able to understand who to send messages to"
 
@@ -517,8 +508,8 @@ msgid "Вывести предупреждение"
 msgstr "Display a warning"
 
 #: app_tg_bot.py:99 app_tg_bot.py:194
-msgid "Выключить ПК"
-msgstr "Turn off your PC"
+msgid "Выключить и заблокировать ПК"
+msgstr "Turn off and lock your PC"
 
 #: app_tg_bot.py:99 app_tg_bot.py:192
 msgid "Разблокировать ПК"
@@ -646,3 +637,41 @@ msgstr "Enable the application"
 #: app_tg_bot.py:202
 msgid "Приложение включено."
 msgstr "Application included."
+
+msgid ""
+"Выбранный пользователь: {usermane} не вошел в свой аккаунт Windows.\n"
+"РЕШЕНИЕ:\n"
+"1 - Нужно зайти в его аккаунт.\n"
+"2 - Запустить программу от имени АДМИНИСТРАТОРА\n"
+"3 - Провести процедуру настройки блокировки снова."
+msgstr ""
+"The selected user: {usermane} is not logged into his Windows account.\n"
+"SOLUTION:\n"
+"1 - You need to log into his account.\n"
+"2 - Run the program as ADMINISTRATOR\n"
+"3 - Perform the blocking setup procedure again."
+
+msgid "Пользователь '{username}' заблокирован."
+msgstr "User '{username}' has been blocked."
+
+msgid "Команда не будет выполнена. Не назначен пользователь для блокировки перед выключением ПК"
+msgstr "The command will not be executed. No user has been assigned to lock before PC shutdown"
+
+msgid "Введите это имя для подтверждения блокировки и выключения ПК:"
+msgstr "Enter this name to confirm locking and shutting down your PC:"
+
+msgid "Пользователь {username} будет заблокирован. ПК будет выключен через 30 секунд."
+msgstr "User {username} will be blocked. PC will be shut down in 30 seconds."
+
+msgid "Имя пользователя указано неверно. Отмена операции."
+msgstr "The username is incorrect. Cancel operation."
+
+msgid ""
+"Имя пользователя который будет заблокирован:\n"
+"{usr_act_ses}"
+msgstr ""
+"Username to be blocked:\n"
+"{usr_act_ses}"
+
+msgid "Этот пользователь защищен от блокировки. Отмена операции."
+msgstr "This user is protected from blocking. Cancel operation."

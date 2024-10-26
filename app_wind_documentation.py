@@ -9,8 +9,6 @@ import os
 
 import wx
 import wx.html2
-import wx.richtext
-import wx.xrc
 
 import config_localization
 import function
@@ -49,7 +47,6 @@ class DocWindow(wx.Dialog):
 
         sizer_main.SetMinSize(wx.Size(700, 700))
         # ------------------------------------- HTML -----------------------------
-        # Заменяем richtext контрол на HtmlWindow
         self.html_win = wx.html2.WebView.New(self,
                                            wx.ID_ANY,
                                            size=wx.Size(700, 700)

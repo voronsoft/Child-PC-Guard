@@ -2,11 +2,13 @@ import asyncio
 import ctypes
 import logging
 import os
+import subprocess
 import sys
 
 from telegram import KeyboardButton, ReplyKeyboardMarkup, Update
 from telegram.ext import (Application, CommandHandler, ContextTypes,
-                          MessageHandler, filters)
+                          MessageHandler, filters
+                          )
 
 import config_localization
 import function
@@ -64,8 +66,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
                                           ).format(chat_id=chat_id)
                                         )
     if function.read_data_json("chat_id") == chat_id:
-        await update.message.reply_text(_("Chat_id: {chat_id}").format(chat_id=chat_id)
-                                        )
+        await update.message.reply_text(_("Chat_id: {chat_id}").format(chat_id=chat_id))
 
     # Проверяем, авторизован ли пользователь
     if chat_id not in authorized_users:
@@ -105,7 +106,7 @@ async def show_menu(update: Update):
     """Отображение меню кнопок"""
     keyboard = [
             [KeyboardButton(_("Получить статус CPG")), KeyboardButton(_("Вывести предупреждение"))],
-            [KeyboardButton(_("Выключить ПК"))]
+            [KeyboardButton(_("Выключить и заблокировать ПК"))]
     ]
     reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True, one_time_keyboard=False)
     await update.message.reply_text(_("Меню:"), reply_markup=reply_markup)
@@ -120,6 +121,7 @@ async def handle_warning_message(update: Update, context: ContextTypes.DEFAULT_T
     # Вывод устрашающего предупреждения на экран
     function.show_message_with_auto_close(message=text, delay=30)
     await update.message.reply_text(_("Устрашающее сообщение выведено на главном экране."))
+
 
 # Обработка сообщений от пользователя.
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -158,8 +160,11 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
         # Получаем имя пользователя из системы windows если есть заблокированные учетные записи
         username_block_sistem = function.get_block_user()
 
+        # Выбираем имя пользователя исходя из значения из БД или данных из системы
+        # Если имя в БД не пустое
         if len(username_block_bd) >= 2:
             username_block = username_block_bd
+        # Если найден в системе заблокированный пользователь
         elif len(username_block_sistem) >= 2 and len(username_block_bd) == 0:
             username_block = username_block_sistem
         else:
@@ -185,9 +190,45 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 )
         )
 
-    elif text == _("Выключить ПК"):
-        os.system("shutdown /s /t 30")  # Выключение ПК с таймером в 30 секунд
-        await update.message.reply_text(_("ПК будет выключен через 30 секунд."))
+    elif text == _("Выключить и заблокировать ПК"):
+        # Выводим имена пользователей из системы
+        usr_act_ses = function.username_session()
+        await update.message.reply_text(
+                _("Имя пользователя который будет заблокирован:\n{usr_act_ses}").format(usr_act_ses=usr_act_ses)
+        )
+        # Запрашиваем имя блокируемого пользователя
+        await update.message.reply_text(_("Введите это имя для подтверждения блокировки и выключения ПК:"))
+        context.user_data['waiting_for_username'] = True
+
+    elif context.user_data.get('waiting_for_username'):
+        # Получаем введенное имя пользователя
+        username = text.strip()
+        # Получаем имя защищенного пользователя
+        protect_usr = function.read_data_json("protected_user")
+        # Получаем имя пользователя активной сессии
+        session_usr = function.username_session()
+
+        # Если имя не совпадает с именем защищенного пользователя
+        # и имя совпадает с именем пользователя активной сессии
+        if protect_usr != username and username == session_usr:
+            # Если имя введено, блокируем пользователя
+            command_disable_user = f'net user "{username}" /active:no'
+            subprocess.run(command_disable_user, shell=True, check=True)
+            await update.message.reply_text(
+                    _("Пользователь {username} будет заблокирован. ПК будет выключен через 30 секунд.").format(username=username)
+            )
+            # Выключение ПК
+            os.system("shutdown /s /t 30")
+            context.user_data['waiting_for_username'] = False
+        elif protect_usr == username:
+            # Если имя совпадает с именем защищенного пользователя
+            await update.message.reply_text(_("Этот пользователь защищен от блокировки. Отмена операции."))
+        elif username != session_usr:
+            # Если имя не совпадает с именем активной сессии
+            await update.message.reply_text(_("Имя пользователя указано неверно. Отмена операции."))
+
+
+
 
 
 # Главная функция запуска приложения бота

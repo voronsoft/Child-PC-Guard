@@ -56,10 +56,10 @@ class EventHandlers:
             self.main_window.input_time.Disable()  # Отключаем поле выбора времени для блокировки
             self.main_window.btn_disable_blocking.Disable()  # Отключаем кнопку - Отключить блокировку
 
-            # Выводим сообщение что-бы выбранный пользователь зашел в систему (сессию)
+            # Выводим сообщение что-бы выбранный пользователь зашел в систему (активировал сессию)
             dialog = wx.MessageDialog(
                     None,
-                    f"{_("Выбранный пользователь:")} {self.main_window.username_blocking} {_("не вошел в свой аккаунт Windows.\nРЕШЕНИЕ:\n1 - Нужно зайти в его аккаунт.\n2 - Запустить программу от имени АДМИНИСТРАТОРА\n3 - Провести процедуру настройки блокировки снова.")}",
+                    _("Выбранный пользователь: {usermane} не вошел в свой аккаунт Windows.\nРЕШЕНИЕ:\n1 - Нужно зайти в его аккаунт.\n2 - Запустить программу от имени АДМИНИСТРАТОРА\n3 - Провести процедуру настройки блокировки снова.").format(usermane=self.main_window.username_blocking),
                     _("Предупреждение"),
                     wx.ICON_WARNING,
             )
@@ -141,7 +141,9 @@ class EventHandlers:
             username = self.main_window.username_blocking  # Получаем имя пользователя для блокировки
             session_data = function.get_session_id_by_username(username)  # Данные о сессии
             id_session_username = int(*(id for id in session_data if id.isdigit()))  # ID сессии
+            print("id_session_username", id_session_username)
             function.blocking(username, id_session_username)  # Запуск
+            function.send_bot_telegram_message(_("Пользователь '{username}' заблокирован.").format(username=username))
             # ====================== END ==========================
 
             # После того как отработала блокировка пользователя настраиваем интерфейс и обновляем данные.
@@ -322,7 +324,7 @@ class EventHandlers:
     def on_run_info(self, event):
         """Запуск окна справки"""
         doc_app = DocWindow(None)
-        doc_app.Show()
+        doc_app.ShowModal()
 
     def on_run_bot(self, event):
         """Запуск окна настройки для оповещения для telegram"""
@@ -356,12 +358,10 @@ class EventHandlers:
             self.main_window.input_username.Enable(False)
             self.main_window.btn_disable_blocking.Enable(True)
             function.send_bot_telegram_message(_("Интерфейс программы разблокирован"))
-            print("2 Должен активироваться интерфейс")
         # Если пароль совпал
         elif dlg.password_check:
             self.enable_fields()
             function.send_bot_telegram_message(_("Интерфейс программы разблокирован"))
-            print("3 Должен активироваться интерфейс")
 
     def log_error(self, message):
         """Логирование ошибок в файл."""

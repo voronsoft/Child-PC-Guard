@@ -1,3 +1,7 @@
+"""
+Модуль разблокировки пользователя
+"""
+
 import ctypes
 import os
 import time
@@ -8,10 +12,9 @@ import wx.xrc
 import config_localization
 import function
 from config_app import FOLDER_IMG, PATH_LOG_FILE
-from function import read_data_json, show_message_with_auto_close, unblock_user
 
 # Подключаем локализацию
-_ = config_localization.setup_locale(read_data_json("language"))
+_ = config_localization.setup_locale(function.read_data_json("language"))
 
 # Имя мьютекса (должно быть уникальным)
 MUTEX_NAME_UUCPG = "Global\\Unlock_User_CPGuard"
@@ -261,9 +264,15 @@ class UnblockUser(wx.Dialog):
         """Обработчик поиска заблокированного пользователя для 3 языковых версий"""
         self.USERNAME = function.get_block_user()
 
+        if self.USERNAME:
+            self.static_txt.SetLabel(self.USERNAME)
+            self.btn_unlock.Enable(True)
+        else:
+            self.static_txt.SetLabel(_('Нет заблокированных'))
+
     def unblock(self, event):
         # Снимаем блокировку
-        answer = unblock_user(self.USERNAME)
+        answer = function.unblock_user(self.USERNAME)
         # Очищаем имя пользователя для блокировки в файле
         function.update_data_json("username_blocking", "")
         # Очищаем время блокировки в файле
@@ -276,12 +285,13 @@ class UnblockUser(wx.Dialog):
         self.log_error(f"Пользователь {self.USERNAME} разблокирован !")
 
         if answer:
-            show_message_with_auto_close(f"{self.USERNAME}\n{_("Пользователь разблокирован!")}", _("Успешно"))
+            function.show_message_with_auto_close(_("Пользователь {username} разблокирован.").format(username=self.USERNAME), _('Успешно'))
+            function.send_bot_telegram_message(_("Пользователь {username} разблокирован.").format(username=self.USERNAME))
         else:
             # Сообщение записываем в log
             self.log_error(f"Ошибка при разблокировке пользователя: {self.USERNAME}")
-            show_message_with_auto_close(
-                    f"(a_l_u_u)\n{_("Ошибка при разблокировке пользователя:")} {self.USERNAME}\n", _("Ошибка")
+            function.show_message_with_auto_close(
+                    f"(a_l_u_u)\n{_("Error unblocking user:")} {self.USERNAME}\n", _("Ошибка")
             )
 
     @staticmethod
@@ -294,7 +304,7 @@ class UnblockUser(wx.Dialog):
                 )
         except Exception as e:
             print(f"Ошибка при записи лога в файл лога: {str(e)}")
-            show_message_with_auto_close(
+            function.show_message_with_auto_close(
                     f"CPG_UNLOCK_USER({time.strftime('%Y-%m-%d %H:%M:%S')}) - {message}\n==================\n",
                     _("Ошибка")
             )

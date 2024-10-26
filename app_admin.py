@@ -314,7 +314,8 @@ class Window(wx.Frame):
             self.timer.Start(1000)  # Запускаем таймер, обновляя каждую секунду
         # Если время 0 а имя пользователя есть
         elif self.remaining_time == 0 and len(self.username_blocking) >= 1:
-            self.remaining_time = 0
+            function.update_data_json("username_blocking", "")
+            self.username_blocking = function.read_data_json("username_blocking")
         # Если время есть, а имени нет
         elif self.remaining_time > 0 and len(self.username_blocking) == 0:
             # Очищаем имя пользователя для блокировки в файле
@@ -344,7 +345,7 @@ class Window(wx.Frame):
         self.Bind(wx.EVT_TOOL, self.event_handlers.on_run_log, self.btn_tool_log)
         # Запуск окна таймера
         self.Bind(wx.EVT_TOOL, self.event_handlers.on_run_timer, self.btn_tool_timer)
-        # Стирает все данные приложения и пароль
+        # Стирает все данные приложения
         self.Bind(wx.EVT_TOOL, self.event_handlers.on_run_clear_data, self.btn_tool_clear_data)
         # Запуск приложения разблокировки пользователя
         self.Bind(wx.EVT_TOOL, self.event_handlers.on_run_unblock, self.btn_tool_run_unblock_usr)
