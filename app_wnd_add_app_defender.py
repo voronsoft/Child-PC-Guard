@@ -110,7 +110,6 @@ class AddAppWindDefender(wx.Dialog):
                           )
 
         self.Destroy()
-        print("Метка 40")
 
     def on_close(self, event):
         """Обработчик закрытия программы"""
