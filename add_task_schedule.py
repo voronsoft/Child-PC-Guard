@@ -92,8 +92,6 @@ def run_add_task():
 
         log_error(f"Задача '{taskName}' успешно добавлена в 'Планировщик заданий'")
 
-    sys.exit()
-
 
 if __name__ == '__main__':
     run_add_task()
