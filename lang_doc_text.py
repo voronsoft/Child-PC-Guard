@@ -46,16 +46,6 @@ ru_html_content = r"""
         <div class="lang-section">
             <h1>Добро пожаловать в Child PC Guard</h1>
 
-            <div class="toc">
-                <h2>Содержание:</h2>
-                <ul>
-                    <li><a href="#program-features_ru">Что может эта программа?</a></li>
-                    <li><a href="#usage-rules_ru">Правила использования программы</a></li>
-                    <li><a href="#telegram-setup_ru">Настройка оповещения через бот Телеграм</a></li>
-                    <li><a href="#contacts_ru">Контакты</a></li>
-                </ul>
-            </div>
-
             <p class="important">ВАЖНО!</p>
 
             <p class="admin-warning">
@@ -238,16 +228,6 @@ uk_html_content = r"""
     <body>
         <div class="lang-section">
             <h1>Ласкаво просимо до Child PC Guard</h1>
-
-            <div class="toc">
-                <h2>Зміст:</h2>
-                <ul>
-                    <li><a href="#program-features_uk">Що може ця програма?</a></li>
-                    <li><a href="#usage-rules_uk">Правила використання програми</a></li>
-                    <li><a href="#telegram-setup_uk">Налаштування сповіщення через бот Телеграм</a></li>
-                    <li><a href="#contacts_uk">Контакти</a></li>
-                </ul>
-            </div>
 
             <p class="important">ВАЖЛИВО!</p>
 
@@ -432,16 +412,6 @@ en_html_content = r"""
     <body>
         <div class="lang-section">
             <h1>Welcome to Child PC Guard</h1>
-
-            <div class="toc">
-                <h2>Contents:</h2>
-                <ul>
-                    <li><a href="#program-features_en">What can this program do?</a></li>
-                    <li><a href="#usage-rules_en">Rules for using the program</a></li>
-                    <li><a href="#telegram-setup_en">Setting up notifications via Telegram bot</a></li>
-                    <li><a href="#contacts_en">Contacts</a></li>
-                </ul>
-            </div>
 
             <p class="important">IMPORTANT!</p>
 
