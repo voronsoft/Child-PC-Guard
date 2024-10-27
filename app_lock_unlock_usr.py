@@ -118,7 +118,7 @@ class UnblockUser(wx.Dialog):
                            id=wx.ID_ANY,
                            title=_("Разблокировать пользователя"),
                            pos=wx.DefaultPosition,
-                           size=wx.Size(450, -1),
+                           size=wx.Size(450, 250),
                            style=wx.DEFAULT_DIALOG_STYLE
                            )
 
@@ -135,9 +135,8 @@ class UnblockUser(wx.Dialog):
         # Устанавливаем иконку для окна
         icon = wx.Icon(os.path.join(FOLDER_IMG, "icon.ico"), wx.BITMAP_TYPE_ICO)
         self.SetIcon(icon)
-        # Получаем имя заблокированного пользователя
+        # Получаем имя заблокированного пользователя из системы
         self.USERNAME = function.get_block_user()
-        print(self.USERNAME)
 
         sizer_main = wx.BoxSizer(wx.VERTICAL)
 
@@ -242,7 +241,7 @@ class UnblockUser(wx.Dialog):
 
         szer_btn.Add(self.btn_unlock, 1, wx.ALL | wx.EXPAND, 0)
 
-        sizer_main.Add(szer_btn, 1, wx.ALL | wx.EXPAND, 5)
+        sizer_main.Add(szer_btn, 0, wx.ALL | wx.EXPAND, 5)
 
         self.SetSizer(sizer_main)
         self.Layout()
