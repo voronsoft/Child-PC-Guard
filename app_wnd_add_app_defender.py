@@ -120,7 +120,7 @@ class AddAppWindDefender(wx.Dialog):
 def run_main_add_def_app():
     app = wx.App(False)
     wnd_add_def = AddAppWindDefender(None)
-    wnd_add_def.ShowModal()
+    wnd_add_def.Show()
     app.MainLoop()
 
 
