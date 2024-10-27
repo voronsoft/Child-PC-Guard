@@ -420,9 +420,9 @@ def main_app():
     function.process_mutex_error(error_code, mutex)
     # ------------------------------------ END -------------------------------------
 
-    # Запуск окна соглашения о добавлении программы как доверенный источник.
-    # Для отключения блокировки системой защиты от вирусов.
-    app_wnd_add_app_defender.run_main_add_def_app()
+    # Получаем пароль из реестра
+    password_from_registry = function.get_password_from_registry()
+
     # Создаем папки и файлы с данными для работы приложения если они не существуют
     function.function_to_create_path_data_files()
 
@@ -452,17 +452,21 @@ def main_app():
 
     # Если пароля нет в реестре, то запускаем приложение как в первый раз с вводом будущего пароля для приложения
     if not password_from_registry:
+        # Запуск окна соглашения о добавлении программы как доверенный источник.
+        # Для отключения блокировки системой защиты от вирусов.
+        app_wnd_add_app_defender.run_main_add_def_app()
         # Выводим описание о программе - Документация
         app_wind_documentation.run_wind_doc()
         # Вывод окна для настройки приложения
         app_wnd_input_first_pass.main()
-        # Вывод заставки программы
-        main_splash()
         # При первом запуске активируем добавление задачи в 'Планировщик заданий'
         run_add_task()
 
     # Запускаем приложение бота
     function.run_program_bot()
+
+    # Вывод заставки программы
+    main_splash()
 
     # Инициализируем главное окно
     app = wx.App(False)
