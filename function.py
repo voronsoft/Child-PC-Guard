@@ -188,19 +188,26 @@ def get_block_user():
     command = "net user"
 
     try:
-        # Выполняем команду и получаем список всех пользователей
-        result = subprocess.run(command, capture_output=True, text=True, shell=True, encoding="cp866")
-
-        # Ищем пользователей в выводе команды
+        # Получаем список пользователей системы
         users = get_users()
-        disabled_users = []
+        print("users:", users)
+        # Получаем имя защищенного пользователя
+        protect_usr = read_data_json("protected_user")
+        print("protect_usr:", protect_usr)
+        # Исключаем из списка пользователей системы защищенного пользователя
+        if protect_usr in users:
+            users.remove(protect_usr)
 
+        print("2users:", users)
+
+        disabled_users = []
         # Проверяем каждого пользователя, активна ли его учетная запись
         for user in users:
             user_info_command = f'net user "{user}"'
             user_info_result = subprocess.run(
                     user_info_command, capture_output=True, text=True, shell=True, encoding="cp866"
             )
+            # print("user_info_result", user_info_result)
             user_info_output = user_info_result.stdout
 
             keyword_list = ["Account active", "Учетная запись активна", "Обліковий запис активний"]
@@ -221,11 +228,14 @@ def get_block_user():
                         disabled_users.append(user)
                         break
         # обновляем поле с именем
-        return disabled_users[0]
+        log_error(f"(get_block_user()) переменная - disabled_users содержит:\n {disabled_users}")
+        log_error(f"Возвращаемое значение: {disabled_users[0] if len(disabled_users[:]) != 0 else False}")
+
+        return disabled_users[0] if len(disabled_users[:]) != 0 else False
 
     except Exception as e:
         log_error(f"(Function: get_block_user()) Произошла ошибка: {e}")
-        return ""
+        return False
 
 
 def get_session_id_by_username(username: str):
@@ -260,33 +270,106 @@ def get_session_id_by_username(username: str):
     return None
 
 
-def blocking(username, id_ses_user):
+def is_session_active(usr_name):
+    """
+    Проверяет, активна ли сессия пользователя по имени.
+
+    :param usr_name: Имя пользователя для проверки
+    :return: True, если сессия активна; False, если неактивна
+    """
+    try:
+        # Выполнение команды для получения информации о сессии пользователя
+        command = f'query user {usr_name}'
+        result = subprocess.run(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+
+        # Обработка вывода команды
+        for line in result.stdout.splitlines():
+            # print(1)
+            if usr_name in line:
+                if "console" in line:
+                    # print(2, "Сессия активна")
+                    return True
+
+            if usr_name not in line and usr_name in line:
+                if "console" not in line:
+                    # print(3, "Сессия НЕ активна")
+                    return False
+
+    except Exception as e:
+        print(5, f"Произошла ошибка: {e}")
+
+    # print(6, False)
+    return False  # Если имя пользователя не найдено
+
+
+def blocking(username, id_ses):
     """
     Функция блокировки пользователя.
 
     :param username: Имя блокируемого пользователя
-    :param id_ses_user: ID сессии для блокировки экрана рабочего стола
+    :param id_ses: ID сессии для блокировки экрана рабочего стола
     """
-    if id_ses_user is not None:
-        command_logoff = f"logoff {id_ses_user}"
-        command_disable_user = f'net user "{username}" /active:no'
-        try:
-            # Выполнение команды logoff для указанной сессии
-            subprocess.run(command_logoff, shell=True, check=True)
-            log_error("1 Отработала команда блокировки экрана")
-        except Exception as e:
-            log_error(log_error(f"Ошибка при выполнении команды выхода на экран блокировки:\n{e}"))
+    # Статус запуска программы с привилегиями администратора или нет
+    status_run = ctypes.windll.shell32.IsUserAnAdmin()
+    log_error(f"0(blocking()) Статус запуска скрипта от имени Администратора: {status_run}")
 
-        time.sleep(1)
+    # Если запуск происходит от имени администратора
+    if status_run:
+        # Получаем имя пользователя активной сесии
+        usr = os.getlogin()
+        log_error(f"1(blocking()) Получаем имя пользователя текущей сессии: {usr}")
 
-        try:
-            # Выполнение команды для блокировки учетной записи
-            subprocess.run(command_disable_user, shell=True, check=True)
-            log_error(f"2 Учётка заблокирована {username} (ID: {id_ses_user}).")
-        except subprocess.CalledProcessError as e:
-            log_error(f"Ошибка при выполнении команды Блокировки учётной записи:\n{e}")
+        # Получаем имя защищенного пользователя
+        protect_usr = read_data_json("protected_user")
+        log_error(f"2(blocking()) Получаем имя защищенного пользователя: {protect_usr}")
+
+        # Получаем id активной сессии
+        id_ses_active = ctypes.windll.kernel32.WTSGetActiveConsoleSessionId()
+        log_error(f"3(blocking()) Получаем id текущей сессии: {id_ses_active}")
+
+        # Если имя защищенного пользователя одинаково с именем блокируемого пользователя
+        if protect_usr == usr:
+            log_error("5(blocking()) Это сессия защищенного пользователя, команда блокировки ОТМЕНЕНА.")
+            return
+        # Если имя защищенного пользователя не совпадает с именем блокируемого пользователя
+        elif protect_usr != usr:
+            # Если сессия активна
+            if is_session_active(usr):
+                log_error("6(blocking()) Должна отработать блокировка")
+                # --------------------------------------------------------------
+                # Если id сессии не пустой
+                if id_ses is not None:
+                    # Команда выхода пользователя из сессии
+                    command_logoff = f"logoff {id_ses}"
+                    # Команда для блокировки учетной записи пользователя через PowerShell
+                    command_disable_user = f'PowerShell -Command "Disable-LocalUser -Name \'{username}\'"'
+
+                    # ------------------ Закрываем пользовательскую сессию -----------------------
+                    try:
+                        log_error(f"7(blocking()) Учетная запись {username} успешно заблокирована.")
+                        # Выполнение команды через subprocess
+                        result = subprocess.run(command_disable_user, shell=True, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+                    except subprocess.CalledProcessError as e:
+                        log_error(f"8(blocking()) Ошибка при выполнении команды блокировки учетки:\n{e.stderr}")
+                    # ----------------------------------- END ------------------------------------
+                    # ------------------------ Блокируем учетную запись --------------------------
+                    try:
+                        log_error("9(blocking()) Отработала команда блокировки экрана")
+                        # Выполнение команды logoff для указанной сессии
+                        subprocess.run(command_logoff, shell=True, check=True)
+                    except Exception as e:
+                        log_error(f"10(blocking()) Ошибка при выполнении команды выхода на экран блокировки:\n{e}")
+                    # ----------------------------------- END ------------------------------------
+                else:
+                    log_error("11(blocking()) Не удалось получить ID сессии. Команды не будут выполнены.")
+                # --------------------------------------------------------------
+            # Сессия не активна
+            else:
+                log_error("12(blocking()) Пользователь не активировал сессию")
+                return
+    # Если нет прав Администратора на запуск, отмена операции
     else:
-        log_error("(function.py/blocking()) Не удалось получить ID сессии. Команды не будут выполнены.")
+        log_error(f"13(blocking()) Отмена блокировки пользователя запущено НЕ от имени Администратора\n")
 
 
 def unblock_user(username):
@@ -576,7 +659,7 @@ def set_password_in_registry(password: str):
         log_error("Пароль успешно сохранен в реестр.")
     except Exception as e:
         print(f"Ошибка при записи пароля в реестр: {e}")
-        log_error(f"{e}")
+        log_error(f"(set_password_in_registry) Ошибка при записи пароля в реестр:\n{e}")
 
 
 def get_password_from_registry():
@@ -595,7 +678,7 @@ def get_password_from_registry():
         return False
     except Exception as e:
         print(f"Ошибка при чтении пароля из реестра: {e}")
-        log_error(f"{e}")
+        log_error(f"(get_password_from_registry) Ошибка при чтении пароля из реестра:\n{e}")
         return False
 
 
@@ -612,7 +695,7 @@ def delete_password_from_registry():
         log_error("Пароль удален из реестра.")
     except FileNotFoundError:
         print("Запись не найдена в реестре.")
-        log_error("Запись не найдена в реестре.")
+        log_error("(get_password_from_registry) Запись не найдена в реестре.")
     except Exception as e:
         print(f"Ошибка при удалении записи пароля: {e}")
         log_error(f"Ошибка при удалении записи пароля: {e}")
