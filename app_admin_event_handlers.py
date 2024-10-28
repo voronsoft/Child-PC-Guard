@@ -142,7 +142,13 @@ class EventHandlers:
             session_data = function.get_session_id_by_username(username)  # Данные о сессии
             id_session_username = int(*(id for id in session_data if id.isdigit()))  # ID сессии
             print("id_session_username", id_session_username)
-            function.blocking(username, id_session_username)  # Запуск
+            # Если ос типа PRO
+            if function.get_windows_edition_pro_or_home():
+                function.blocking(username, id_session_username)  # Запуск
+            # Если ос тип HOME
+            else:
+                function.blocking_v2(username)  # Запуск
+
             function.send_bot_telegram_message(_("Пользователь '{username}' заблокирован.").format(username=username))
             # ====================== END ==========================
 
