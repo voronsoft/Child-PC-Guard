@@ -288,7 +288,7 @@ class UnblockUser(wx.Dialog):
             function.send_bot_telegram_message(_("Пользователь {username} разблокирован.").format(username=self.USERNAME))
         else:
             # Сообщение записываем в log
-            self.log_error(f"Ошибка при разблокировке пользователя: {self.USERNAME}")
+            self.log_error(f"(unblock()) Ошибка при разблокировке пользователя: {self.USERNAME}")
             function.show_message_with_auto_close(
                     f"(a_l_u_u)\n{_("Error unblocking user:")} {self.USERNAME}\n", _("Ошибка")
             )

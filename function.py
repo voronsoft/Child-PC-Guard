@@ -332,7 +332,6 @@ def get_windows_edition_pro_or_home():
     return False
 
 
-# TODO Если ос версии HOME код не работает...
 def blocking(username, id_ses):
     """
     Функция блокировки пользователя. Для windows 10/11 PRO
@@ -428,7 +427,8 @@ def blocking_v2(username):
             log_error("5(blocking_v2()) Это сессия защищенного пользователя, команда блокировки ОТМЕНЕНА.")
             # Открытие окна с сообщением
             ctypes.windll.user32.MessageBoxW(0, "Это сессия защищенного пользователя, команда блокировки ОТМЕНЕНА.",
-                                             "Отмена операции", 0)
+                                             "Отмена операции", 0
+                                             )
             return
         # Если имя защищенного пользователя не совпадает с именем блокируемого пользователя
         elif protect_usr != usr_ses:
@@ -472,7 +472,7 @@ def unblock_user(username):
         subprocess.run(command, shell=True, check=True)
         return True
     except Exception as e:
-        log_error(f"Ошибка при разблокировке пользователя - {username}:\n{e}")
+        log_error(f"(unblock_user()) Ошибка при разблокировке пользователя - {username}:\n{e}")
         show_message_with_auto_close(f"Ошибка при разблокировке пользователя - {username}:\n{e}", "Ошибка")
         return False
 
