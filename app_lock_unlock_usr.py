@@ -5,6 +5,7 @@
 import ctypes
 import os
 import time
+import subprocess
 
 import wx
 import wx.xrc
@@ -118,7 +119,7 @@ class UnblockUser(wx.Dialog):
                            id=wx.ID_ANY,
                            title=_("Разблокировать пользователя"),
                            pos=wx.DefaultPosition,
-                           size=wx.Size(450, 250),
+                           size=wx.Size(450, -1),
                            style=wx.DEFAULT_DIALOG_STYLE
                            )
 
@@ -142,24 +143,11 @@ class UnblockUser(wx.Dialog):
 
         sizer_top = wx.BoxSizer(wx.HORIZONTAL)
 
-        self.btn_update_mode = wx.BitmapButton(self,
-                                               wx.ID_ANY,
-                                               wx.NullBitmap,
-                                               wx.DefaultPosition,
-                                               wx.DefaultSize,
-                                               wx.BU_AUTODRAW | 0
-                                               )
-        self.btn_update_mode.SetBitmap(wx.Bitmap(os.path.join(FOLDER_IMG, "update48.ico"), wx.BITMAP_TYPE_ANY))
-        self.btn_update_mode.SetBitmapDisabled(wx.NullBitmap)
-        self.btn_update_mode.SetBitmapPressed(wx.Bitmap(os.path.join(FOLDER_IMG, "update248.ico"), wx.BITMAP_TYPE_ANY))
-        self.btn_update_mode.SetBitmapFocus(wx.NullBitmap)
-        sizer_top.Add(self.btn_update_mode, 0, wx.ALIGN_CENTER | wx.ALL, 0)
-
         sizer_static_text1 = wx.BoxSizer(wx.HORIZONTAL)
 
         self.static_txt_app_mode = wx.StaticText(self,
                                                  wx.ID_ANY,
-                                                 (_("АДМИНИСТРАТОР") if APP_MODE else _("НЕТ ПРАВ администратора")),
+                                                 ("Status program: " + _("АДМИНИСТРАТОР") if APP_MODE else _("НЕТ ПРАВ администратора")),
                                                  wx.Point(-1, -1),
                                                  wx.DefaultSize,
                                                  0
@@ -176,13 +164,16 @@ class UnblockUser(wx.Dialog):
                                          )
         self.static_txt_app_mode.SetForegroundColour(wx.Colour(213, 0, 0))
 
-        sizer_static_text1.Add(self.static_txt_app_mode, 1, wx.ALL | wx.EXPAND, 10)
+        sizer_static_text1.Add(self.static_txt_app_mode, 0, wx.ALIGN_CENTER, 10)
 
         sizer_top.Add(sizer_static_text1, 1, wx.ALIGN_CENTER | wx.ALL, 5)
 
-        sizer_main.Add(sizer_top, 0, wx.ALL | wx.EXPAND, 5)
+        sizer_main.Add(sizer_top, 0, wx.ALL, 5)
 
         sizer_data_user = wx.BoxSizer(wx.HORIZONTAL)
+
+        self.static_line0 = wx.StaticLine(self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.LI_HORIZONTAL)
+        sizer_main.Add(self.static_line0, 0, wx.ALL | wx.EXPAND, 5)
 
         self.img_user = wx.StaticBitmap(self,
                                         wx.ID_ANY,
@@ -192,6 +183,19 @@ class UnblockUser(wx.Dialog):
                                         0
                                         )
         sizer_data_user.Add(self.img_user, 0, wx.ALIGN_CENTER | wx.ALL, 5)
+
+        self.btn_update_mode = wx.BitmapButton(self,
+                                                wx.ID_ANY,
+                                                wx.NullBitmap,
+                                                wx.DefaultPosition,
+                                                wx.DefaultSize,
+                                                wx.BU_AUTODRAW | 0
+                                                )
+        self.btn_update_mode.SetBitmap(wx.Bitmap(os.path.join(FOLDER_IMG, "update48.ico"), wx.BITMAP_TYPE_ANY))
+        self.btn_update_mode.SetBitmapDisabled(wx.NullBitmap)
+        self.btn_update_mode.SetBitmapPressed(wx.Bitmap(os.path.join(FOLDER_IMG, "update248.ico"), wx.BITMAP_TYPE_ANY))
+        self.btn_update_mode.SetBitmapFocus(wx.NullBitmap)
+        sizer_data_user.Add(self.btn_update_mode, 0, wx.ALIGN_CENTER | wx.ALL, 0)
 
         sizer_static_text2 = wx.BoxSizer(wx.HORIZONTAL)
 
@@ -213,35 +217,33 @@ class UnblockUser(wx.Dialog):
                                         )
                                 )
         self.static_txt.SetForegroundColour(wx.Colour(223, 0, 0))
-
-        sizer_static_text2.Add(self.static_txt, 1, wx.ALL | wx.EXPAND, 10)
+        sizer_static_text2.Add(self.static_txt, 1, wx.ALL | wx.EXPAND, 0)
 
         sizer_data_user.Add(sizer_static_text2, 1, wx.ALIGN_CENTER | wx.ALL, 5)
-
-        sizer_main.Add(sizer_data_user, 0, wx.ALL | wx.EXPAND, 5)
+        # ---------------------------
+        sizer_main.Add(sizer_data_user, 0, wx.ALL | wx.EXPAND, 0)
 
         self.static_line = wx.StaticLine(self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.LI_HORIZONTAL)
-        self.static_line.SetForegroundColour(wx.SystemSettings.GetColour(wx.SYS_COLOUR_WINDOW))
-        self.static_line.SetBackgroundColour(wx.SystemSettings.GetColour(wx.SYS_COLOUR_WINDOW))
-
         sizer_main.Add(self.static_line, 0, wx.ALL | wx.EXPAND, 5)
 
-        szer_btn = wx.BoxSizer(wx.HORIZONTAL)
+        sizer_btn = wx.BoxSizer(wx.HORIZONTAL)
 
         self.btn_unlock = wx.Button(self, wx.ID_ANY, _("UnLock"), wx.DefaultPosition, wx.DefaultSize, 0)
         self.btn_unlock.SetBitmap(wx.Bitmap(os.path.join(FOLDER_IMG, "unlock32.ico"), wx.BITMAP_TYPE_ANY))
         self.btn_unlock.SetForegroundColour(wx.SystemSettings.GetColour(wx.SYS_COLOUR_BTNTEXT))
         self.btn_unlock.SetBackgroundColour(wx.Colour(174, 255, 170))
-
         # Состояние кнопки - "UnLock"
         if self.USERNAME == "":
             self.btn_unlock.Enable(False)
+        elif not self.USERNAME:
+            self.btn_unlock.Enable(False)
         else:
             self.btn_unlock.Enable(True)
+        # ------- END "UnLock" --------
+        sizer_btn.Add(self.btn_unlock, 1, wx.ALL | wx.EXPAND, 0)
 
-        szer_btn.Add(self.btn_unlock, 1, wx.ALL | wx.EXPAND, 0)
-
-        sizer_main.Add(szer_btn, 0, wx.ALL | wx.EXPAND, 5)
+        sizer_main.Add(sizer_btn, 1, wx.ALL | wx.EXPAND, 5)
+        #  wx.ALIGN_CENTER | wx.ALL
 
         self.SetSizer(sizer_main)
         self.Layout()
@@ -271,7 +273,7 @@ class UnblockUser(wx.Dialog):
 
     def unblock(self, event):
         # Снимаем блокировку
-        answer = function.unblock_user(self.USERNAME)
+        answer = self.unblock_user(self.USERNAME)
         # Очищаем имя пользователя для блокировки в файле
         function.update_data_json("username_blocking", "")
         # Очищаем время блокировки в файле
@@ -280,18 +282,33 @@ class UnblockUser(wx.Dialog):
         self.static_txt.SetLabel(_("Нет заблокированных"))
         # Отключаем кнопку
         self.btn_unlock.Enable(False)
-        # Сообщение записываем в log
-        self.log_error(f"Пользователь {self.USERNAME} разблокирован !")
-
         if answer:
+            # Сообщение записываем в log
+            self.log_error(f"Пользователь {self.USERNAME} разблокирован !")
             function.show_message_with_auto_close(_("Пользователь {username} разблокирован.").format(username=self.USERNAME), _('Успешно'))
             function.send_bot_telegram_message(_("Пользователь {username} разблокирован.").format(username=self.USERNAME))
-        else:
-            # Сообщение записываем в log
-            self.log_error(f"(unblock()) Ошибка при разблокировке пользователя: {self.USERNAME}")
-            function.show_message_with_auto_close(
-                    f"(a_l_u_u)\n{_("Error unblocking user:")} {self.USERNAME}\n", _("Ошибка")
-            )
+
+    def unblock_user(self, usr):
+        """
+        Разблокирует учетную запись пользователя Windows.
+
+        :param usr: Имя учетной записи пользователя для разблокировки.
+        """
+        try:
+            # Формируем команду для разблокировки пользователя
+            command_enable_user = f'net user "{usr}" /active:yes'
+            # Выполняем команду в командной строке
+            subprocess.run(command_enable_user, shell=True, check=True)
+            # subprocess.run(['runas', '/user:Administrator', f'cmd /c {command_enable_user}'], shell=True, check=True)
+
+            return True
+        except Exception as e:
+            self.log_error(f"(unblock_user()) Ошибка при разблокировке пользователя - {usr}:\n{e}")
+            function.show_message_with_auto_close(f"Ошибка при разблокировке пользователя - {usr}:\n{e}",
+                                                  "Ошибка",
+                                                  15
+                                                  )
+            return False
 
     @staticmethod
     def log_error(message):
