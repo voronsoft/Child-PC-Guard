@@ -179,12 +179,18 @@ def get_users():
                 users.append(username)
 
         netapi32.NetApiBufferFree(bufptr)
+        if "администратор" in users:
+            users.remove("администратор")
     return users
 
 
 def get_block_user():
-    """Получаем заблокированного пользователя"""
-    # Выполняем команду для получения списка всех пользователей
+    """
+    Получаем заблокированного пользователя
+
+    :return str(username) or False if not user blocked
+    """
+    # Получение списка всех пользователей
     command = "net user"
 
     try:
@@ -332,6 +338,7 @@ def get_windows_edition_pro_or_home():
     return False
 
 
+# Windows PRO
 def blocking(username, id_ses):
     """
     Функция блокировки пользователя. Для windows 10/11 PRO
@@ -402,6 +409,7 @@ def blocking(username, id_ses):
         log_error(f"13(blocking()) Отмена блокировки пользователя запущено НЕ от имени Администратора\n")
 
 
+# Windows Home
 def blocking_v2(username):
     """
     Функция блокировки пользователя. Для windows 10/11 HOME
@@ -433,48 +441,36 @@ def blocking_v2(username):
         # Если имя защищенного пользователя не совпадает с именем блокируемого пользователя
         elif protect_usr != usr_ses:
             log_error("6(blocking_v2()) Должна отработать блокировка")
-            # Команда выхода пользователя из сессии
-            command_logoff = f"logoff"
-            # Команда для блокировки учетной записи пользователя через PowerShell
-            command_disable_user = f'PowerShell -Command "Disable-LocalUser -Name \'{username}\'"'
+            # ------------------ Блокируем учетную запись -----------------------
+            try:
+                # Команда блокировки учетной записи пользователя (Windows HOME)
+                command_disable_user = f"net user {username} /active:no"
+                # Выполнение команды блокировки учётки от имени администратора
+                # subprocess.run(['runas', '/user:Administrator', f'cmd /c {command_disable_user}'], shell=True, check=True)
+                subprocess.run(command_disable_user, shell=True, check=True)
 
-            # ------------------ Закрываем пользовательскую сессию -----------------------
-            try:
                 log_error(f"7(blocking_v2()) Учетная запись {username} успешно заблокирована.")
-                # Выполнение команды через subprocess
-                result = subprocess.run(command_disable_user, shell=True, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
             except subprocess.CalledProcessError as e:
-                log_error(f"8(blocking_v2()) Ошибка при выполнении команды блокировки учетки:\n{e.stderr}")
-            # ----------------------------------- END ------------------------------------
-            # ------------------------ Блокируем учетную запись --------------------------
-            try:
-                log_error("9(blocking_v2()) Отработала команда блокировки экрана")
-                # Выполнение команды logoff для указанной сессии
-                subprocess.run(command_logoff, shell=True, check=True)
+                log_error(f"8(blocking_v2()) Ошибка при выполнении команды блокировки учётки:\n{str(e)}")
             except Exception as e:
-                log_error(f"10(blocking_v2()) Ошибка при выполнении команды выхода на экран блокировки:\n{e}")
-                # ----------------------------------- END ------------------------------------
+                log_error(f"8(blocking_v2()) Ошибка при выполнении команды блокировки учётки:\n{str(e)}")
+            # ----------------------------------- END ------------------------------------
+            # ------------------------ Закрываем пользовательскую сессию --------------------------
+            try:
+                # Команда выхода из сессии пользователя (Windows HOME)
+                command_logoff = f"shutdown /l"
+                # Выполнение команды выхода из сессии
+                # subprocess.run(['runas', '/user:Administrator', f'cmd /c {command_logoff}'], shell=True, check=True)
+                subprocess.run(command_logoff, shell=True, check=True)
+                log_error("9(blocking_v2()) Отработала команда блокировки экрана")
+            except subprocess.CalledProcessError as e:
+                log_error(f"10(blocking_v2()) Ошибка при выполнении команды выхода на экран блокировки:\n{str(e)}")
+            except Exception as e:
+                log_error(f"10(blocking_v2()) Ошибка при выполнении команды выхода на экран блокировки:\n{str(e)}")
+            # ----------------------------------- END ------------------------------------
     # Если нет прав Администратора на запуск, отмена операции
     else:
         log_error(f"13(blocking_v2()) Отмена блокировки пользователя запущено НЕ от имени Администратора\n")
-
-
-def unblock_user(username):
-    """
-    Разблокирует учетную запись пользователя Windows.
-
-    :param username: Имя учетной записи пользователя для разблокировки.
-    """
-    try:
-        # Формируем команду для разблокировки пользователя
-        command = f'net user "{username}" /active:yes'
-        # Выполняем команду в командной строке
-        subprocess.run(command, shell=True, check=True)
-        return True
-    except Exception as e:
-        log_error(f"(unblock_user()) Ошибка при разблокировке пользователя - {username}:\n{e}")
-        show_message_with_auto_close(f"Ошибка при разблокировке пользователя - {username}:\n{e}", "Ошибка")
-        return False
 
 
 def username_session():
