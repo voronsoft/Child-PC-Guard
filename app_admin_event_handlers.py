@@ -40,7 +40,6 @@ class EventHandlers:
         self.main_window.username_blocking = function.read_data_json("username_blocking")
 
         # Время блокировки получаем из поля выбора и записываем в файл данных переведя в секунды
-        # TODO Перевести значение в часы после разработки (*3600)
         time_choice = int(self.main_window.input_time.GetValue()) * 3600
         # Записывает выбранное время для блокировки в файл данных.
         function.update_data_json("remaining_time", time_choice)
@@ -95,7 +94,7 @@ class EventHandlers:
 
         username = self.main_window.input_username.GetValue()  # Получаем имя пользователя для блокировки
         hours = int(self.main_window.input_time.GetValue())  # Получаем время для таймера из поля выбора времени
-        self.main_window.remaining_time = int(hours * 3600)  # TODO Перевести значение в часы после разработки (*3600)
+        self.main_window.remaining_time = int(hours * 3600)
 
         # Настройка таймера
         self.main_window.elapsed_time = 0  # Инициализируем прошедшее время
@@ -139,13 +138,14 @@ class EventHandlers:
             # =============== Логика блокировки учетной записи и рабочего стола.
             # TODO Запускаем блокировку ==========================
             username = self.main_window.username_blocking  # Получаем имя пользователя для блокировки
-            session_data = function.get_session_id_by_username(username)  # Данные о сессии
-            id_session_username = int(*(id for id in session_data if id.isdigit()))  # ID сессии
-            print("id_session_username", id_session_username)
-            # Если ос типа PRO
+            # Если ос типа PRO (return TRUE)
             if function.get_windows_edition_pro_or_home():
+                session_data = function.get_session_id_by_username(username)  # Данные о сессии
+                id_session_username = int(*(id for id in session_data if id.isdigit()))  # ID сессии
+                print("id_session_username", id_session_username)
+
                 function.blocking(username, id_session_username)  # Запуск
-            # Если ос тип HOME
+            # Если ос тип HOME (return FALSE)
             else:
                 function.blocking_v2(username)  # Запуск
 
