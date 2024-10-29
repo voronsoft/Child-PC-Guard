@@ -94,7 +94,7 @@ async def check_and_restart_bot():
             os.startfile(path_to_program_bot)  # Запуск программы
         except Exception as e:
             # Логируем ошибку при запуске
-            log_error_monitor(f"Ошибка при запуске БОТа: {e}")
+            log_error_monitor(f"Ошибка при запуске БОТа: {e}\n{(path_to_program_bot)}")
     await asyncio.sleep(1)  # Задержка на 1 секунду
 
 
