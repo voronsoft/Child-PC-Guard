@@ -70,8 +70,9 @@ def run_add_task():
 
         # Привилегии
         principal = taskDef.Principal
-        principal.GroupId = "S-1-5-32-545"  # Группа Пользователи (SID)
-        principal.RunLevel = 0  # LeastPrivilege
+        # principal.GroupId = "S-1-5-32-545"  # Группа Пользователи (SID)
+        principal.GroupId = "S-1-5-32-544"  # Группа Администраторы (SID)
+        principal.RunLevel = 1  # наивысшие привилегии при выполнении программы
 
         # Действие запуска программы
         action = taskDef.Actions.Create(0)  # Exec
@@ -86,7 +87,7 @@ def run_add_task():
                 6,  # TASK_CREATE_OR_UPDATE
                 None,  # Логин пользователя (None = текущий пользователь)
                 None,
-                3,  # TASK_LOGON_GROUP
+                3,  # TASK_LOGON_INTERACTIVE_TOKEN для запуска от имени текущего пользователя
                 None
         )
 
