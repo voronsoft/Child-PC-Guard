@@ -31,6 +31,7 @@ msginit --input=locale/messages.pot --output-file=locale/en/LC_MESSAGES/messages
 msginit --input=locale/messages.pot --output-file=locale/uk/LC_MESSAGES/messages.po --locale=uk_UA
 
 --------------------------------------------------------------------------------------
+Тестовый адрес (нужно указать свой chat_id)
 "chat_id": 631191214,
 --------------------------------------------------------------------------------------
 
