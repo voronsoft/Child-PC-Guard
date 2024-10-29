@@ -165,7 +165,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
         if len(username_block_bd) >= 2:
             username_block = username_block_bd
         # Если найден в системе заблокированный пользователь
-        elif len(username_block_sistem) >= 2 and len(username_block_bd) == 0:
+        elif username_block_sistem:
             username_block = username_block_sistem
         else:
             username_block = _("Не найдено")
@@ -210,7 +210,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
         # Если имя не совпадает с именем защищенного пользователя
         # и имя совпадает с именем пользователя активной сессии
-        if protect_usr != username and username == session_usr:
+        if protect_usr != username and username == session_usr and protect_usr:
             # Если имя введено, блокируем пользователя
             command_disable_user = f'net user "{username}" /active:no'
             subprocess.run(command_disable_user, shell=True, check=True)
@@ -220,8 +220,8 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
             # Выключение ПК
             os.system("shutdown /s /t 30")
             context.user_data['waiting_for_username'] = False
+        # Если имя совпадает с именем защищенного пользователя
         elif protect_usr == username:
-            # Если имя совпадает с именем защищенного пользователя
             await update.message.reply_text(_("Этот пользователь защищен от блокировки. Отмена операции."))
         elif username != session_usr:
             # Если имя не совпадает с именем активной сессии
