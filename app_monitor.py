@@ -31,6 +31,19 @@ mame_prog_cpg = "Child PC Guard.exe"
 name_prog_bot = "run_bot_telegram.exe"
 
 
+def run_as_admin(path_to_program):
+    """
+    Запускает приложение с правами администратора.
+
+    :param path_to_program: Путь к исполняемому файлу программы.
+    """
+    try:
+        # Параметры для запуска программы с правами администратора
+        ctypes.windll.shell32.ShellExecuteW(None, "runas", path_to_program, None, None, 1)
+    except Exception as e:
+        log_error_monitor(f"() Ошибка при запуске с правами администратора: {e}")
+
+
 def log_error_monitor(message):
     """
     Логирование ошибок или событий мониторинга в файл.
@@ -67,7 +80,8 @@ async def check_and_restart_program():
         print("CPG не запущена. Перезапуск...")
         log_error_monitor(f"CPG не запущена. Перезапуск...\nПуть: {path_to_program}")
         try:
-            os.startfile(path_to_program)  # Запуск программы
+            # os.startfile(path_to_program)  # Запуск программы
+            run_as_admin(path_to_program)  # Запуск программы с правами администратора
         except Exception as e:
             # Логируем ошибку, если не удалось запустить
             log_error_monitor(f"Ошибка при запуске CPG:\n{e}")
@@ -84,14 +98,19 @@ async def check_and_restart_bot():
     Если не запущено, запускает его.
     """
     log_error_monitor("Проверка run_bot_telegram...")
+    # Получаем имя защищенного пользователя из JSON
+    usr_protect = function.read_data_json("protected_user")
+    # Получаем имя пользователя текущей сессии
+    usr_ses = os.getlogin()
     if any(proc.name() == name_prog_bot for proc in psutil.process_iter()):
         log_error_monitor("BOT работает")  # Если бот запущен, ничего не делаем
-    else:
+    elif usr_protect != usr_ses and usr_protect:
         # Если бот не запущен, запускаем его
         print("БОТ не запущен. Перезапуск...")
         log_error_monitor(f"БОТ программа не запущена. Перезапуск...\nПуть: {path_to_program_bot}")
         try:
-            os.startfile(path_to_program_bot)  # Запуск программы
+            # os.startfile(path_to_program_bot)  # Запуск программы
+            run_as_admin(path_to_program_bot)  # Запуск программы с правами администратора
         except Exception as e:
             # Логируем ошибку при запуске
             log_error_monitor(f"Ошибка при запуске БОТа: {e}\n{(path_to_program_bot)}")
