@@ -1,5 +1,6 @@
 import asyncio
 import ctypes
+from dotenv import load_dotenv
 import logging
 import os
 import subprocess
@@ -7,11 +8,13 @@ import sys
 
 from telegram import KeyboardButton, ReplyKeyboardMarkup, Update
 from telegram.ext import (Application, CommandHandler, ContextTypes,
-                          MessageHandler, filters
-                          )
+                          MessageHandler, filters)
 
 import config_localization
 import function
+
+# Загружаем переменные из .env файла
+load_dotenv()
 
 # Подключаем локализацию
 _ = config_localization.setup_locale(function.read_data_json("language"))
@@ -19,7 +22,11 @@ _ = config_localization.setup_locale(function.read_data_json("language"))
 # Имя мьютекса (должно быть уникальным)
 MUTEX_NAME_BCPG = "Global\\BOT_Child_PC"
 
-# Глобальная переменная токена
+# Получаем Токен бота
+get_token_env = os.getenv("bot_token_telegram")
+# Записываем токен бота в файл БД
+function.update_data_json("bot_token_telegram", get_token_env)
+
 TOKEN = function.read_data_json("bot_token_telegram")
 
 # Объявляем переменную глобально
@@ -226,9 +233,6 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
         elif username != session_usr:
             # Если имя не совпадает с именем активной сессии
             await update.message.reply_text(_("Имя пользователя указано неверно. Отмена операции."))
-
-
-
 
 
 # Главная функция запуска приложения бота
