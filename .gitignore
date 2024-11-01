@@ -1,6 +1,7 @@
 .git/
 .idea/
-.venv/
+.venv
 __pycache__/
 build
 .env
+.idea/child_control.iml
