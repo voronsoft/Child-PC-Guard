@@ -5,3 +5,4 @@ __pycache__/
 build
 .env
 .idea/child_control.iml
+notes_bot.txt
