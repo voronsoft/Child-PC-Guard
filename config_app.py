@@ -119,6 +119,7 @@ path_bot_tg_exe = os.path.join(FOLDER_INSTALL_APP, "run_bot_telegram.exe")  # П
 
 if __name__ == "__main__":
     print("SECRET_KEY: ", SECRET_KEY)
+    print("TOKEN: ", TOKEN)
     print("--------------------------------------")
     print("PROJECT_ROOT: ", PROJECT_ROOT)
     print("DISK_LETTER: ", DISK_LETTER)

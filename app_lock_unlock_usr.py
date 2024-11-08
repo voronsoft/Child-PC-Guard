@@ -94,14 +94,15 @@ class Pass(wx.Dialog):
     def on_ok(self, event):
         """Определяет поведение окна исходя из введенного пароля (принять или вывести сообщение если нет)"""
         # Получаем значение из поля ввода пароля и сравниваем со значением из БД
-        if function.check_password(self.m_text_ctrl1.GetValue(), self.password_from_registry):
-            self.password_check = True
-            self.Destroy()  # Закрытие окна и завершение процесса питон
-        elif not function.get_password_from_registry():
+        if not function.get_password_from_registry():
             wx.MessageBox(
                     _("Не задан пароль для главного приложения.\nОткройте главное приложение и задайте пароль для главной программы.\nПотом вернитесь и введите пароль опять, что-бы получить доступ"),
                     _("Ошибка"), wx.OK | wx.ICON_STOP
             )
+        elif function.check_password(self.m_text_ctrl1.GetValue(), self.password_from_registry):
+            self.password_check = True
+            self.Destroy()  # Закрытие окна и завершение процесса питон
+
         else:
             wx.MessageBox(_("Неверный пароль. Попробуйте снова."), _("Ошибка"), wx.OK | wx.ICON_ERROR)
 

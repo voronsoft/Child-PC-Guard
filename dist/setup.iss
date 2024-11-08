@@ -91,7 +91,7 @@ Root: HKLM; Subkey: "SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System";
 [Code]
 procedure InitializeWizard();
 begin
-  MsgBox('Для успешной установки может потребоваться подтвердить действие UAC. Пожалуйста, нажмите "Да" для продолжения.', mbInformation, MB_OK);
+  MsgBox('Для успешной установки может потребоваться перезагрузка. Пожалуйста, нажмите "Да" для продолжения.', mbInformation, MB_OK);
 end;
 
 function AppRunning(AppName: string): Boolean;

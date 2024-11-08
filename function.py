@@ -710,7 +710,7 @@ def kill_program_by_name(program_name="run_bot_telegram.exe"):
 # --------------------------Работа с паролем для приложения-------------------
 def hash_password(password: str) -> str:
     """Хеширует пароль с использованием HMAC и секретного ключа."""
-    hash_psw = hmac.new(SECRET_KEY, password.encode("utf-8"), hashlib.sha256).hexdigest()
+    hash_psw = hmac.new(SECRET_KEY.encode("utf-8"), password.encode("utf-8"), hashlib.sha256).hexdigest()
     return hash_psw
 
 
