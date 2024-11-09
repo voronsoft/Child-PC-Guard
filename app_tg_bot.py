@@ -1,6 +1,5 @@
 import asyncio
 import ctypes
-from dotenv import load_dotenv
 import logging
 import os
 import subprocess
@@ -8,13 +7,11 @@ import sys
 
 from telegram import KeyboardButton, ReplyKeyboardMarkup, Update
 from telegram.ext import (Application, CommandHandler, ContextTypes,
-                          MessageHandler, filters)
+                          MessageHandler, filters
+                          )
 
 import config_localization
 import function
-
-# Загружаем переменные из .env файла
-load_dotenv()
 
 # Подключаем локализацию
 _ = config_localization.setup_locale(function.read_data_json("language"))
@@ -22,10 +19,10 @@ _ = config_localization.setup_locale(function.read_data_json("language"))
 # Имя мьютекса (должно быть уникальным)
 MUTEX_NAME_BCPG = "Global\\BOT_Child_PC"
 
-# Получаем Токен бота
-get_token_env = os.getenv("bot_token_telegram")
+# Токен телеграм бота
+bot_token_telegram = "7456533985:AAEGOk3VUU04Z4bk9B83kzy4MW5zem3hbYw"
 # Записываем токен бота в файл БД
-function.update_data_json("bot_token_telegram", get_token_env)
+function.update_data_json("bot_token_telegram", bot_token_telegram)
 
 TOKEN = function.read_data_json("bot_token_telegram")
 

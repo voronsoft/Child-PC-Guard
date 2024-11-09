@@ -91,7 +91,7 @@ Root: HKLM; Subkey: "SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System";
 [Code]
 procedure InitializeWizard();
 begin
-  MsgBox('Для успешной установки может потребоваться перезагрузка. Пожалуйста, нажмите "Да" для продолжения.', mbInformation, MB_OK);
+  MsgBox('ENG - A reboot may be required for successful installation. Please click "Да" to continue.\n\nУКР - Для успішного встановлення може знадобитися перезавантаження. Будь ласка, натисніть "Так", щоб продовжити.\n\nРУС - Для успешной установки может потребоваться перезагрузка. Пожалуйста, нажмите "Да" для продолжения.', mbInformation, MB_OK);
 end;
 
 function AppRunning(AppName: string): Boolean;

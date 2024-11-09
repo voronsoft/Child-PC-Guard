@@ -31,58 +31,34 @@ class EventHandlers:
         Обработчик события выбора имени пользователя и времени
         """
         # =============== Получаем значения из полей ввода ================
-        # Имя пользователя получаем из поля выбора и записываем в файл данных
-        username_choice = self.main_window.input_username.GetValue()  # Получаем имя пользователя для блокировки
-        print("Произошло событие в поле выбора пользователя:", username_choice)
-        # Записываем имя пользователя для блокировки в файл данных.
-        function.update_data_json("username_blocking", username_choice)
-        # Обновляем атрибут в классе
-        self.main_window.username_blocking = function.read_data_json("username_blocking")
+        # Имя пользователя активной сессии
+        usr_ses_activ = function.username_session()
+        # Имя защищенного пользователя
+        usr_protct = function.read_data_json("protected_user")
 
-        # Время блокировки получаем из поля выбора и записываем в файл данных переведя в секунды
+        # Получаем имя пользователя для блокировки из поля выбора
+        username_choice = self.main_window.input_username.GetValue()
+        # Получаем время блокировки из поля выбора (переводим в секунды)
         time_choice = int(self.main_window.input_time.GetValue()) * 3600
-        # Записывает выбранное время для блокировки в файл данных.
-        function.update_data_json("remaining_time", time_choice)
-        # Обновляем атрибут в классе
-        self.main_window.remaining_time = function.read_data_json("remaining_time")
 
-        # Получаем данные о сессии
-        session_id = function.get_session_id_by_username(self.main_window.username_blocking)
-
-        # ==========================================================================
-        # Проверяем запущена ли сессия искомого пользователя если нет стираем данные
-        if function.get_session_id_by_username(self.main_window.username_blocking) is None:
-            self.main_window.input_time.Disable()  # Отключаем поле выбора времени для блокировки
-            self.main_window.btn_disable_blocking.Disable()  # Отключаем кнопку - Отключить блокировку
-
-            # Выводим сообщение что-бы выбранный пользователь зашел в систему (активировал сессию)
-            dialog = wx.MessageDialog(
-                    None,
-                    _("Выбранный пользователь: {usermane} не вошел в свой аккаунт Windows.\nРЕШЕНИЕ:\n1 - Нужно зайти в его аккаунт.\n2 - Запустить программу от имени АДМИНИСТРАТОРА\n3 - Провести процедуру настройки блокировки снова.").format(usermane=self.main_window.username_blocking),
-                    _("Предупреждение"),
-                    wx.ICON_WARNING,
-            )
-            dialog.ShowModal()
-            dialog.Destroy()
-
-            # Сбрасываем выбор пользователя
-            self.main_window.input_username.SetSelection(-1)  # Сбрасываем поле имени
-            function.update_data_json("username_blocking", "")  # Стираем имя пользователя в файле
-            self.main_window.username_blocking = function.read_data_json(
-                    "username_blocking"
-            )  # Обновляем атрибут имени пользователя
-            # Сбрасываем выбор времени
-            self.main_window.input_time.SetSelection(0)  # Обнуляем время в поле
-            function.update_data_json("remaining_time", 0)  # Стираем значение времени в файле
-            self.main_window.remaining_time = function.update_data_json("remaining_time", 0)  # Обновляем атрибут времени блокировки
-        else:
-            self.main_window.input_time.Enable()  # Активируем поле выбора времени
-            self.main_window.btn_disable_blocking.Enable()  # Активируем кнопку - Отключить блокировку
-
-        # Проверяем, указаны ли пользователь и время и запущена ли сессия.
-        if self.main_window.input_username.GetValue() and int(time_choice) > 0 and session_id is not None:
-            self.main_window.btn_ok.Enable()  # Активируем кнопку OK, если значения корректные
+        # Если выбранный пользователь не совпадает с защищенным пользователем.
+        if username_choice != usr_protct:
+            # Записываем имя пользователя для блокировки в файл данных.
+            function.update_data_json("username_blocking", username_choice)
+            # Обновляем атрибут в классе
+            self.main_window.username_blocking = function.read_data_json("username_blocking")
+            # Активируем поле выбора времени если выбран пользователь для блокировки
             self.main_window.input_time.Enable()  # Активируем поле с временем для блокировки
+
+        if time_choice != 0:
+            # Записывает выбранное время для блокировки в файл данных.
+            function.update_data_json("remaining_time", time_choice)
+            # Обновляем атрибут в классе
+            self.main_window.remaining_time = function.read_data_json("remaining_time")
+
+        # Проверяем, указаны ли пользователь и время.
+        if self.main_window.input_username.GetValue() and int(time_choice) > 0:
+            self.main_window.btn_ok.Enable()  # Активируем кнопку OK, если значения корректные
         else:
             self.main_window.btn_ok.Disable()  # Деактивируем кнопку, если значения некорректные или пустые
 
@@ -90,9 +66,14 @@ class EventHandlers:
         """
         Обработчик запуска задания блокировки. Кнопка ОК
         """
-        # function.send_bot_telegram_message(_("Запуск задания блокировки"))
+        # Блокируем интерфейс.
+        self.disable_fields()
+        # Но оставляем активными кнопки для разблокировки интерфейса
+        self.enable_fields_tool_bar()
 
-        username = self.main_window.input_username.GetValue()  # Получаем имя пользователя для блокировки
+        # Посылаем сообщение администратору о начале блокировки
+        function.send_bot_telegram_message(_("Запуск задания блокировки"))
+
         hours = int(self.main_window.input_time.GetValue())  # Получаем время для таймера из поля выбора времени
         self.main_window.remaining_time = int(hours * 3600)
 
@@ -105,17 +86,6 @@ class EventHandlers:
         self.main_window.input_username.Disable()  # Блокируем поле имени пользователя
         self.main_window.input_time.Disable()  # Блокируем поле выбора времени блокировки
 
-        if username == function.username_session():
-            dialog = wx.MessageDialog(
-                    None,
-                    _(
-                            "Внимание убедитесь что вы выбрали не АДМИНИСТРАТОРА !!!\nТолько АДМИНИСТРАТОР может снять блокировку !!!.\nВ противном случае блокировку уже не снять.\nРЕШЕНИЕ - ПЕРЕУСТАНОВКА WINDOWS !!!"
-                    ),
-                    _("Предупреждение"),
-                    wx.ICON_WARNING,
-            )
-            dialog.ShowModal()
-            dialog.Destroy()
 
     def run_on_timer(self, event):
         """
@@ -223,10 +193,8 @@ class EventHandlers:
         # Деактивируем кнопки в тулбаре
         self.main_window.tool_bar.EnableTool(self.main_window.btn_tool_log.GetId(), False)
         self.main_window.tool_bar.EnableTool(self.main_window.btn_tool_timer.GetId(), False)
-        # self.main_window.tool_bar.EnableTool(self.main_window.btn_tool_monitor.GetId(), False)
         self.main_window.tool_bar.EnableTool(self.main_window.btn_tool_clear_data.GetId(), False)
         self.main_window.tool_bar.EnableTool(self.main_window.btn_tool_run_unblock_usr.GetId(), False)
-        # self.main_window.tool_bar.EnableTool(self.main_window.btn_tool_info.GetId(), True)
         self.main_window.tool_bar.EnableTool(self.main_window.btn_tool_bot.GetId(), False)
 
         self.main_window.tool_bar.EnableTool(self.main_window.btn_tool_unblock_interface.GetId(), False)
@@ -354,7 +322,6 @@ class EventHandlers:
         if not dlg.password_check:
             self.main_window.Close()
             self.enable_fields_tool_bar()
-            print("1 Должен активироваться интерфейс")
             function.send_bot_telegram_message(
                     _("Кто то пытается разблокировать интерфейс программы\nПароль не совпал")
             )

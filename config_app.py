@@ -1,13 +1,8 @@
 import os
 import sys
 
-from dotenv import load_dotenv
-
-# Загружаем переменные из .env файла
-load_dotenv()
-
 # Секретный ключ для хеширования пароля
-SECRET_KEY = os.getenv("SECRET_KEY")
+SECRET_KEY = "super_simple_key_ChilD_Ps_GuuaRD"
 
 # Определяем корневую папку проекта (определяется путем с какого места вызван код из файла)
 PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
@@ -119,7 +114,6 @@ path_bot_tg_exe = os.path.join(FOLDER_INSTALL_APP, "run_bot_telegram.exe")  # П
 
 if __name__ == "__main__":
     print("SECRET_KEY: ", SECRET_KEY)
-    print("TOKEN: ", TOKEN)
     print("--------------------------------------")
     print("PROJECT_ROOT: ", PROJECT_ROOT)
     print("DISK_LETTER: ", DISK_LETTER)

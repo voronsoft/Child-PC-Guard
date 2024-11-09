@@ -604,7 +604,7 @@ def function_to_create_path_data_files():
                 "protected_user": "",
                 "bot_token_telegram": "7456533985:AAEGOk3VUU04Z4bk9B83kzy4MW5zem3hbYw",
                 "chat_id": 631191214,
-                "language": "ru",
+                "language": "uk",
         }
         with open(PATH_DATA_FILE_PRGM_DATA, "w", encoding="utf-8") as file:
             json.dump(initial_data, file, indent=4)  # Записываем данные в формате JSON с отступами
