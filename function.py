@@ -287,22 +287,21 @@ def is_session_active(usr_name):
         # Выполнение команды для получения информации о сессии пользователя
         command = f'query user {usr_name}'
         result = subprocess.run(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        # print("-----\n", result, "\n-----")
 
         # Обработка вывода команды
         for line in result.stdout.splitlines():
-            # print(1)
+            # print("line: ", line)
             if usr_name in line:
                 if "console" in line:
-                    # print(2, "Сессия активна")
+                    # print(222, "Сессия активна")
                     return True
 
-            if usr_name not in line and usr_name in line:
-                if "console" not in line:
-                    # print(3, "Сессия НЕ активна")
-                    return False
+        return False
 
     except Exception as e:
         print(5, f"Произошла ошибка: {e}")
+        log_error(f"is_session_active(): Произошла ошибка при проверке активна ли сессия пользователя:/n{e}")
 
     # print(6, False)
     return False  # Если имя пользователя не найдено
