@@ -1,6 +1,7 @@
 import ctypes
 import hashlib
 import hmac
+import inspect
 import json
 import os
 import subprocess
@@ -8,21 +9,13 @@ import sys
 import threading
 import time
 import winreg
-import inspect
-from idlelib.iomenu import encoding
 
 import psutil
 import requests
 
-from config_app import (
-    DISK_LETTER,
-    FOLDER_DATA,
-    PATH_DATA_FILE,
-    PATH_INSTALL_INFO_FILE,
-    PATH_LOG_FILE,
-    SECRET_KEY,
-    path_bot_tg_exe,
-)
+from config_app import (DISK_LETTER, FOLDER_DATA, PATH_DATA_FILE,
+                        PATH_INSTALL_INFO_FILE, PATH_LOG_FILE, SECRET_KEY,
+                        path_bot_tg_exe)
 
 FOLDER_DATA_PRGM_DATA = os.path.join(os.environ.get("PROGRAMDATA"), "Child PC Guard Data")
 PATH_DATA_FILE_PRGM_DATA = os.path.join(FOLDER_DATA_PRGM_DATA, "data.json")
