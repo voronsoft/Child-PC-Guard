@@ -32,6 +32,7 @@ class Pass(wx.Dialog):
                            size=wx.Size(400, 150),
                            style=wx.DEFAULT_DIALOG_STYLE | wx.STAY_ON_TOP
                            )
+        self.SetSizeHints(wx.Size(400, 150), wx.Size(400, 150))
         self.password_from_registry = function.get_password_from_registry()  # Пароль из БД
         self.password_check = False  # Флаг проверки правильности пароля
 
@@ -244,7 +245,6 @@ class UnblockUser(wx.Dialog):
         sizer_btn.Add(self.btn_unlock, 1, wx.ALL | wx.EXPAND, 0)
 
         sizer_main.Add(sizer_btn, 1, wx.ALL | wx.EXPAND, 5)
-        #  wx.ALIGN_CENTER | wx.ALL
 
         self.SetSizer(sizer_main)
         self.Layout()

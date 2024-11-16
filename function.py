@@ -9,6 +9,7 @@ import threading
 import time
 import winreg
 import inspect
+from idlelib.iomenu import encoding
 
 import psutil
 import requests
@@ -268,12 +269,43 @@ def get_session_id_by_username(username: str):
 
         return None
     except subprocess.CalledProcessError as e:
-        log_error(f"Ошибка получение данных сессии по имени пользователя\nОшибка:\n{e}")
+        log_error(f"(get_session_id_by_username()) Ошибка получение данных сессии по имени пользователя\nОшибка:\n{e}")
         print(f"Ошибка получение данных сессии по имени пользователя\nОшибка:\n{e}")
     except Exception as e:
         log_error(f"Неизвестная ошибка: {e}")
         print(f"Неизвестная ошибка: {e}")
     return None
+
+
+def get_console_encoding():
+    """
+    Определяет текущую кодировку консоли Windows.
+
+    :return: Строка с кодировкой консоли, например 'cp866' или 'utf-8'.
+    """
+    try:
+        # Выполняем команду chcp для получения текущей кодовой страницы
+        result = subprocess.run(
+                "chcp",
+                shell=True,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                text=True,
+        )
+        output = result.stdout.strip()  # Убираем лишние пробелы и переносы строк
+        print("output:", output)
+        log_error(f"(get_console_encoding()) Вывод команды chcp: {output}")
+
+        # Извлекаем кодовую страницу (номер кодировки)
+        for word in output.split():
+            print(word)
+            if word.isdigit():  # Ищем числовую часть строки
+                return f"cp{word}"  # Преобразуем в формат кодировки Python
+    except Exception as e:
+        log_error(f"(get_console_encoding()) Ошибка при определении кодировки консоли:{e}")
+
+    # Если не удалось определить, возвращаем utf-8
+    return "utf-8"
 
 
 def is_session_active(usr_name):
@@ -284,17 +316,15 @@ def is_session_active(usr_name):
     :return: True, если сессия активна; False, если неактивна
     """
     try:
+        # Определяем кодировку консоли
+        encoding_txt_cmd = get_console_encoding()
         # Выполнение команды для получения информации о сессии пользователя
         command = f'query user {usr_name}'
-        result = subprocess.run(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-        # print("-----\n", result, "\n-----")
-
+        result = subprocess.run(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, encoding=encoding_txt_cmd)
         # Обработка вывода команды
         for line in result.stdout.splitlines():
-            # print("line: ", line)
             if usr_name in line:
                 if "console" in line:
-                    # print(222, "Сессия активна")
                     return True
 
         return False
@@ -303,7 +333,7 @@ def is_session_active(usr_name):
         print(5, f"Произошла ошибка: {e}")
         log_error(f"is_session_active(): Произошла ошибка при проверке активна ли сессия пользователя:/n{e}")
 
-    # print(6, False)
+    print(6, False)
     return False  # Если имя пользователя не найдено
 
 
