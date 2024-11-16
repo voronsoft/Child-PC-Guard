@@ -286,13 +286,12 @@ def get_console_encoding():
                 text=True,
         )
         output = result.stdout.strip()  # Убираем лишние пробелы и переносы строк
-        print("output:", output)
         log_error(f"(get_console_encoding()) Вывод команды chcp: {output}")
 
         # Извлекаем кодовую страницу (номер кодировки)
         for word in output.split():
-            print(word)
             if word.isdigit():  # Ищем числовую часть строки
+                log_error(f"(get_console_encoding()) отправляем кодировку консоли:cp{word}")
                 return f"cp{word}"  # Преобразуем в формат кодировки Python
     except Exception as e:
         log_error(f"(get_console_encoding()) Ошибка при определении кодировки консоли:{e}")
@@ -308,6 +307,7 @@ def is_session_active(usr_name):
     :param usr_name: Имя пользователя для проверки
     :return: True, если сессия активна; False, если неактивна
     """
+    log_error(f"(is_session_active()) Проверка активности сессии пользователя: {usr_name}")
     try:
         # Определяем кодировку консоли
         encoding_txt_cmd = get_console_encoding()
@@ -316,10 +316,13 @@ def is_session_active(usr_name):
         result = subprocess.run(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, encoding=encoding_txt_cmd)
         # Обработка вывода команды
         for line in result.stdout.splitlines():
-            if usr_name in line:
+            log_error(f"(is_session_active()) {line}")
+            if usr_name in line or usr_name.lower() in line:
                 if "console" in line:
+                    log_error(f"(is_session_active()) вернула - True")
                     return True
 
+        log_error(f"(is_session_active()) вернула - False")
         return False
 
     except Exception as e:
